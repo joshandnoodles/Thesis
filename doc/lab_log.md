@@ -33,15 +33,15 @@ This could be corrected by:
       - a large industry competes at the highest caliber to perfect these systems
   - reduce EM noise by using **opto-isolator**
   
-[s1_s2_10k]: ./img/s1_s2_10k.bmp
+[s1_s2_10k]: https://github.com/joshandnoodles/MS/raw/master/doc/img/s1_s2_10k.bmp
 	"Figure 1: Transient response after Stage 1 & 2 with input 20mA 10kHz signal from point-blank distance"
-[s1_s2_76k]: ./img/s1_s2_76k.bmp
+[s1_s2_76k]: https://github.com/joshandnoodles/MS/raw/master/doc/img/s1_s2_76k.bmp
 	"Figure 2: Transient response after Stage 1 & 2 with input 20mA 76kHz signal from point-blank distance"
-[s1_s2_133k]: ./img/s1_s2_133k.bmp
+[s1_s2_133k]: https://github.com/joshandnoodles/MS/raw/master/doc/img/s1_s2_133k.bmp
 	"Figure 3: Transient response after Stage 1 & 2 with input 20mA 133kHz signal from point-blank distance"
-[s1_s2_350k]: ./img/s1_s2_350k.bmp
+[s1_s2_350k]: https://github.com/joshandnoodles/MS/raw/master/doc/img/s1_s2_350k.bmp
 	"Figure 4: Transient response after Stage 1 & 2 with input 20mA 350kHz signal from point-blank distance"
-[s1_s2_670k]: ./img/s1_s2_670k.bmp
+[s1_s2_670k]: https://github.com/joshandnoodles/MS/raw/master/doc/img/s1_s2_670k.bmp
 	"Figure 5: Transient response after Stage 1 & 2 with input 20mA 670kHz signal from point-blank distance"
 
 
@@ -126,11 +126,11 @@ Investigating whether the video resolution or frame could be downgraded to allow
 ![][networx_bw_post_stream_res_nominal_fps_3]
 
 
-[networx_bw_pre_stream_res_nominal_fps_nominal]: ./img/networx_bw_pre_stream_res_nominal_fps_nominal.png
+[networx_bw_pre_stream_res_nominal_fps_nominal]: https://github.com/joshandnoodles/MS/raw/master/doc/img/networx_bw_pre_stream_res_nominal_fps_nominal.png
   "Figure !!: Nominal network activity prior to video streaming"
-[networx_bw_post_stream_res_nominal_fps_nominal]: ./img/networx_bw_post_stream_res_nominal_fps_nominal.png
+[networx_bw_post_stream_res_nominal_fps_nominal]: https://github.com/joshandnoodles/MS/raw/master/doc/img/networx_bw_post_stream_res_nominal_fps_nominal.png
   "Figure !!: Nominal network activity with video streaming"
-[networx_bw_post_stream_res_nominal_fps_3]: ./img/networx_bw_post_stream_res_nominal_fps_3.png
+[networx_bw_post_stream_res_nominal_fps_3]: https://github.com/joshandnoodles/MS/raw/master/doc/img/networx_bw_post_stream_res_nominal_fps_3.png
   "Figure !!: Network activity with video streaming and config modified for 3 fps"
 
 
@@ -204,7 +204,8 @@ Notes:
   - power source for Data Plane Controller, Mechanical Plane Controller, and Gimbal still indefinite
 	  - hopefully this can be powered with 5V, max=5V (available on OpenROV)
 
-[hld_generic_controller_v1]: ./img/hld_generic_controller_v1.svg
+[hld_generic_controller_v1]: 
+https://rawgit.com/joshandnoodles/MS/master/doc/img/hld_generic_controller_v1.svg
   "Figure !!: High-level Design of communication system with generic, independent controllers "
   
 # Weekly One-One - September 22, 2016
@@ -260,7 +261,7 @@ Further investigation found that the resolution is able to be changed within the
 
 ![][networx_bw_post_stream_res_640x480_fps_nominal]
 
-[networx_bw_post_stream_res_640x480_fps_nominal]: ./img/networx_bw_post_stream_res_640x480_fps_nominal.png
+[networx_bw_post_stream_res_640x480_fps_nominal]: "https://raw.githubusercontent.com/joshandnoodles/MS/master/doc//img/networx_bw_post_stream_res_640x480_fps_nominal.png"
   "Figure !!: Network activity of streaming videa at a resolution of 640x480"
 
 

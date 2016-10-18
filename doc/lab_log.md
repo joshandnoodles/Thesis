@@ -273,4 +273,15 @@ Further investigation found that the resolution is able to be changed within the
   - *Cont'd* - Test OpenROV without Topside Interface board and both Tenda Homeplug Adapters
 	  - should be nominal, but important to test
 	  - could raise issues about using using our system in place of Tenda Homeplug Adapters
-  - *Cont'd* - Blackbox design control loop system to better outline the interaction between all mechanisms as well as 
+  - *Cont'd* - Blackbox design control loop system to better outline the interaction between all mechanisms as well as resources/components needed for design
+
+# Weekly One-One w/ Chelsea - October 11, 2016
+
+## Action Items
+
+
+| Tables   |      Are      |  Cool |
+|----------|:-------------:|------:|
+| col 1    |  left-aligned | $1600 |
+| col 2 is |    centered   |   $12 |
+| col 3 is | right-aligned |    $1 |

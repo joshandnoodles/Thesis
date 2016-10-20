@@ -213,7 +213,7 @@ Notes:
 	  - hopefully this can be powered with 5V, max=5V (available on OpenROV)
 
 [hld_generic_controller_v1]: 
-https://rawgit.com/joshandnoodles/MS/master/doc/diagrams/hld_generic_controller_v1.svg
+https://rawgit.com/joshandnoodles/MS/master/doc/img/hld_generic_controller_v1.svg
   "Figure !!: High-level Design of communication system with generic, independent controller(s)"
   
 # Weekly One-One - September 22, 2016
@@ -321,7 +321,11 @@ Cons
 
 #### Block diagram of control loop
 
-**
+![][hld_control_loop_camera_v1]
+
+[hld_control_loop_camera_v1]: 
+https://rawgit.com/joshandnoodles/MS/master/doc/img/hld_control_loop_camera_v1.svg
+  "Figure !!: High-level design of control loop using camera/computer vision feedback system"
 
 ### Photodiode Array
 
@@ -339,16 +343,16 @@ Cons
 
 #### Block diagram of control loop
 
-**
+![][hld_control_loop_pd_v1]
 
-
-###
-
+[hld_control_loop_pd_v1]: 
+https://rawgit.com/joshandnoodles/MS/master/doc/img/hld_control_loop_pd_v1.svg
+  "Figure !!: High-level design of control loop using photodiode array feedback system"
 
 ## *Updated* High-level Design (generic controller)
 
-![][[hld_generic_controller_v2]]
+![][hld_generic_controller_v2]
 
 [hld_generic_controller_v2]: 
-https://rawgit.com/joshandnoodles/MS/master/doc/diagrams/hld_generic_controller_v2.svg
-  "Figure !!: High-level Design of communication system with generic, independent controller(s)"
+https://rawgit.com/joshandnoodles/MS/master/doc/img/hld_generic_controller_v2.svg
+  "Figure !!: High-level design of communication system with generic, independent controller(s)"

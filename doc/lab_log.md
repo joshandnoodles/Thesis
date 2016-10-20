@@ -101,11 +101,19 @@ Data collected began with OpenROV off. OpenROV was power-up up and data collecti
 
 ![][networx_bw_pre_stream_res_nominal_fps_nominal]
 
-Once the video streaming was up, the FPS averaged right above 20 fps although extremes were seen at both 10 fps and 40 fps. As can be seen in the figure !!, after the OpenROV powered up fully and video streaming begain, download rates held at ~21Mbps for about 5 minutes until jumping to **~25Mbps**. Uploads held farily consistently throughout at 
+Once the video streaming was up, the FPS averaged right above 20 fps although extremes were seen at both 10 fps and 40 fps. As can be seen in the figure !!, after the OpenROV powered up fully and video streaming begain, download rates held at ~21Mbps for about 5 minutes until jumping to **~25Mbps**. Uploads held farily consistently throughout at ~500kbps
 
 ![][networx_bw_post_stream_res_nominal_fps_nominal]
 
-Investigating whether the video resolution or frame could be downgraded to allow for lower download rates, I found there is modifications that can be done on the node.js side of platform (within the openrov-cockpit). This modification will affect the frame rate. It is made in the following file: */opt/openrov/cockpit/src/lib/config.js*.
+Investigating whether the video resolution or frame could be downgraded to allow for lower download rates, I found there is modifications that can be done on the node.js side of platform (within the openrov-cockpit). This modification will affect the frame rate. It is made in the following file: */opt/openrov/cockpit/src/lib/config.js*. 
+
+These modifications can be done using Putty to connect to the OpenROV using the following settings:
+
+  - IP Address: 192.168.254.1
+  - Port: 22
+  - Username : rov
+  - Password : OpenROV
+
 
 *Original*
 
@@ -205,8 +213,8 @@ Notes:
 	  - hopefully this can be powered with 5V, max=5V (available on OpenROV)
 
 [hld_generic_controller_v1]: 
-https://rawgit.com/joshandnoodles/MS/master/doc/img/hld_generic_controller_v1.svg
-  "Figure !!: High-level Design of communication system with generic, independent controllers "
+https://rawgit.com/joshandnoodles/MS/master/doc/diagrams/hld_generic_controller_v1.svg
+  "Figure !!: High-level Design of communication system with generic, independent controller(s)"
   
 # Weekly One-One - September 22, 2016
 
@@ -218,7 +226,17 @@ https://rawgit.com/joshandnoodles/MS/master/doc/img/hld_generic_controller_v1.sv
   - *Cont'd* - further reduce BW usage of OpenROV's video stream by reducing resolution
    - Blackbox design control loop system to better outline the interaction between all mechanisms as well as 
 
-# Week Six
+# Weekly One-One - September 29, 2016
+
+## Action Items
+
+  - *Cont'd* - Test OpenROV without Topside Interface board and both Tenda Homeplug Adapters
+	  - should be nominal, but important to test
+	  - could raise issues about using using our system in place of Tenda Homeplug Adapters
+  - *Cont'd* - further reduce BW usage of OpenROV's video stream by reducing resolution
+  - *Cont'd* - Blackbox design control loop system to better outline the interaction between all mechanisms as well as resources/components needed for design
+
+# Week Six and Seven
 
 ## Tenda-less OpenROV Testing
 
@@ -230,11 +248,17 @@ To complete this test, the following items were removed:
   - Tenda Interface Board
   - Twisted-pair tether
 
-pass through eth and decephier
+Once all components had been removed, a small CAT5e cable was connected directly from the Ethernet port of my computer to the BeagleBone that is housed within the OpenROV. The OpenROV was kept partially deconstructed throughout this test as there is no trivial way to run this Ethernet line out of the OpenROV.
 
-Once all components had been removed, a small CAT5e cable was connected directly from the Ethernet port of my computer to the BeagleBone that is housed within the OpenROV. The OpenROV was kept partially deconstructed throughout this test as there is no trivial way to run this Ethernet line out of the OpenROV while keeping.
+Upon testing, the OpenROV did not power up and/or connect to the OpenROV Cockpit interface as expected. I initially expected that the Tenda provided some sort of enable signal to the OpenROV once the land-side end was connected to power. This turned out not to be the case after analyzing the circuitry. Investigating further, I found that the only suspect left was the tether. Measuring the tether pair directly with a differently ended probe on the oscilloscope, I found it provided a signal centered at a DC value of 40V with small variations caused by the modulation. As it turns out, the OpenROV uses this signal from the tether in its power up sequence for the BeagleBone. This can be seen in the OpenROV 2.8 schematic.
 
-Powering up the system with the modification listed previously, no issues were found. The OpenROV and land-side Cockpit interface performed nominally throughout the duration of the test.
+![][schema_J12]
+
+[schema_J12]: https://raw.githubusercontent.com/joshandnoodles/MS/master/doc/img/schema_J12.png
+  "Figure !!: OpenROV schematic showing manual power switch override to not wait for tether signal"
+
+
+Once this jumper, J12, was shorted, the OpenROV proceeded to power up and operate nominally without the tether or Tendas.
 
 ## Bandwidth Reduction
 
@@ -259,29 +283,72 @@ Further investigation found that the resolution is able to be changed within the
     'video_resolution': '640x480',
 
 
+The data collected using the NetWorx tool shows an average bandwidth usage of **~1.4Mbps** after switching to a resolution of 640x480. Originally, the OpenROV operates using a nominal resolution of 1280x1024 (SXGA) and requires a bandwidth of ~25Mbps. A simple calculation shows that the bandwidth usage scales as a function of resolution unexpectedly. More investigation will be done on this at a later time.
+
+(1.4Mbps) / (25Mbps) = (reduced BW) / (nominal BW) = (pixels @ reduced resolution) / (pixels @ nominal resolution) = (640x480) / (1280x1024) = (307200 pixels) / (1310720 pixels) = 15 / 64 = 0.234375
+
 ![][networx_bw_post_stream_res_640x480_fps_nominal]
 
-[networx_bw_post_stream_res_640x480_fps_nominal]: "https://raw.githubusercontent.com/joshandnoodles/MS/master/doc//img/networx_bw_post_stream_res_640x480_fps_nominal.png"
-  "Figure !!: Network activity of streaming videa at a resolution of 640x480"
+[networx_bw_post_stream_res_640x480_fps_nominal]: https://raw.githubusercontent.com/joshandnoodles/MS/master/doc/img/networx_bw_post_stream_res_640x480_fps_nominal.png
+  "Figure !!: Network activity of streaming video at a resolution of 640x480"
 
-
-
-# Weekly One-One - September 29, 2016
-
-## Action Items
-
-  - *Cont'd* - Test OpenROV without Topside Interface board and both Tenda Homeplug Adapters
-	  - should be nominal, but important to test
-	  - could raise issues about using using our system in place of Tenda Homeplug Adapters
-  - *Cont'd* - Blackbox design control loop system to better outline the interaction between all mechanisms as well as resources/components needed for design
 
 # Weekly One-One w/ Chelsea - October 11, 2016
 
 ## Action Items
 
+  - create pro-cons list for different feedback control systems (i.e. photodiode array versus camera sensor)
+  - *Cont'd* - Blackbox design control loop system to better outline the interaction between all mechanisms as well as resources/components needed for design
 
-| Tables   |      Are      |  Cool |
-|----------|:-------------:|------:|
-| col 1    |  left-aligned | $1600 |
-| col 2 is |    centered   |   $12 |
-| col 3 is | right-aligned |    $1 |
+# Week Eight and Nine
+
+## Exploration of different control feedback systems
+
+### Camera Sensor and Computer Vision
+
+#### Pros/cons
+
+Pros
+
+  - independent of other transceiver (feedback is received in a closed look on the same transceiver, not reliant on communication link being up)
+  - robust in its ability to track other transceiver's orientation (having transmitter and receiver circuitry is no longer an issue if we can determine relative orientation between boards)
+
+Cons
+
+  - entirely different medium of sensing than communication link, different wavelengths, more issues for different ranges of the EM spectrum
+  - relatively slow (probably)
+  - will most likely need additional controller for processing image frames and running computer vision algorithms
+
+#### Block diagram of control loop
+
+**
+
+### Photodiode Array
+
+Pros
+
+  - elegant, simple concept decreases chance for complications
+  - will be able to operate quickly
+  - should be able to be supported by data plane controller, won't need additional controller (second controller=more complexity)
+  - majority of system will have to be already present for transceiver communication, using exisiting architecture
+
+Cons
+
+  - relys on inital calibration (data to align is held by opposite system, needs active communication link for feedback)
+  - potential issues with orientation relative to other gimbal (if the receiver and transceiver are offset on board)
+
+#### Block diagram of control loop
+
+**
+
+
+###
+
+
+## *Updated* High-level Design (generic controller)
+
+![][[hld_generic_controller_v2]]
+
+[hld_generic_controller_v2]: 
+https://rawgit.com/joshandnoodles/MS/master/doc/diagrams/hld_generic_controller_v2.svg
+  "Figure !!: High-level Design of communication system with generic, independent controller(s)"

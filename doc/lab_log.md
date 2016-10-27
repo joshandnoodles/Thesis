@@ -1,6 +1,13 @@
 
 [TOC]
 
+
+# Scratchpad
+
+http://learn.mikroe.com/ebooks/picmicrocontrollersprogramminginassembly/chapter/ccp-modules/
+
+https://www.mbeckler.org/coursework/2005-2006/ee2361lab10.pdf
+
 # Take-away from Senior Design (UC the Fish - Fall 2015 and Spring 2016)
 
 ## Ethernet Compatibility
@@ -356,3 +363,143 @@ https://rawgit.com/joshandnoodles/MS/master/doc/img/hld_control_loop_pd_v1.svg
 [hld_generic_controller_v2]: 
 https://rawgit.com/joshandnoodles/MS/master/doc/img/hld_generic_controller_v2.svg
   "Figure !!: High-level design of communication system with generic, independent controller(s)"
+
+
+# Weekly One-One - October 20, 2016
+
+Talked about geometry of board and placement concerns of receiver and transmitter in a directional system. Still an open-ended item and will need to be revisited in the future.
+
+## Action Items
+
+  - research potentially easy camera solutions that could be added to the system with minimal effort (even if their control implementation will be left as a second priority)
+    - is it possible to have the same controller support a camera (if it runs at a slow rate, even ~1fps)
+  - begin making choosing devices and making diagrams showing actual connectivity between different elements in the system
+    - this may mean doing this multiple times with different devices to show comparisons of different options
+
+# Week 10
+
+
+## Camera Solutions Investigation
+
+Time was spent researching different options for an on board camera system to use computer vision techniques for assistance in gimbal alignment. The results of this investigation are promising in certain cases and hopeless in others. Regardless, the want of a camera solution is able to be easily implemented and able to be supported by the Data Plane Controller seems unlikely. It looks like it might be possible to implement one of these systems, but it will not be trivial.
+
+http://www.microchip.com/forums/m357664.aspx
+
+digikey search
+
+mouser search
+
+additional...
+
+### CMOS Camera Sensor
+
+  - **small**, even board mounted CMOS cameras with supporting circuitry are **~3cm x 3cm**
+  - **inexpensive**, 728x488 CMOS camera module on Sparkfun for only **$32** (*https://www.sparkfun.com/products/11745*
+  - storage of the raw data on a microcontroller becomes an issue (external memory modules interfacing with the PIC are an option as well as SD memory cards)
+    - this will obviously require more complexity, board space, and cost
+  - it is difficult to tell the frame rate that can be achieved, other microchip users have reported a few seconds for a single image acquisition (*http://www.microchip.com/forums/m402377.aspx*)
+    - also no one on the forms is discussing image processing (only image acquisition to send to some other device/medium)
+
+To make the amount of image data reasonable, some have recommended to install a **JPEG encoder chip** which will make the process faster (but probably not twice as fast) and the amount of image data is still significant enough to require some form of external memory module. 
+
+![](https://cdn.sparkfun.com//assets/parts/7/9/6/7/11745-02b.jpg)
+
+### AVRcam
+
+*http://www.jrobot.net/Projects/AVRcam.html*
+
+  - startard UART interface return **real-time tracking statistics**, not raw image data, not compressed image data, but instead **number of objects, color, bounding box, and more**
+  - using Omnivision OV6620 CMOS image sensor along with a whole bunch of internal processing components
+  - in-circuit reprogrammability and **open-source** (we can add new capabilities and modify existing ones)
+  - 88x144 resolution at 30fps
+  - large standalone board with dimensions **2.4" x 1.9"**
+  - 
+
+![](http://www.jrobot.net/pictures/AVRcam_v1_1_front1_small.jpg)
+![](http://www.jrobot.net/pictures/AVRcam_v1_1_back1_small.jpg)
+
+
+## Microcontroller Selection
+
+### Necessary features
+
+  - ADCs (>=4)
+    - read power rails, quantify intensity of light incident on photodiode(s)
+    - general purpose, 10-/12-/16-bit resolution
+  - DACs (>=1)
+    - laser driving, having on board is a must since this will be key in creating a signal with quick modulation patterns
+    - general purpose, 16-bit resolution
+  -  PWM (>=1)
+    - necessary in order to develop a carrier signal and modulate at a lower frequency
+    - 16-bit with up to nine independent time bases
+  - Input Capture (IC)/ Output Capture (OC)
+    -  ability to capture an external event with an independent timer and ability to trigger an output (single output pulse or train of output pulses) on a compare match event (comparing value to compare registers)
+    - may be very helpful when dealing with Ethernet packet data and directly translating data directly to next tx/rx step in process, also fairly standard feature (built into the timers)
+  - USB
+    - although this will not be used in production operation, this is critical for debugging issue from the entire system during active operation
+    - architecture for PC based debug console for this system is already 85% there and already have an understanding of the Microchip USB stack
+  - I2C/UART/SPI
+    - basic communication protocols needed to interface with any outside components (camera, sensors, etc.)
+  - Program memory >=128kB
+    - it is likely more than this will be needed, 256kB, but minimum 128kB
+
+### Optional Features
+  
+  - High-speed ADC
+    - would be very nice to potentially use for photodiode tracking
+    - high-speed SAR ADC with 12-bit resolution and sampling speed of 10Msps 
+  - High-speed Comparator
+    - again, would be very nice have to condition received signal
+    - general purpose, rail-to-rail comparator with <1ns response time
+
+### Non-needed Features (Externalize)
+
+*This section just convinces myself that there are certain features that I can either replicate at the same level as the PIC or better using external components*
+
+  - Opamps
+    - if we need opamps for laser driving or signal conditioning (which we will), I would rather choose the amplifier that best suits the purpose and have access to pins for troubleshooting/characterizing if necessary
+ 
+### Packaging 
+
+It is important to consider package types when choosing devices. Certain package types will be more conducive to prototyping as well as hand soldering on copper clad PCBs using the in-lab PCB maker. Even though certain packages with pads on the bottom of the IC may be able to be used in prototyping with some creativity (flipping component and wire bonding from each pad), they will not be able to be soldered to any PCB in-house. This is undesirable (both time and money loss).
+
+![](https://hackadaycom.files.wordpress.com/2016/10/ne555_h.jpg?w=800)
+
+Any variant of **BGA** (Ball Grid Array packages) (i.e. TFBGA) are **ruled out**. Even the thought of wire bonding to densely packed pads on the bottom of such devices reminds me of some of my worst nightmares.
+
+**QFN** (Quad Fat No-leads) is still **undesirable but still a possibility**. They do not have legs that extend beyond the IC and are meant to be flowed from underneath. However, they are prototypable and have pads that run slightly up the edges which make them possible to hand solder on PCBs with the right solder pad construction. 
+
+Other variants of packaging offered by Microchip such as **QFP** (Quad Flat Package) are **very desirable** as they have legs that extend away from the 
+
+### PIC24 Families
+
+Although features are important, not all 16-bit PICs are equal. From the lowest performance to highest (excluding the dsPICs), we have the following:
+
+  - PIC24F - *Lowest Power*
+    - **16 MIPS**
+    - 3.3V/5.0V
+    - Flash 4K to 1024K
+    - RAM 512 to 96K
+  - PIC24H - *Higher Performance*
+    - **40 MIPS**
+    - 3.3V
+    - Flash 12K to 256K
+    - RAM 1K to 16K
+  - PIC24E - *Highest Performance MCU*
+    - **70 MIPS**
+    - 3.3V
+    - Flash 32K to 512K
+    - RAM 8K to 52K
+
+## OpenROV Power Distribution Research
+
+In an attempt to begin selecting components and showing pin connectivity, the concern of what power supply rails the OpenROV has on board (and which rails may still have leftover amperage available) became a growing issue. Because of this, the OpenROV schematics were explored, and the power distribution diagrammed.
+
+*The power distribution system also contains many current sense points and voltage measurement points. It may be helpful to label these at a later time as they might be helpful when diagnosing power issues on the sub.*
+
+![][hld_openrov_power]
+
+[hld_openrov_power]: 
+https://rawgit.com/joshandnoodles/MS/cd88693408b3beadbc45515974884ea5a7c1ab7e/doc/img/hld_openrov_power.svg
+  "Figure !!: High-level design of power distribution system on board the OpenROV"
+

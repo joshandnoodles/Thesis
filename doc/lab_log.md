@@ -40,15 +40,15 @@ This could be corrected by:
       - a large industry competes at the highest caliber to perfect these systems
   - reduce EM noise by using **opto-isolator**
   
-[s1_s2_10k]: https://github.com/joshandnoodles/MS/raw/master/doc/img/s1_s2_10k.bmp
+[s1_s2_10k]: https://github.com/joshandnoodles/MS/raw/747357e0e8dca8728b961f16eb45695172f6b3a1/doc/img/s1_s2_10k.bmp
 	"Figure 1: Transient response after Stage 1 & 2 with input 20mA 10kHz signal from point-blank distance"
-[s1_s2_76k]: https://github.com/joshandnoodles/MS/raw/master/doc/img/s1_s2_76k.bmp
+[s1_s2_76k]: https://github.com/joshandnoodles/MS/raw/747357e0e8dca8728b961f16eb45695172f6b3a1/doc/img/s1_s2_76k.bmp
 	"Figure 2: Transient response after Stage 1 & 2 with input 20mA 76kHz signal from point-blank distance"
-[s1_s2_133k]: https://github.com/joshandnoodles/MS/raw/master/doc/img/s1_s2_133k.bmp
+[s1_s2_133k]: https://github.com/joshandnoodles/MS/raw/747357e0e8dca8728b961f16eb45695172f6b3a1/doc/img/s1_s2_133k.bmp
 	"Figure 3: Transient response after Stage 1 & 2 with input 20mA 133kHz signal from point-blank distance"
-[s1_s2_350k]: https://github.com/joshandnoodles/MS/raw/master/doc/img/s1_s2_350k.bmp
+[s1_s2_350k]: https://github.com/joshandnoodles/MS/raw/747357e0e8dca8728b961f16eb45695172f6b3a1/doc/img/s1_s2_350k.bmp
 	"Figure 4: Transient response after Stage 1 & 2 with input 20mA 350kHz signal from point-blank distance"
-[s1_s2_670k]: https://github.com/joshandnoodles/MS/raw/master/doc/img/s1_s2_670k.bmp
+[s1_s2_670k]: https://github.com/joshandnoodles/MS/raw/747357e0e8dca8728b961f16eb45695172f6b3a1/doc/img/s1_s2_670k.bmp
 	"Figure 5: Transient response after Stage 1 & 2 with input 20mA 670kHz signal from point-blank distance"
 
 
@@ -141,11 +141,11 @@ These modifications can be done using Putty to connect to the OpenROV using the 
 ![][networx_bw_post_stream_res_nominal_fps_3]
 
 
-[networx_bw_pre_stream_res_nominal_fps_nominal]: https://github.com/joshandnoodles/MS/raw/master/doc/img/networx_bw_pre_stream_res_nominal_fps_nominal.png
+[networx_bw_pre_stream_res_nominal_fps_nominal]: https://github.com/joshandnoodles/MS/raw/747357e0e8dca8728b961f16eb45695172f6b3a1/doc/img/networx_bw_pre_stream_res_nominal_fps_nominal.png
   "Figure !!: Nominal network activity prior to video streaming"
-[networx_bw_post_stream_res_nominal_fps_nominal]: https://github.com/joshandnoodles/MS/raw/master/doc/img/networx_bw_post_stream_res_nominal_fps_nominal.png
+[networx_bw_post_stream_res_nominal_fps_nominal]: https://github.com/joshandnoodles/MS/raw/747357e0e8dca8728b961f16eb45695172f6b3a1/doc/img/networx_bw_post_stream_res_nominal_fps_nominal.png
   "Figure !!: Nominal network activity with video streaming"
-[networx_bw_post_stream_res_nominal_fps_3]: https://github.com/joshandnoodles/MS/raw/master/doc/img/networx_bw_post_stream_res_nominal_fps_3.png
+[networx_bw_post_stream_res_nominal_fps_3]: https://github.com/joshandnoodles/MS/raw/747357e0e8dca8728b961f16eb45695172f6b3a1/doc/img/networx_bw_post_stream_res_nominal_fps_3.png
   "Figure !!: Network activity with video streaming and config modified for 3 fps"
 
 
@@ -220,7 +220,7 @@ Notes:
 	  - hopefully this can be powered with 5V, max=5V (available on OpenROV)
 
 [hld_generic_controller_v1]: 
-https://rawgit.com/joshandnoodles/MS/master/doc/img/hld_generic_controller_v1.svg
+https://rawgit.com/joshandnoodles/MS/747357e0e8dca8728b961f16eb45695172f6b3a1/doc/img/hld_generic_controller_v1.svg
   "Figure !!: High-level Design of communication system with generic, independent controller(s)"
   
 # Weekly One-One - September 22, 2016
@@ -261,7 +261,8 @@ Upon testing, the OpenROV did not power up and/or connect to the OpenROV Cockpit
 
 ![][schema_J12]
 
-[schema_J12]: https://raw.githubusercontent.com/joshandnoodles/MS/master/doc/img/schema_J12.png
+[schema_J12]: 
+https://github.com/joshandnoodles/MS/raw/495c809e913dbe1651ba9bfd9f822c1a214aa586/doc/img/schema_J12.png
   "Figure !!: OpenROV schematic showing manual power switch override to not wait for tether signal"
 
 
@@ -296,7 +297,8 @@ The data collected using the NetWorx tool shows an average bandwidth usage of **
 
 ![][networx_bw_post_stream_res_640x480_fps_nominal]
 
-[networx_bw_post_stream_res_640x480_fps_nominal]: https://raw.githubusercontent.com/joshandnoodles/MS/master/doc/img/networx_bw_post_stream_res_640x480_fps_nominal.png
+[networx_bw_post_stream_res_640x480_fps_nominal]: 
+https://github.com/joshandnoodles/MS/raw/7b967a3bff429ad4abd5ebafc3a9e7fb5c885d17/doc/img/networx_bw_post_stream_res_640x480_fps_nominal.png
   "Figure !!: Network activity of streaming video at a resolution of 640x480"
 
 
@@ -331,7 +333,7 @@ Cons
 ![][hld_control_loop_camera_v1]
 
 [hld_control_loop_camera_v1]: 
-https://rawgit.com/joshandnoodles/MS/master/doc/img/hld_control_loop_camera_v1.svg
+https://rawgit.com/joshandnoodles/MS/5c2f29b4d1f9f393043a2c0f38d69b342fda525c/doc/img/hld_control_loop_camera.svg
   "Figure !!: High-level design of control loop using camera/computer vision feedback system"
 
 ### Photodiode Array
@@ -353,7 +355,7 @@ Cons
 ![][hld_control_loop_pd_v1]
 
 [hld_control_loop_pd_v1]: 
-https://rawgit.com/joshandnoodles/MS/master/doc/img/hld_control_loop_pd_v1.svg
+https://rawgit.com/joshandnoodles/MS/5c2f29b4d1f9f393043a2c0f38d69b342fda525c/doc/img/hld_control_loop_pd.svg
   "Figure !!: High-level design of control loop using photodiode array feedback system"
 
 ## *Updated* High-level Design (generic controller)
@@ -361,7 +363,7 @@ https://rawgit.com/joshandnoodles/MS/master/doc/img/hld_control_loop_pd_v1.svg
 ![][hld_generic_controller_v2]
 
 [hld_generic_controller_v2]: 
-https://rawgit.com/joshandnoodles/MS/master/doc/img/hld_generic_controller_v2.svg
+https://rawgit.com/joshandnoodles/MS/cd88693408b3beadbc45515974884ea5a7c1ab7e/doc/img/hld_generic_controller_v2.svg
   "Figure !!: High-level design of communication system with generic, independent controller(s)"
 
 

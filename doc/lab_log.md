@@ -8,6 +8,9 @@ http://learn.mikroe.com/ebooks/picmicrocontrollersprogramminginassembly/chapter/
 
 https://www.mbeckler.org/coursework/2005-2006/ee2361lab10.pdf
 
+http://www.jensign.com/opto/ledlaserdrivers/
+
+
 # Take-away from Senior Design (UC the Fish - Fall 2015 and Spring 2016)
 
 ## Ethernet Compatibility
@@ -428,8 +431,6 @@ To make the amount of image data reasonable, some have recommended to install a 
   - ADCs (>=4)
     - read power rails, quantify intensity of light incident on photodiode(s)
     - general purpose, 10-/12-/16-bit resolution
-  - DACs (>=1)
-    - laser driving, having on board is a must since this will be key in creating a signal with quick modulation patterns
     - general purpose, 16-bit resolution
   -  PWM (>=1)
     - necessary in order to develop a carrier signal and modulate at a lower frequency
@@ -447,6 +448,9 @@ To make the amount of image data reasonable, some have recommended to install a 
 
 ### Optional Features
   
+  - DACs (>=1)
+    - laser driving, having on board is a must since this will be key in creating a signal with quick modulation patterns
+    - reconsidering, the benefit of a DAC and being able to set a very specific analog DC voltage is near entirely eliminated if a simple MOSFET switching circuit is used to drive laser from generic I/O pin (which is the more likely route at this point)
   - High-speed ADC
     - would be very nice to potentially use for photodiode tracking
     - high-speed SAR ADC with 12-bit resolution and sampling speed of 10Msps 
@@ -475,23 +479,161 @@ Other variants of packaging offered by Microchip such as **QFP** (Quad Flat Pack
 
 ### PIC24 Families
 
-Although features are important, not all 16-bit PICs are equal. From the lowest performance to highest (excluding the dsPICs), we have the following:
+Although features are important, not all PICs are equal. From the lowest performance to highest (excluding the dsPICs), we have the following for both the Microchip's 16-bit architecture product line and 32-bit architecture:
 
-  - PIC24F - *Lowest Power*
-    - **16 MIPS**
-    - 3.3V/5.0V
-    - Flash 4K to 1024K
-    - RAM 512 to 96K
-  - PIC24H - *Higher Performance*
-    - **40 MIPS**
-    - 3.3V
-    - Flash 12K to 256K
-    - RAM 1K to 16K
-  - PIC24E - *Highest Performance MCU*
-    - **70 MIPS**
-    - 3.3V
-    - Flash 32K to 512K
-    - RAM 8K to 52K
+  - 16-bit
+    - PIC24F - *Lowest Power*
+      - **16 MIPS**
+      - 3.3V/5.0V
+      - Flash 4K to 1024K
+      - RAM 512 to 96K
+    - PIC24H - *Higher Performance*
+      - **40 MIPS**
+      - 3.3V
+      - Flash 12K to 256K
+      - RAM 1K to 16K
+    - PIC24E - *Highest Performance MCU*
+      - **70 MIPS**
+      - 3.3V
+      - Flash 32K to 512K
+      - RAM 8K to 52K
+  - 32-bit
+    - PIC32MZ
+      - Up to 252 MHz, 415 DMIPS
+      - Up to 2 MB Flash with
+      - Live Update
+      - Up to 512 KB High Speed SRAM
+      - FPU for fast single- and double- precision math
+      - 12-bit, 18 MSPS ADC module with up to 48 channels and 6 S&H circuits.
+    - PIC32MX
+      - Up to 120 MHz, 1.65 DMIPS/MHz or 3.28 Coremarks™ MHz
+      - Up to 512 KB Flash
+      - Up to 128 KB High-speed SRAM
+      - 100 MHz Internal Bus and Cache
+    - PIC32MM
+      - Low Power: optimize power consumption in battery applications
+      - Low Voltage Sleep Mode with RAM retention < 500nA
+      - Low Cost:
+      - Prices as low as $0.60 in high volume
+      - Small Packages:
+      - 4x4mm – 20 QFN, 28 uQFN
+      - 5x5mm – 40 uQFN
+      - 6x6mm – 28 QFN, 36 QFN
+      - Core Independent Peripheral Integration:
+      - ADC, Comparators, RTCC, WDT
+      - Configurable Logic Cells (CLC)
+      - Flexible PWMs / IC / OC / Timers - MCCP & SCCP
+      - Analog Integration:
+      - 12-bit 200ksps ADC
+      - 5-bit DAC
+      - Comparators
+      - Supported by MPLAB Code Configurator (MCC) for Easy Set-Up
+
+** reduce above
+https://www.microchip.com/design-centers/32-bit
+
+### What's Left
+
+From the 16-bit PICs
+
+  - dsPIC33EP256MU806
+  - dsPIC33EP256MU810
+  - dsPIC33EP256MU814
+  - dsPIC33EP512MU810
+  - dsPIC33EP512MU814
+  - PIC24EP256GU810
+  - PIC24EP256GU814
+  - PIC24EP512GU810
+  - PIC24EP512GU814
+
+From the 32-bit PICs
+
+  - PIC32MX775F512L
+  - PIC32MX775F512H
+  - PIC32MX775F256H
+  - PIC32MX675F512H
+  - PIC32MX675F256H
+  - PIC32MX775F256L
+  - PIC32MX675F512L
+  - PIC32MX675F256L
+  - PIC32MX795F512L
+  - PIC32MX795F512H
+  - PIC32MX695F512H
+  - PIC32MX695F512L
+  - PIC32MZ0512EFF064
+  - PIC32MZ0512EFK064
+  - PIC32MZ0512EFE064
+  - PIC32MZ0512EFK100
+  - PIC32MZ0512EFF100
+  - PIC32MZ0512EFE100
+  - PIC32MZ0512EFE144
+  - PIC32MZ0512EFF124
+  - PIC32MZ0512EFF144
+  - PIC32MZ0512EFK124
+  - PIC32MZ0512EFK144
+  - PIC32MZ0512EFE124
+  - PIC32MZ1024EFF064
+  - PIC32MZ1024EFK064
+  - PIC32MZ1024EFE064
+  - PIC32MZ1024EFK100
+  - PIC32MZ1024EFF100
+  - PIC32MZ1024EFE100
+  - PIC32MZ1024EFE144
+  - PIC32MZ1024EFF124
+  - PIC32MZ1024EFF144
+  - PIC32MZ1024EFK124
+  - PIC32MZ1024EFK144
+  - PIC32MZ1024EFE124
+  - PIC32MZ1024ECH064
+  - PIC32MZ1024ECH144
+  - PIC32MZ1024ECH100
+  - PIC32MZ2048ECH100
+  - PIC32MZ2048ECH064
+  - PIC32MZ2048ECH144
+  - PIC32MZ1024ECG064
+  - PIC32MZ2048ECG064
+  - PIC32MZ1024ECG100
+  - PIC32MZ2048ECG100
+  - PIC32MZ1024ECG124
+  - PIC32MZ2048ECG124
+  - PIC32MZ1024ECH124
+  - PIC32MZ2048ECH124
+  - PIC32MZ1024ECG144
+  - PIC32MZ2048ECG144
+  - PIC32MZ2048ECM144
+  - PIC32MZ1024ECM144
+  - PIC32MZ2048ECM124
+  - PIC32MZ1024ECM124
+  - PIC32MZ2048ECM100
+  - PIC32MZ1024ECM100
+  - PIC32MZ2048ECM064
+  - PIC32MZ1024ECM064
+  - PIC32MZ1024EFG064
+  - PIC32MZ2048EFG064
+  - PIC32MZ1024EFH064
+  - PIC32MZ2048EFH064
+  - PIC32MZ1024EFM064
+  - PIC32MZ2048EFM064
+  - PIC32MZ1024EFG100
+  - PIC32MZ2048EFG100
+  - PIC32MZ1024EFM100
+  - PIC32MZ2048EFM100
+  - PIC32MZ1024EFH100
+  - PIC32MZ2048EFH100
+  - PIC32MZ1024EFG124
+  - PIC32MZ2048EFG124
+  - PIC32MZ1024EFG144
+  - PIC32MZ2048EFG144
+  - PIC32MZ1024EFH124
+  - PIC32MZ2048EFH124
+  - PIC32MZ1024EFH144
+  - PIC32MZ2048EFH144
+  - PIC32MZ1024EFM124
+  - PIC32MZ2048EFM124
+  - PIC32MZ1024EFM144
+  - PIC32MZ2048EFM144
+
+*In addition to the selection criteria applied to the 16-bit PIC, an additional restriction was imposed on the 32-bit PICs: 10/100 Base-TX Mac. This was done since on-board MAC would be the main motivation behind choosing a 32-bit architecture (along with faster processing speed).*
 
 ## OpenROV Power Distribution Research
 

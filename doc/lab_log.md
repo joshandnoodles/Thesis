@@ -381,22 +381,18 @@ Talked about geometry of board and placement concerns of receiver and transmitte
   - begin making choosing devices and making diagrams showing actual connectivity between different elements in the system
     - this may mean doing this multiple times with different devices to show comparisons of different options
 
-# Week 10
+# Week 10 & 11
 
 
 ## Camera Solutions Investigation
 
 Time was spent researching different options for an on board camera system to use computer vision techniques for assistance in gimbal alignment. The results of this investigation are promising in certain cases and hopeless in others. Regardless, the want of a camera solution is able to be easily implemented and able to be supported by the Data Plane Controller seems unlikely. It looks like it might be possible to implement one of these systems, but it will not be trivial.
 
+UPDATE: Use of Microchip's 32-bit MCU products makes this feat much more reasonable.
+
 http://www.microchip.com/forums/m357664.aspx
 
-digikey search
-
-mouser search
-
-additional...
-
-### CMOS Camera Sensor
+### CMOS/CCD Camera Sensor
 
   - **small**, even board mounted CMOS cameras with supporting circuitry are **~3cm x 3cm**
   - **inexpensive**, 728x488 CMOS camera module on Sparkfun for only **$32** (*https://www.sparkfun.com/products/11745*
@@ -405,9 +401,21 @@ additional...
   - it is difficult to tell the frame rate that can be achieved, other microchip users have reported a few seconds for a single image acquisition (*http://www.microchip.com/forums/m402377.aspx*)
     - also no one on the forms is discussing image processing (only image acquisition to send to some other device/medium)
 
-To make the amount of image data reasonable, some have recommended to install a **JPEG encoder chip** which will make the process faster (but probably not twice as fast) and the amount of image data is still significant enough to require some form of external memory module. 
+To make the amount of image data reasonable, some have recommended to install a **JPEG encoder chip** alongside the PIC24 which will make the process faster (but probably not twice as fast) and the amount of image data is still significant enough to require some form of external memory module. 
 
 ![](https://cdn.sparkfun.com//assets/parts/7/9/6/7/11745-02b.jpg)
+
+However, there is much more ongoing development with CMOS image sensors on **Microchip's 32-bit line of MCU's** (more multimedia-centric). Still not a whole lot of fps data and such, but there is many more code examples and connectivity discussion for their 32-bit architecture. Microchip offers an color VGA CMOS expansion card that is pluggable to their 32-bit Starter Kits as well (more information about this below).
+
+**Conclusions...**
+
+Attempting to interface a CMOS image sensor with a 16-bit PIC alone seems like convoluted task with little to no support on the hardware or firmware items needed to get the sensor up. And once it is up, achieving reasonable rates and storing the frame data will be a significant issue (and this is assuming the PIC is devoted to camera processing, which it will not be).
+
+If a CMOS sensor is to be used, Microchip's 32-bit line of PICs should be used. The color VGA CMOS expansion card Microchip offers is an attractive options since it also has firmware code examples that will get the sensor up and fully working immediately. However, if a standalone CMOS sensor is to be used, OmniVision's offerings seem best suited and relatively well documented. Specifically, OmniVision's OV9653 chip with a resolution of 1280x1024 pixels looks to be the best candidate if a standalone sensor is to be pursued (it is the replacement for the OV9650 which has been heavily used in the microcontroller community).
+
+*http://www.techtoys.com.hk/Components/OmniVision%20Cameras/OV%20CMOS%20Camera%20Modules.htm*
+
+![](http://www.techtoys.com.hk/Components/OmniVision%20Cameras/OmniVision_hires.PNG)
 
 ### AVRcam
 
@@ -497,6 +505,7 @@ Although features are important, not all PICs are equal. From the lowest perform
       - 3.3V
       - Flash 32K to 512K
       - RAM 8K to 52K
+
   - 32-bit
     - PIC32MZ
       - Up to 252 MHz, 415 DMIPS
@@ -510,6 +519,7 @@ Although features are important, not all PICs are equal. From the lowest perform
       - Up to 512 KB Flash
       - Up to 128 KB High-speed SRAM
       - 100 MHz Internal Bus and Cache
+      - **backwards compatibility with Peripheral, Pin and source of  PIC24F 16-bit microcontroller**
     - PIC32MM
       - Low Power: optimize power consumption in battery applications
       - Low Voltage Sleep Mode with RAM retention < 500nA
@@ -548,96 +558,84 @@ From the 16-bit PICs
 
 From the 32-bit PICs
 
-  - PIC32MX775F512L
-  - PIC32MX775F512H
-  - PIC32MX775F256H
-  - PIC32MX675F512H
-  - PIC32MX675F256H
-  - PIC32MX775F256L
-  - PIC32MX675F512L
-  - PIC32MX675F256L
-  - PIC32MX795F512L
+  - PIC32MX775F256L/512L
+  - PIC32MX775F256H/512H
+  - PIC32MX675F256H/512H
+  - PIC32MX675F256L/512L
+  - PIC32MX795F512L - *PIC32 Ethernet Starter Kit II (DM320004-2)*
   - PIC32MX795F512H
   - PIC32MX695F512H
   - PIC32MX695F512L
-  - PIC32MZ0512EFF064
-  - PIC32MZ0512EFK064
-  - PIC32MZ0512EFE064
-  - PIC32MZ0512EFK100
-  - PIC32MZ0512EFF100
-  - PIC32MZ0512EFE100
-  - PIC32MZ0512EFE144
-  - PIC32MZ0512EFF124
-  - PIC32MZ0512EFF144
-  - PIC32MZ0512EFK124
-  - PIC32MZ0512EFK144
-  - PIC32MZ0512EFE124
-  - PIC32MZ1024EFF064
-  - PIC32MZ1024EFK064
-  - PIC32MZ1024EFE064
-  - PIC32MZ1024EFK100
-  - PIC32MZ1024EFF100
-  - PIC32MZ1024EFE100
-  - PIC32MZ1024EFE144
-  - PIC32MZ1024EFF124
-  - PIC32MZ1024EFF144
-  - PIC32MZ1024EFK124
-  - PIC32MZ1024EFK144
-  - PIC32MZ1024EFE124
-  - PIC32MZ1024ECH064
-  - PIC32MZ1024ECH144
-  - PIC32MZ1024ECH100
-  - PIC32MZ2048ECH100
-  - PIC32MZ2048ECH064
-  - PIC32MZ2048ECH144
-  - PIC32MZ1024ECG064
-  - PIC32MZ2048ECG064
-  - PIC32MZ1024ECG100
-  - PIC32MZ2048ECG100
-  - PIC32MZ1024ECG124
-  - PIC32MZ2048ECG124
-  - PIC32MZ1024ECH124
-  - PIC32MZ2048ECH124
-  - PIC32MZ1024ECG144
-  - PIC32MZ2048ECG144
-  - PIC32MZ2048ECM144
-  - PIC32MZ1024ECM144
-  - PIC32MZ2048ECM124
-  - PIC32MZ1024ECM124
-  - PIC32MZ2048ECM100
-  - PIC32MZ1024ECM100
-  - PIC32MZ2048ECM064
-  - PIC32MZ1024ECM064
-  - PIC32MZ1024EFG064
-  - PIC32MZ2048EFG064
-  - PIC32MZ1024EFH064
-  - PIC32MZ2048EFH064
-  - PIC32MZ1024EFM064
-  - PIC32MZ2048EFM064
-  - PIC32MZ1024EFG100
-  - PIC32MZ2048EFG100
-  - PIC32MZ1024EFM100
-  - PIC32MZ2048EFM100
-  - PIC32MZ1024EFH100
-  - PIC32MZ2048EFH100
-  - PIC32MZ1024EFG124
-  - PIC32MZ2048EFG124
-  - PIC32MZ1024EFG144
-  - PIC32MZ2048EFG144
-  - PIC32MZ1024EFH124
-  - PIC32MZ2048EFH124
-  - PIC32MZ1024EFH144
-  - PIC32MZ2048EFH144
-  - PIC32MZ1024EFM124
-  - PIC32MZ2048EFM124
-  - PIC32MZ1024EFM144
-  - PIC32MZ2048EFM144
+  - PIC32MZ0512EFF064/100/124/144
+  - PIC32MZ0512EFK064/100/124/144
+  - PIC32MZ0512EFE064/100/124/144
+  - PIC32MZ1024EFF064/100/124/144
+  - PIC32MZ1024EFK064/100/124/144
+  - PIC32MZ1024EFE064/100/124/144
+  - PIC32MZ1024ECH064/100/124/144
+  - PIC32MZ2048ECH064/100/124/144
+  - PIC32MZ1024ECG064/100/124/144
+  - PIC32MZ2048ECG064/100/124/144
+  - PIC32MZ2048ECM064/100/124/144
+  - PIC32MZ1024ECM064/100/124/144
+  - PIC32MZ1024EFG064/100/124/144
+  - PIC32MZ2048EFG064/100/124/144
+  - PIC32MZ1024EFH064/100/124/144
+  - PIC32MZ2048EFH064/100/124/144
+  - PIC32MZ1024EFM064/100/124/144
+  - PIC32MZ2048EFM064/100/124/144
 
 *In addition to the selection criteria applied to the 16-bit PIC, an additional restriction was imposed on the 32-bit PICs: 10/100 Base-TX Mac. This was done since on-board MAC would be the main motivation behind choosing a 32-bit architecture (along with faster processing speed).*
 
+**PIC32 Ethernet Starter Kit II (DM320004-2)**
+
+  - Includes **10/100 Fast Ethernet LAN8740 PHY Daughter Board**
+  - Integrated programmer/debugger
+  - PIC32 running at 80 MHz with 512K Flash, 128K RAM, 8 channel DMA + 8 channel DMA dedicated to Ethernet, CAN and USB
+  - CAN 2 0b peripheral and **USB host/device/OTG**
+**Expansion connector** enables the addition of Microchip’s PIC32 expansion boards or the creation of your own board
+
+![](http://www.microchip.com/_ImagedCopy/EthSKII6475.JPG)
+
+*http://www.microchip.com/Developmenttools/ProductDetails.aspx?PartNO=DM320004-2*
+
+**Color VGA Camera Sensor (VCS) PICtail Plus (AC164150)**
+
+  - **640x480 VGA Color CMOS Sensor** on our standard PICTail™ plus form factor
+  - Based on the Omnivision OVM7690 CameraCubeChipTM
+  - Convenient test points for video sync and clock sync
+  - **Interfaces** to the I/O expansion board (DM320002) with **PIC32 starter kits** (DM320004 or DM320003-2)
+
+![](http://www.microchip.com/_ImagedCopy/AC164150.png)
+
+*http://www.microchip.com/DevelopmentTools/ProductDetails.aspx?PartNO=ac164150*
+
+**PIC32MZ EC Starter Kit (DM320006)**
+
+*basically the PIC32 Ethernet Starter Kit II but with a PIC32MZ instead of a PIC32MX*
+
+![](http://www.microchip.com/_ImagedCopy/DM320006.png)
+
+*http://www.microchip.com/Developmenttools/ProductDetails.aspx?PartNO=Dm320006*
+
+**PIC32MZ Starter Kit Adaptor Board (AC320006)**
+
+168-pin to 132-pin connector to enables the use of PIC32MZ starter kits that have a 168-pin interface with the following PIC32 hardware:
+
+  - Multimedia Expansion Board (MEB) – Part # DM320005
+  - PIC32 I/O Expansion Board – Part # DM320002
+  - Low-Cost Controller-less (LCC) Graphics PICtail Plus Daughter Board – Part # AC164144
+  - Graphics LCD Controller PICtail Plus SSD1926 Board – Part # AC164127-5
+  - Graphics PICtail Plus Epson S1D13517 Board – Part # AC164127-7
+
+![](http://www.microchip.com/_ImagedCopy/AC320006.png)
+
+*http://www.microchip.com/DevelopmentTools/ProductDetails.aspx?PartNO=AC320006*
+
+
 ## OpenROV Power Distribution Research
 
-In an attempt to begin selecting components and showing pin connectivity, the concern of what power supply rails the OpenROV has on board (and which rails may still have leftover amperage available) became a growing issue. Because of this, the OpenROV schematics were explored, and the power distribution diagrammed.
+In an attempt to begin selecting components and shsowing pin connectivity, the concern of what power supply rails the OpenROV has on board (and which rails may still have leftover amperage available) became a growing issue. Because of this, the OpenROV schematics were explored, and the power distribution diagrammed.
 
 *The power distribution system also contains many current sense points and voltage measurement points. It may be helpful to label these at a later time as they might be helpful when diagnosing power issues on the sub.*
 

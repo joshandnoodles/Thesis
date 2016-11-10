@@ -10,6 +10,10 @@ https://www.mbeckler.org/coursework/2005-2006/ee2361lab10.pdf
 
 http://www.jensign.com/opto/ledlaserdrivers/
 
+PD TOO
+https://www.aptechnologies.co.uk/index.php/support/photodiodes/photodiode-theory-of-operation
+https://www.aptechnologies.co.uk/index.php/support/photodiodes/photodiode-operating-circuits
+
 
 # Take-away from Senior Design (UC the Fish - Fall 2015 and Spring 2016)
 
@@ -505,42 +509,30 @@ Although features are important, not all PICs are equal. From the lowest perform
       - 3.3V
       - Flash 32K to 512K
       - RAM 8K to 52K
-
   - 32-bit
     - PIC32MZ
-      - Up to 252 MHz, 415 DMIPS
-      - Up to 2 MB Flash with
-      - Live Update
+      - Up to **252 MHz**, 415 DMIPS
       - Up to 512 KB High Speed SRAM
       - FPU for fast single- and double- precision math
-      - 12-bit, 18 MSPS ADC module with up to 48 channels and 6 S&H circuits.
+      - **12-bit, 18 MSPS ADC module with up to 48 channels and 6 S&H circuits.**
     - PIC32MX
-      - Up to 120 MHz, 1.65 DMIPS/MHz or 3.28 Coremarks™ MHz
+      - Up to **120 MHz**, 1.65 DMIPS/MHz or 3.28 Coremarks™ MHz
       - Up to 512 KB Flash
       - Up to 128 KB High-speed SRAM
       - 100 MHz Internal Bus and Cache
       - **backwards compatibility with Peripheral, Pin and source of  PIC24F 16-bit microcontroller**
     - PIC32MM
-      - Low Power: optimize power consumption in battery applications
-      - Low Voltage Sleep Mode with RAM retention < 500nA
-      - Low Cost:
-      - Prices as low as $0.60 in high volume
-      - Small Packages:
-      - 4x4mm – 20 QFN, 28 uQFN
-      - 5x5mm – 40 uQFN
-      - 6x6mm – 28 QFN, 36 QFN
+      - Small Packages (4x4mm, 5x5mm 6x6mm)
       - Core Independent Peripheral Integration:
-      - ADC, Comparators, RTCC, WDT
-      - Configurable Logic Cells (CLC)
-      - Flexible PWMs / IC / OC / Timers - MCCP & SCCP
+        - ADC, Comparators, RTCC, WDT
+        - Configurable Logic Cells (CLC)
+        - Flexible PWMs / IC / OC / Timers - MCCP & SCCP
       - Analog Integration:
-      - 12-bit 200ksps ADC
-      - 5-bit DAC
-      - Comparators
-      - Supported by MPLAB Code Configurator (MCC) for Easy Set-Up
+        - 12-bit 200ksps ADC
+        - 5-bit DAC
+        - Comparators
 
-** reduce above
-https://www.microchip.com/design-centers/32-bit
+*https://www.microchip.com/design-centers/32-bit*
 
 ### What's Left
 
@@ -645,3 +637,89 @@ In an attempt to begin selecting components and shsowing pin connectivity, the c
 https://rawgit.com/joshandnoodles/MS/cd88693408b3beadbc45515974884ea5a7c1ab7e/doc/img/hld_openrov_power.svg
   "Figure !!: High-level design of power distribution system on board the OpenROV"
 
+
+# Weekly One-One - November 2, 2016
+
+## Action items
+
+  - explore MikroElektronika's offerings compared to Microchip's
+  - look at Arduino Chips (with cameras)
+  - consider Raspberry Pi/BeagleBone
+  - investigate PD arrays
+
+# Week 12
+
+## MikroElektronika's Offerings
+
+Doing an initial evaluation of MikroElektronika's products based on our systems needs...
+
+The **camera will again be a large constraint** in design choices. MikroElektronika recommeds a 32-bit MCU to be able to achieve QCIF resolution video (**176 x 144 px**). This is explained here: http://www.mikroe.com/click/camera/. This alone is enough to limit our search to 32-bit MCUs. 
+
+![](http://www.mikroe.com/img/development-tools/accessory-boards/click/camera/camera_click.png)
+![](http://www.mikroe.com/img/development-tools/accessory-boards/click/eth_wiz/eth_wiz_click.png)
+
+MikroElektronika has a total of **6 PIC32 development boards** as per http://www.mikroe.com/store/pic32/development-boards/. None of these boards have on-board Ethernet PHY or a camera. However, MikroElektronika offers both of these functionalities through it's mikroBUS click boards (http://www.mikroe.com/click/camera/ and http://www.mikroe.com/click/eth/, respectively. This means the PIC32 development board chosen will need spaces for **2 Click boards** (this excludes the possibility of supplementing boards without two slots with the very large MikroMedia Workstation v7). This narrows down the original six development boards to two:
+
+  - mikromedia Plus for PIC32MX7 with Shield
+    - the board itself does not have any mikroBUS slots, thus the shield is needed
+    - http://www.mikroe.com/mikromedia/plus/pic32mx7/
+  - clicker 2 for PIC32MX
+    - 2 mikroBUS slots on board
+    - http://www.mikroe.com/pic32/clicker-2-pic32mx/
+
+----------
+
+Conclusion...
+
+![](http://cdn.mikroe.com/img/clicker/2/pic32mx/overview/clicker_2_pc32mx_combinations.png)
+
+The **clicker 2 for PIC32MX** would be the choice from MikroElektronika's offerings (the other sytem will be grossly more expensive). However, it appears that MikroElektronika's PIC32 line of products focuses heavily on multimedia more than lower level embedded system applications. This is fine but is the reason so many products were elimated. MikroElektronika favors LCDs over Ethernet and cameras. The prices of everything may be compariable between a MikroElektronika setup and a Microchip setup. It is also worth noting that does not have a development board for any of the PIC32MZ chips (the fastest in Microchip's 32-bit line). However, this will need to be investigated further.
+
+## Consideration of Arduino/Raspberry Pi/BeagleBone
+
+Raspberry Pi/BeagleBone are more or less full blown computers with real-time operating systems. There is a lot that is constantly happening that is near impossible to know the intimate details of. This could be devastating when trying to build a high-speed communication system where every bit of processing needs to be intelligently distributed to different processes.
+
+Arduino was built with hobbyist at the forfront of users. This is fine, but raises issues similar to Raspberry Pi and BeagleBone. The ability to have control over all low level operations (although less friendly during development) is necessary for the system being built here.
+
+## Photodiode Array Investigation
+
+After research into what PD arrays are available (and if they even exist), it is apparent that the **line begins to blur between image sensors and PDs**. A full-fledged image sensor ~~is~~ may be overkill for this situation. Additionally, normal image sensors will not offer the fast responsivity that PDs will in a communication system.
+
+Offerings for **photodiode arrays** that are not many pixel sensors are either **highly specialized** (each section divided to be sensitive to a specific wavelength) or are **linear** (will not fully requirement of a two-dimensional dynamic alignment system).
+
+However, **quadrant photodiodes** are a proven technology used in systems where precise laser alignment is a necessity. These look to be a perfect fit for what is desired in this system.
+
+*Note: The original thought to approach this problem by using a series of intelligently positioned discrete photodiodes is still possible. However, when the application of QPs are analyzed in depth, the shortcomings of a discrete solution become obvious.*
+
+### Quadrant Photodiodes (QP) *or* Avalanche Quadrant Photodiodes (APD)
+
+![](http://www.first-sensor.com/cms/upload/productimages/products/quadrant_pin_photodiodes_first_sensor.jpg)
+*http://www.first-sensor.com/en/products/optical-sensors/detectors/quadrant-pin-photodiodes-qp/*
+ 
+  - **four optically active areas separated by small gap**
+  - used for detecting the **positioning** of laser beams (**collimators**, **adjustment** applications, etc)
+  - reliable incidence of beam on segments on photodiode
+    - eliminates potential beam -> photodiode geometry issues that will arise if discrete photodiodes are used
+    - **detector gap < spot size < detector size**
+  - **many resources/examples** of people using this photodiode within laser alignment systems in research settings
+    - good candidate for implementation in a FSO communication system 
+
+
+----------
+
+
+Still costly but more readily accessabile and less specialized than photodiode array products. Mouser has a relatively reasonably priced QP for **~$50** from a respected optoelectronics manufacture, First Sensor (http://www.mouser.com/ProductDetail/First-Sensor/QP58-6-TO5/?qs=sGAEpiMZZMtWNtIk7yMEsWYqMtd76IRNp6trVSLtLDk%3d). I have reached out to First Sensor to inquire about samples/eval boards. It may be worth doing the same with other QP manufactures (only if we would actually see ourselves buying other QPs in the future).
+
+
+----------
+
+
+Use cases of QP:
+
+  - www.conspiracyoflight.com/Quadrant/Quadrant.html
+    - laser stability measurment device using PD **and amplifier circuit**
+  - https://www.aptechnologies.co.uk/index.php/support/photodiodes/bi-cell-a-quadrant-photodiodes
+    - standalone beam centering system using QP
+    - frequencies up to **500kHz** and input powers down to **1uW**
+    - brief description of components chosen
+  - https://www.aptechnologies.co.uk/index.php/support/photodiodes/bi-cell-a-quadrant-photodiodes (theory of spot size vs gap size vs detector size)

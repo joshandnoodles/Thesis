@@ -385,7 +385,7 @@ Talked about geometry of board and placement concerns of receiver and transmitte
   - begin making choosing devices and making diagrams showing actual connectivity between different elements in the system
     - this may mean doing this multiple times with different devices to show comparisons of different options
 
-# Week 10 & 11
+# Week Ten & Eleven
 
 
 ## Camera Solutions Investigation
@@ -524,13 +524,13 @@ Although features are important, not all PICs are equal. From the lowest perform
     - PIC32MM
       - Small Packages (4x4mm, 5x5mm 6x6mm)
       - Core Independent Peripheral Integration:
-        - ADC, Comparators, RTCC, WDT
-        - Configurable Logic Cells (CLC)
-        - Flexible PWMs / IC / OC / Timers - MCCP & SCCP
+          - ADC, Comparators, RTCC, WDT
+          - Configurable Logic Cells (CLC)
+          - Flexible PWMs / IC / OC / Timers - MCCP & SCCP
       - Analog Integration:
-        - 12-bit 200ksps ADC
-        - 5-bit DAC
-        - Comparators
+          - 12-bit 200ksps ADC
+          - 5-bit DAC
+          - Comparators
 
 *https://www.microchip.com/design-centers/32-bit*
 
@@ -539,45 +539,40 @@ Although features are important, not all PICs are equal. From the lowest perform
 From the 16-bit PICs
 
   - dsPIC33EP256MU806
-  - dsPIC33EP256MU810
-  - dsPIC33EP256MU814
-  - dsPIC33EP512MU810
-  - dsPIC33EP512MU814
-  - PIC24EP256GU810
-  - PIC24EP256GU814
-  - PIC24EP512GU810
-  - PIC24EP512GU814
+  - dsPIC33EP[256/512]MU810
+  - dsPIC33EP[256/512]MU814
+  - PIC24EP[256/512]GU810
+  - PIC24EP[256/512]GU814
 
 From the 32-bit PICs
 
-  - PIC32MX775F256L/512L
-  - PIC32MX775F256H/512H
-  - PIC32MX675F256H/512H
-  - PIC32MX675F256L/512L
-  - PIC32MX795F512L - *PIC32 Ethernet Starter Kit II (DM320004-2)*
-  - PIC32MX795F512H
-  - PIC32MX695F512H
-  - PIC32MX695F512L
-  - PIC32MZ0512EFF064/100/124/144
-  - PIC32MZ0512EFK064/100/124/144
-  - PIC32MZ0512EFE064/100/124/144
-  - PIC32MZ1024EFF064/100/124/144
-  - PIC32MZ1024EFK064/100/124/144
-  - PIC32MZ1024EFE064/100/124/144
-  - PIC32MZ1024ECH064/100/124/144
-  - PIC32MZ2048ECH064/100/124/144
-  - PIC32MZ1024ECG064/100/124/144
-  - PIC32MZ2048ECG064/100/124/144
-  - PIC32MZ2048ECM064/100/124/144
-  - PIC32MZ1024ECM064/100/124/144
-  - PIC32MZ1024EFG064/100/124/144
-  - PIC32MZ2048EFG064/100/124/144
-  - PIC32MZ1024EFH064/100/124/144
-  - PIC32MZ2048EFH064/100/124/144
-  - PIC32MZ1024EFM064/100/124/144
-  - PIC32MZ2048EFM064/100/124/144
+  - Non-Ethernet PIC32MX's
+    - PIC32MX230F[256B/256D/256H/256L]
+    - PIC32MX270F[256B/256D/512H/512L]
+    - PIC32MX440F[256H/512H]
+    - PIC32MX450F[256H/256L]
+    - PIC32MX460F[256L/512L]  -  *Clicker 2 for PIC32MX [512L]*
+    - PIC32MX470F[512H/512L]
+    - PIC32MX550F[256H/256L]
+    - PIC32MX570F[512H/512L]
+    - PIC32MX575F[256H/256L/512H/512L]
+  - Ethernet PIC32MX's
+    - PIC32MX675F[256H/256L/512H/512L]
+    - PIC32MX695F[512H/512L]
+    - PIC32MX775F[256H/256L/512H/512L]
+    - PIC32MX795F[512H/512L] - *PIC32 Ethernet Starter Kit II (DM320004-2) [512L]* **&** *Mikromedia Plus for PIC32MX7 [512L]*
+  - Ethernet PIC32MZ's
+    - PIC32MZ[0512/1024]EFE[064/100/124/144]
+    - PIC32MZ[0512/1024]EFF[064/100/124/144]
+    - PIC32MZ[0512/1024]EFK[064/100/124/144]
+    - PIC32MZ[1024/2048]ECG[064/100/124/144]
+    - PIC32MZ[1024/2048]ECH[064/100/124/144] - *PIC32MZ EC STARTER KIT (DM320006) [2048] [144]*
+    - PIC32MZ[1024/2048]ECM[064/100/124/144]
+    - PIC32MZ[1024/2048]EFG[064/100/124/144]
+    - PIC32MZ[1024/2048]EFH[064/100/124/144] - *PIC32MZ EF STARTER KIT (DM320007) [2048] [144]*
+    - PIC32MZ[1024/2048]EFM[064/100/124/144]
 
-*In addition to the selection criteria applied to the 16-bit PIC, an additional restriction was imposed on the 32-bit PICs: 10/100 Base-TX Mac. This was done since on-board MAC would be the main motivation behind choosing a 32-bit architecture (along with faster processing speed).*
+*~~In addition to the selection criteria applied to the 16-bit PIC, an additional restriction was imposed on the 32-bit PICs: 10/100 Base-TX Mac. This was done since on-board MAC would be the main motivation behind choosing a 32-bit architecture (along with faster processing speed).~~ This was later nixed as many of the options would use a compact SPI Ethernet dongle as opposed to a direct PHY port. Later on, the main motivation for a 32-bit architecture was no longer Ethernet related but rather processing speed for camera capabilities.*
 
 **PIC32 Ethernet Starter Kit II (DM320004-2)**
 
@@ -624,6 +619,17 @@ From the 32-bit PICs
 
 *http://www.microchip.com/DevelopmentTools/ProductDetails.aspx?PartNO=AC320006*
 
+**Starter Kit I/O Expansion Board (DM320002)**
+
+Needed to interface with the PICtail Plus camera sensor. Also gives access to MCU signals and debug headers.
+
+Compatible w/ ..., PIC32 Ethernet Starter Kit (DM320004), PIC32 Ethernet Starter Kit II (DM320004-2), ...
+
+A PIC32MZ Adapter Board (AC320006) is needed to connect the following PIC32MZ Starter Kits: : ..., PIC32MZ EF Starter Kit (DM320007), ..., PIC32MZ EC Starter Kit (DM320006), ...
+
+![](http://www.microchip.com/_ImagedCopy/DM320002.png)
+
+*http://www.microchip.com/DevelopmentTools/ProductDetails.aspx?PartNO=dm320002&utm_source=MicroSolutions&utm_medium=&utm_term=&utm_content=&utm_campaign=DM320002*
 
 ## OpenROV Power Distribution Research
 
@@ -647,7 +653,7 @@ https://rawgit.com/joshandnoodles/MS/cd88693408b3beadbc45515974884ea5a7c1ab7e/do
   - consider Raspberry Pi/BeagleBone
   - investigate PD arrays
 
-# Week 12
+# Week Twelve
 
 ## MikroElektronika's Offerings
 
@@ -660,10 +666,10 @@ The **camera will again be a large constraint** in design choices. MikroElektron
 
 MikroElektronika has a total of **6 PIC32 development boards** as per http://www.mikroe.com/store/pic32/development-boards/. None of these boards have on-board Ethernet PHY or a camera. However, MikroElektronika offers both of these functionalities through it's mikroBUS click boards (http://www.mikroe.com/click/camera/ and http://www.mikroe.com/click/eth/, respectively. This means the PIC32 development board chosen will need spaces for **2 Click boards** (this excludes the possibility of supplementing boards without two slots with the very large MikroMedia Workstation v7). This narrows down the original six development boards to two:
 
-  - mikromedia Plus for PIC32MX7 with Shield
+  - Mikromedia Plus for PIC32MX7 with Shield
     - the board itself does not have any mikroBUS slots, thus the shield is needed
     - http://www.mikroe.com/mikromedia/plus/pic32mx7/
-  - clicker 2 for PIC32MX
+  - Clicker 2 for PIC32MX
     - 2 mikroBUS slots on board
     - http://www.mikroe.com/pic32/clicker-2-pic32mx/
 
@@ -673,7 +679,7 @@ Conclusion...
 
 ![](http://cdn.mikroe.com/img/clicker/2/pic32mx/overview/clicker_2_pc32mx_combinations.png)
 
-The **clicker 2 for PIC32MX** would be the choice from MikroElektronika's offerings (the other sytem will be grossly more expensive). However, it appears that MikroElektronika's PIC32 line of products focuses heavily on multimedia more than lower level embedded system applications. This is fine but is the reason so many products were elimated. MikroElektronika favors LCDs over Ethernet and cameras. The prices of everything may be compariable between a MikroElektronika setup and a Microchip setup. It is also worth noting that does not have a development board for any of the PIC32MZ chips (the fastest in Microchip's 32-bit line). However, this will need to be investigated further.
+The **Clicker 2 for PIC32MX** would be the choice from MikroElektronika's offerings (the other sytem will be grossly more expensive). However, it appears that MikroElektronika's PIC32 line of products focuses heavily on multimedia more than lower level embedded system applications. This is fine but is the reason so many products were elimated. MikroElektronika favors LCDs over Ethernet and cameras. The prices of everything may be compariable between a MikroElektronika setup and a Microchip setup. It is also worth noting that does not have a development board for any of the PIC32MZ chips (the fastest in Microchip's 32-bit line). However, this will need to be investigated further.
 
 ## Consideration of Arduino/Raspberry Pi/BeagleBone
 
@@ -722,4 +728,43 @@ Use cases of QP:
     - standalone beam centering system using QP
     - frequencies up to **500kHz** and input powers down to **1uW**
     - brief description of components chosen
-  - https://www.aptechnologies.co.uk/index.php/support/photodiodes/bi-cell-a-quadrant-photodiodes (theory of spot size vs gap size vs detector size)
+  - https://www.aptechnologies.co.uk/index.php/support/photodiodes/bi-cell-a-quadrant-photodiodes (theory of spot size vs gap size vs detector 
+
+# Weekly One-One - November 10, 2016
+
+## Action items
+
+  - re-research light propagation of light through water/saltwater
+    - attenuation at different wavelengths
+    - can we get away with green/red light (blue is 
+  - create comparison matrix for PIC development boards
+  - create comparison matrix for QPs
+  - PIC32 questions (features from the PIC24 that would be beneficial
+	  - does PIC32 have multiple sample and hold inputs?
+	  - how fast can we sample ADCs on PIC32?
+
+# Week Thirteen
+
+## Comparison Matrix - PIC development boards
+
+At this point we are down to two offerings from each Microchip and MikroElektronika. 
+
+On the MikroElektronika side, there are only two viable PIC32 development boards options both of which are based on the PIC32MX MCU. These are the **Mikromedia Plus for PIC32MX7** and the **Clicker 2 for PIC32MX**.
+
+On the Microchip side, we have narrowed down development board options to a PIC32MX (for comparison to MikroElektronika PIC32MX board offerings) and a PIC32MZ development board. These are the **PIC32 Ethernet Starter Kit II (DM320004-2)** and **PIC32MZ EC Starter Kit (DM320006)**, respectively.
+
+Comparison of notable features/specs that vary across platforms are shown in the comparison matrix as well as general information for reference of each potential direction. Notice that many options will need additional boards to fulfill all required functionality (non-negotiables).
+ 
+## Matrix - Quad Photodiodes
+
+peak wavelength, package type, active area of elements, cost,
+
+## Attenuation of Light in (salt)Water
+
+![](http://www1.lsbu.ac.uk/water/images/water_spectrum_2.gif)
+
+![][atten_coeff_smith_baker]
+
+[atten_coeff_smith_baker]: 
+https://github.com/joshandnoodles/MS/raw/68a3c44e42285979283155432f06d40e25332567/doc/img/atten_coeff_smith_baker.PNG
+  "Figure !!: **"

@@ -61,6 +61,7 @@ Optical  classification  of  natural  waters
 This article considers the diffuse attenuation coefficient for natural waters as a function of cholorophyll-like pigment concentration in the water. The affects that photoplankton have on light attenuation are shown at visible wavelengths over diverse oceanic environments. In unproductive (low phytoplankton carbon count) waters, the detrital particles (rock, minerials, sediment) have a dominant effect on the optical properties of oceanic waters. On a sepate note, dissolved organic material does not have a large effect on light attenuation except potentially in the blue to far-blue region of the spectrum. Additional conversation about measuring chlorophyll-like pigment concentrations using irradiance reflected measurements (i.e. from satellite imagery).
 
 **Figures/Tables:**
-none 
 
-fig_3: K_T(y) is the diffuse attenuation coefficient for irradiance (indicator of the cloudiness of water, how well light penetrates into a medium) and C_k is the average concentration of Chlorophyll a and pheopigments at a depth of one attenuation length, solid curves are calulated values, dotted curves are experimentally retrieved results
+![][Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3]
+[Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3]: https://raw.githubusercontent.com/joshandnoodles/MS/master/lit/em_absorption/img/Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3.png
+	Fig 3: K_T(y) is the diffuse attenuation coefficient for irradiance (indicator of the cloudiness of water, how well light penetrates into a medium) and C_k is the average concentration of Chlorophyll a and pheopigments at a depth of one attenuation length, solid curves are calculated values, dotted curves are experimentally retrieved results

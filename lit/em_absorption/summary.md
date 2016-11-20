@@ -16,7 +16,6 @@ Discussion included the molecular structure of water and why it is so strongly i
 [Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_6]: https://raw.githubusercontent.com/joshandnoodles/MS/master/lit/em_absorption/img/Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_6.png
 	"Fig 6: The attenuation coefficient of 715nm light, c_m(715) shown as a function of water salinity. It is clear from this graph that attenuation appears to have a linear dependence on salinity (at least at longer visible wavelengths)"
 
-
 # Applied_Optics_36_33-pp_8699_8709-1997-Sogandares_Fry
 
 Absorption spectrum (340–640 nm) of pure water. I. Photothermal measurements

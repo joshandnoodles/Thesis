@@ -2,7 +2,6 @@
 
 Absorption and attenuation of visible and near-infrared light in water: dependence on temperature and salinity
 
-!!
 The absorption coefficient was measured across 15 different wavelength of both pure water and saltwater in this study. A focus on how temperature and salinity effects on absorption as well as an attempt to characterize each affect linearly is presented a ways into the paper. Scattering and absorption are two major components that need to be understood to realize how light interacts with water. Generally, absorption measurements are difficult to take of visible wavelengths since light absorption in water is much lower in the region. 
 Discussion included the molecular structure of water and why it is so strongly influenced by outside factors such as salinity and temperature (overtones of the O-H vibrational modes for wavelengths >450nm). Quick discussion/equations of the various components to be considered when determining the absorption coefficient (particulate matter, dissolved matter, reference water, scattering error) is also included. It was found that salinity (as well as temperature) only had a strong impact on the optical properties of water in the near-IR region of the spectrum. The absorption coefficient was found to decrease as salinity increases although these changes were not as pronounced as changes to the temperature of the water (except for the measurements taken at 412nm which had a strong salinity dependence).
 

@@ -768,3 +768,6 @@ peak wavelength, package type, active area of elements, cost,
 [atten_coeff_smith_baker]: 
 https://github.com/joshandnoodles/MS/raw/68a3c44e42285979283155432f06d40e25332567/doc/img/atten_coeff_smith_baker.PNG
   "Figure !!: **"
+
+
+curves for effect on laser power on distance, wavelength on distance

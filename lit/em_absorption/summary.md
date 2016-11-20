@@ -8,16 +8,13 @@ Discussion included the molecular structure of water and why it is so strongly i
 
 **Figures/Tables:**
 
-![][Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3]
-[Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3]: https://raw.githubusercontent.com/joshandnoodles/MS/master/lit/em_absorption/img/Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3.png
-
 ![][Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_1]
-[Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig-1]: https://raw.githubusercontent.com/joshandnoodles/MS/master/lit/em_absorption/img/Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_1.png
-	Fig 1: Absorption coefficient, a(y), of pure water as a function of wavelength. These results have been compiled by a variety of sources and generally show consistency especially for larger wavelengths. For shorter wavelengths in the blue and near-UV spectrum regions, the discrepancy between results is believed to be due to contaminants such as dissolved organics in the water samples. Temperature dependence on absorption was not considered in these investigations.
+[Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_1]: https://raw.githubusercontent.com/joshandnoodles/MS/master/lit/em_absorption/img/Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_1.png
+	"Fig 1: Absorption coefficient, a(y), of pure water as a function of wavelength. These results have been compiled by a variety of sources and generally show consistency especially for larger wavelengths. For shorter wavelengths in the blue and near-UV spectrum regions, the discrepancy between results is believed to be due to contaminants such as dissolved organics in the water samples. Temperature dependence on absorption was not considered in these investigations."
 
 ![][Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_6]
-[Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig-6]: https://raw.githubusercontent.com/joshandnoodles/MS/master/lit/em_absorption/img/Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_6.png
-	Fig 6: The attenuation coefficient of 715nm light, c_m(715) shown as a function of water salinity. It is clear from this graph that attenuation appears to have a linear dependence on salinity (at least at longer visible wavelengths)
+[Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_6]: https://raw.githubusercontent.com/joshandnoodles/MS/master/lit/em_absorption/img/Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_6.png
+	"Fig 6: The attenuation coefficient of 715nm light, c_m(715) shown as a function of water salinity. It is clear from this graph that attenuation appears to have a linear dependence on salinity (at least at longer visible wavelengths)"
 
 
 # Applied_Optics_36_33-pp_8699_8709-1997-Sogandares_Fry
@@ -70,10 +67,10 @@ none
 
 Optical  classification  of  natural  waters
 
-This article considers the diffuse attenuation coefficient for natural waters as a function of cholorophyll-like pigment concentration in the water. The affects that photoplankton have on light attenuation are shown at visible wavelengths over diverse oceanic environments. In unproductive (low phytoplankton carbon count) waters, the detrital particles (rock, minerials, sediment) have a dominant effect on the optical properties of oceanic waters. On a sepate note, dissolved organic material does not have a large effect on light attenuation except potentially in the blue to far-blue region of the spectrum. Additional conversation about measuring chlorophyll-like pigment concentrations using irradiance reflected measurements (i.e. from satellite imagery).
+This article considers the diffuse attenuation coefficient for natural waters as a function of cholorophyll-like pigment concentration in the water. The affects that photoplankton have on light attenuation are shown at visible wavelengths over diverse oceanic environments. In unproductive (low phytoplankton carbon count) waters, the detrital particles (rock, minerals, sediment) have a dominant effect on the optical properties of oceanic waters. On a seperate note, dissolved organic material does not have a large effect on light attenuation except potentially in the blue to far-blue region of the spectrum. Additional conversation about measuring chlorophyll-like pigment concentrations using irradiance reflected measurements (i.e. from satellite imagery).
 
 **Figures/Tables:**
 
 ![][Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3]
 [Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3]: https://raw.githubusercontent.com/joshandnoodles/MS/master/lit/em_absorption/img/Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3.png
-	Fig 3: K_T(y) is the diffuse attenuation coefficient for irradiance (indicator of the cloudiness of water, how well light penetrates into a medium) and C_k is the average concentration of Chlorophyll a and pheopigments at a depth of one attenuation length, solid curves are calculated values, dotted curves are experimentally retrieved results
+	"Fig 3: K_T(y) is the diffuse attenuation coefficient for irradiance (indicator of the cloudiness of water, how well light penetrates into a medium) and C_k is the average concentration of Chlorophyll a and pheopigments at a depth of one attenuation length, solid curves are calculated values, dotted curves are experimentally retrieved results"

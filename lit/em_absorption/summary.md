@@ -8,6 +8,9 @@ Discussion included the molecular structure of water and why it is so strongly i
 
 **Figures/Tables:**
 
+![][Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3]
+[Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3]: https://raw.githubusercontent.com/joshandnoodles/MS/master/lit/em_absorption/img/Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3.png
+
 ![][Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_1]
 [Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig-1]: https://raw.githubusercontent.com/joshandnoodles/MS/master/lit/em_absorption/img/Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_1.png
 	Fig 1: Absorption coefficient, a(y), of pure water as a function of wavelength. These results have been compiled by a variety of sources and generally show consistency especially for larger wavelengths. For shorter wavelengths in the blue and near-UV spectrum regions, the discrepancy between results is believed to be due to contaminants such as dissolved organics in the water samples. Temperature dependence on absorption was not considered in these investigations.

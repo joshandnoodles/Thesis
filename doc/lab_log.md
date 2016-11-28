@@ -250,7 +250,7 @@ https://rawgit.com/joshandnoodles/MS/747357e0e8dca8728b961f16eb45695172f6b3a1/do
   - *Cont'd* - further reduce BW usage of OpenROV's video stream by reducing resolution
   - *Cont'd* - Blackbox design control loop system to better outline the interaction between all mechanisms as well as resources/components needed for design
 
-# Week Six and Seven
+# Week Six & Seven
 
 ## Tenda-less OpenROV Testing
 
@@ -316,7 +316,7 @@ https://github.com/joshandnoodles/MS/raw/7b967a3bff429ad4abd5ebafc3a9e7fb5c885d1
   - create pro-cons list for different feedback control systems (i.e. photodiode array versus camera sensor)
   - *Cont'd* - Blackbox design control loop system to better outline the interaction between all mechanisms as well as resources/components needed for design
 
-# Week Eight and Nine
+# Week Eight & Nine
 
 ## Exploration of different control feedback systems
 
@@ -743,7 +743,7 @@ Use cases of QP:
 	  - does PIC32 have multiple sample and hold inputs?
 	  - how fast can we sample ADCs on PIC32?
 
-# Week Thirteen
+# Week Thirteen & Fourteen
 
 ## Comparison Matrix - PIC development boards
 
@@ -754,10 +754,33 @@ On the MikroElektronika side, there are only two viable PIC32 development boards
 On the Microchip side, we have narrowed down development board options to a PIC32MX (for comparison to MikroElektronika PIC32MX board offerings) and a PIC32MZ development board. These are the **PIC32 Ethernet Starter Kit II (DM320004-2)** and **PIC32MZ EC Starter Kit (DM320006)**, respectively.
 
 Comparison of notable features/specs that vary across platforms are shown in the comparison matrix as well as general information for reference of each potential direction. Notice that many options will need additional boards to fulfill all required functionality (non-negotiables).
- 
+
+![][comparison_matrix_pic]
+
+[comparison_matrix_pic]: 
+https://github.com/joshandnoodles/MS/raw/4f5adb8a4348f4710e14316094ed9b66c77d6fba/doc/img/comparison_matrix_pic.png
+  "Figure !!: Matrix comparing features/specifications of different PIC32 development boards"
+
 ## Matrix - Quad Photodiodes
 
+Comparison of notable specifications that vary across different quadrant photodiodes are shown in the comparison matrix as well as general information for reference of each potential direction. Notice that many options will need additional boards to fulfill all required functionality (non-negotiables).
 peak wavelength, package type, active area of elements, cost,
+
+![][comparison_matrix_qp_1]
+
+![][comparison_matrix_qp_2]
+
+Notice that the responsitivity at visible wavlengths is almost nearly identical (and linear) for all QPs. The very low response at smaller wavelengths (blue and green) will play a significant role when considering theoretical communication distances. This low response at blue/green and relatively high response at red is due largely in part to the fact that almost all (except very exotic) QPs available are standard silicon PIN photodiodes which generally have a weaker response at shorter visible wavelengths in the near-UV region.
+
+In addition to reaching options immediately available to consumers, attempts were made to reach out to both First Sensor and Luna Optoelectronics representatives to inquire about development boards and samples. First Sensor does not offer samples but has evaluation boards (but nothing smaller than their QP45 line of QPs). A response has yet to be received from Luna Optoelectronics.
+
+[comparison_matrix_qp_1]: 
+https://github.com/joshandnoodles/MS/raw/4f5adb8a4348f4710e14316094ed9b66c77d6fba/doc/img/comparison_matrix_qp_1.png
+  "Figure !!: Matrix comparing features/specifications of different quadrant photodiodes readily available"
+
+[comparison_matrix_qp_2]: 
+https://github.com/joshandnoodles/MS/raw/4f5adb8a4348f4710e14316094ed9b66c77d6fba/doc/img/comparison_matrix_qp_2.png
+  "Figure !!: Graph showing responsivity at visible wavelengths (only seven data points were extracted from the datasheets of each quadrant photodiode)"
 
 ## Attenuation of Light in (salt)Water
 

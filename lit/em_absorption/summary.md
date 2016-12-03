@@ -103,6 +103,6 @@ Mentioned the source of the originator of the c=a+b equation, Jerlov (1968). The
 
 **Figures/Tables:**
 
-![][Optical_Aspects_of_Oceanography_1_1-pp_1_24-1974-Morel-fig_3]
-[Optical_Aspects_of_Oceanography_1_1-pp_1_24-1974-Morel-fig_3]: https://github.com/joshandnoodles/MS/raw/master/lit/em_absorption/img/Optical_Aspects_of_Oceanography_1_1-pp_1_24-1974-Morel-fig_3.png
+![][Optical_Aspects_of_Oceanography_1_1-pp_1_24-1974-Morel-fig_4]
+[Optical_Aspects_of_Oceanography_1_1-pp_1_24-1974-Morel-fig_4]: https://github.com/joshandnoodles/MS/raw/master/lit/em_absorption/img/Optical_Aspects_of_Oceanography_1_1-pp_1_24-1974-Morel-fig_4.png
   "Fig 4: Another comparison of the total attenuation coefficient, c(lambda), from multiple sources. This graph also denotes the difference between the total scattering coefficient for distilled water versus saltwater in comparison to the total attenuation coefficient."

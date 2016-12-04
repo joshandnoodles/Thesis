@@ -716,9 +716,7 @@ However, **quadrant photodiodes** are a proven technology used in systems where 
 
 Still costly but more readily accessabile and less specialized than photodiode array products. Mouser has a relatively reasonably priced QP for **~$50** from a respected optoelectronics manufacture, First Sensor (http://www.mouser.com/ProductDetail/First-Sensor/QP58-6-TO5/?qs=sGAEpiMZZMtWNtIk7yMEsWYqMtd76IRNp6trVSLtLDk%3d). I have reached out to First Sensor to inquire about samples/eval boards. It may be worth doing the same with other QP manufactures (only if we would actually see ourselves buying other QPs in the future).
 
-
-----------
-
+---
 
 Use cases of QP:
 
@@ -736,12 +734,12 @@ Use cases of QP:
 
   - re-research light propagation of light through water/saltwater
     - attenuation at different wavelengths
-    - can we get away with green/red light (blue is 
+    - can we get away with green/red light (blue LEDs/PDs are expensive)
   - create comparison matrix for PIC development boards
   - create comparison matrix for QPs
   - PIC32 questions (features from the PIC24 that would be beneficial
-	  - does PIC32 have multiple sample and hold inputs?
-	  - how fast can we sample ADCs on PIC32?
+    - does PIC32 have multiple sample and hold inputs?
+    - how fast can we sample ADCs on PIC32?
 
 # Week Thirteen & Fourteen
 
@@ -777,20 +775,61 @@ In addition to reaching options immediately available to consumers, attempts wer
 [comparison_matrix_qp_1]: 
 https://github.com/joshandnoodles/MS/raw/4f5adb8a4348f4710e14316094ed9b66c77d6fba/doc/img/comparison_matrix_qp_1.png
   "Figure !!: Matrix comparing features/specifications of different quadrant photodiodes readily available"
-
 [comparison_matrix_qp_2]: 
 https://github.com/joshandnoodles/MS/raw/4f5adb8a4348f4710e14316094ed9b66c77d6fba/doc/img/comparison_matrix_qp_2.png
   "Figure !!: Graph showing responsivity at visible wavelengths (only seven data points were extracted from the datasheets of each quadrant photodiode)"
 
+# Weekly One-One - November 17, 2016
+
+## Action items
+
+  - more in depth attenuation research
+  - need realisitc curves for the effect that wavelength has on distance
+    - laser intensity calculations
+
+# Week Fifteen
+
 ## Attenuation of Light in (salt)Water
 
-![](http://www1.lsbu.ac.uk/water/images/water_spectrum_2.gif)
+*See notes from OneNote, summaries of literature review on EM attenuation, and excel optical intensity calculations for comprehensive study on wavelength dependent attenuation of visible light in water. Only a small sampling of the above mentioned will be placed here.*
 
-![][atten_coeff_smith_baker]
+On the quadrant photodiodes (QPs), I have compiled a list of QPs available on Digikey and Mouser along with their price and specs. I also collected the response each QP at different frequencies which will be important for power calculations. The has been shown in the previous section.
 
-[atten_coeff_smith_baker]: 
-https://github.com/joshandnoodles/MS/raw/68a3c44e42285979283155432f06d40e25332567/doc/img/atten_coeff_smith_baker.PNG
-  "Figure !!: **"
+On wavelength-dependent attenuation, I began by finding relevant literature on the subject and summarizing each academic article I read in my lab notes in ~ a paragraph each. It all boils down to two main interactions light makes with water (both pure and oceanic): absorption and scattering. The terminology get tricky depending on the source but both absorption and scattering have their own coefficient which can be further combined into an attenuation/extinction coefficient which describes the exponential decrease in intensity as a function of distance. From reliable articles that had these coefficients at visible wavelengths, I compiled them and made some rough calculations for certain wavelengths across the visible spectrum. There is much that can be said that goes into the accuracy of obtaining these coefficients (i.e. dissolved organic matter in the water and molecular scattering effects vs particulate scattering). However, I am confident that I have a good grasp on all these processes at this point and have found data that is appropriate for our use here. From the below graphs, the scattering coefficient is well known for water while there is some tension in the absorption coefficient. Specifically, there is more uncertainty in the absorption coefficient at short, near-UV wavelengths.  
 
+![][optical_calc_absorp_1]
 
-curves for effect on laser power on distance, wavelength on distance
+![][optical_calc_scatt_1]
+
+Most importantly are the calculations that show us our light intensity after a certain amount of distance, z (intermediate values were used for initial beam diameter and source power).
+
+![][optical_calc_atten_1]
+
+![][optical_calc_atten_2]
+
+Combining this with the photodiode spectrum-responsivity to see what we will actually see at the photodiode (subject to change depending what QP we use).
+
+![][optical_calc_pd_1]
+
+![][optical_calc_pd_2]
+
+The only significant piece I see that is left out of these calculations is the divergence of the beam (which may be high). I will plan on continuing to refine this and add in rough divergence calculations to see how that will affect overall output.
+
+[optical_calc_absorp_1]: 
+https://github.com/joshandnoodles/MS/raw/51be2e11d54665853058cb245ff6a80bfaa43459/doc/img/optical_calc_absorp_1.png
+  "Figure !!: !!"
+[optical_calc_scatt_1]: 
+https://github.com/joshandnoodles/MS/raw/51be2e11d54665853058cb245ff6a80bfaa43459/doc/img/optical_calc_scatt_1.png
+  "Figure !!: !!"
+[optical_calc_atten_1]: 
+https://github.com/joshandnoodles/MS/raw/51be2e11d54665853058cb245ff6a80bfaa43459/doc/img/optical_calc_atten_1.png
+  "Figure !!: !!"
+[optical_calc_atten_2]: 
+https://github.com/joshandnoodles/MS/raw/51be2e11d54665853058cb245ff6a80bfaa43459/doc/img/optical_calc_atten_2.png
+  "Figure !!: !!"
+[optical_calc_pd_1]: 
+https://github.com/joshandnoodles/MS/raw/51be2e11d54665853058cb245ff6a80bfaa43459/doc/img/optical_calc_pd_1.png
+  "Figure !!: !!"
+[optical_calc_pd_2]: 
+https://github.com/joshandnoodles/MS/raw/51be2e11d54665853058cb245ff6a80bfaa43459/doc/img/optical_calc_pd_2.png
+  "Figure !!: !!"

@@ -12,7 +12,7 @@ An optically centric underwater wireless communication system
   - **/doc**
     - all documentation relating to the development of the system
     - **/datasheets**
-      - datasheets, user-guides, schematics, and layout files of vendor components
+      - datasheets, user-guides, schematics, and layout files for vendor components
     - **/design**
       - preliminary research of high-level design (feasibility studies, calculation notes, block diagrams, preliminary component selection tasks)
     - **/lit**

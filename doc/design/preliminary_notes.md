@@ -31,7 +31,8 @@ This could be corrected by:
   - reduce EM noise by using **opto-isolator**
   
 [s1_s2_10k]: ./img/s1_s2_10k.bmp
-	"Figure 1: Transient response after Stage 1 & 2 with input 20mA 10kHz signal from point-blank distance"
+  "Figure 1: Transient response after Stage 1 & 2 with input 20mA 10kHz signal from point-blank distance"
+
 [s1_s2_76k]: ./img/s1_s2_76k.bmp
 	"Figure 2: Transient response after Stage 1 & 2 with input 20mA 76kHz signal from point-blank distance"
 [s1_s2_133k]: ./img/s1_s2_133k.bmp

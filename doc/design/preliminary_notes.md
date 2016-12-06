@@ -29,7 +29,8 @@ This could be corrected by:
       - large teams of experts in many fields needed to build system 
       - a large industry competes at the highest caliber to perfect these systems
   - reduce EM noise by using **opto-isolator**
-  
+
+
 [s1_s2_10k]: ./img/s1_s2_10k.bmp
   "Figure 1: Transient response after Stage 1 & 2 with input 20mA 10kHz signal from point-blank distance"
 

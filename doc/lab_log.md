@@ -833,3 +833,21 @@ https://github.com/joshandnoodles/MS/raw/51be2e11d54665853058cb245ff6a80bfaa4345
 [optical_calc_pd_2]: 
 https://github.com/joshandnoodles/MS/raw/51be2e11d54665853058cb245ff6a80bfaa43459/doc/img/optical_calc_pd_2.png
   "Figure !!: !!"
+
+# Weekly One-One - December 8, 2016
+
+## Action items
+
+  - finish calculations for entire optical flow
+    - check 2/3 data points by hand to ensure charts align correctly
+  - determine gimbal system to use and mounting
+  - design PCB that will be mounted on gimbal (separate from Mikromedia board) that contains the following
+    - laser diode
+    - TX driver circuitry
+    - QP
+    - RX circuitry (trans impedance amplifier)
+    - camera Click board (w/ mirrored connection header from Clicker)
+    - ribbon cable or alternative connectivity to main Clicker board
+  - (potentially) simulations in Blender
+    - mainly for visualization purposes but possible for geometry issues and/or control feedback modeling
+    - export PCB to 3D model to place in Blender simulation, this would be very nice! 

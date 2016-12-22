@@ -11,15 +11,15 @@ Well respected/cited article detailing IOP (and the derivation of IOPs from AOPs
 **Figures/Tables:**
 
 ![][Applied_Optics_20_2-pp_177_184-1981-Smith_Baker-fig_1]
-[Applied_Optics_20_2-pp_177_184-1981-Smith_Baker-fig_1]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_absorption/img/Applied_Optics_20_2-pp_177_184-1981-Smith_Baker-fig_1.jpg
+[Applied_Optics_20_2-pp_177_184-1981-Smith_Baker-fig_1]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_attenuation/img/Applied_Optics_20_2-pp_177_184-1981-Smith_Baker-fig_1.jpg
   "Fig 1: Total absorption coefficient, a_w(lambda), of pure water as a function of wavelength. These results have been compiled by a variety of sources and generally show more agreement for longer wavelengths and some tension for shorter, near-UV wavelengths. This is consistent with many other studies of natural water IOPs. Note that this graph attempts to show the absorption coefficient for pure freshwater which does not contain absorption from particles or dissolved organic materials (yellow substance). However, this value should present apparent optical properties (AOPs) of the clearest natural waters."
 
 ![][Applied_Optics_20_2-pp_177_184-1981-Smith_Baker-fig_3]
-[Applied_Optics_20_2-pp_177_184-1981-Smith_Baker-fig_3]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_absorption/img/Applied_Optics_20_2-pp_177_184-1981-Smith_Baker-fig_3.jpg
+[Applied_Optics_20_2-pp_177_184-1981-Smith_Baker-fig_3]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_attenuation/img/Applied_Optics_20_2-pp_177_184-1981-Smith_Baker-fig_3.jpg
   "Fig 3: Diffuse attenuation coefficient, K_min(lambda), of clear ocean waters compiled from various sources. The solid line is the data obtained from this study. The table associated with the solid line breaks down the diffuse attenuation, K(lambda), into the diffuse attenuation coefficient for pure saltwater, K_w, the absorption coefficient for pure water, a_w, the molecular scattering coefficient for saltwater, b_m^sw, and the molecular scattering coefficient of freshwater, b_m^fw."
 
 ![][Applied_Optics_20_2-pp_177_184-1981-Smith_Baker-fig_4]
-[Applied_Optics_20_2-pp_177_184-1981-Smith_Baker-fig_4]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_absorption/img/Applied_Optics_20_2-pp_177_184-1981-Smith_Baker-fig_4.jpg
+[Applied_Optics_20_2-pp_177_184-1981-Smith_Baker-fig_4]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_attenuation/img/Applied_Optics_20_2-pp_177_184-1981-Smith_Baker-fig_4.jpg
   "Fig 4: Diffuse attenuation coefficient for irradiance, K(lambda), of ocean water. These results have been compiled by a variety of sources and are an attempt to show effects of different chlorophyll concentrations on the attenuation of shorter, near-UV wavelengths. This graph is interesting as it shows the strong effect organic materials have at these shorter wavelengths."
 
 # Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld
@@ -32,11 +32,11 @@ Discussion included the molecular structure of water and why it is so strongly i
 **Figures/Tables:**
 
 ![][Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_1]
-[Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_1]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_absorption/img/Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_1.png
+[Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_1]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_attenuation/img/Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_1.png
   "Fig 1: Absorption coefficient, a(lambda), of pure water as a function of wavelength. These results have been compiled by a variety of sources and generally show consistency especially for larger wavelengths. For shorter wavelengths in the blue and near-UV spectrum regions, the discrepancy between results is believed to be due to contaminants such as dissolved organics in the water samples. Temperature dependence on absorption was not considered in these investigations."
 
 ![][Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_6]
-[Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_6]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_absorption/img/Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_6.png
+[Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_6]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_attenuation/img/Applied_Optics_36_24-pp_260_267-1978-Pegau_Gray_Zaneveld-fig_6.png
   "Fig 6: The attenuation coefficient of 715nm light, c_m(715) shown as a function of water salinity. It is clear from this graph that attenuation appears to have a linear dependence on salinity (at least at longer visible wavelengths)"
 
 # Applied_Optics_36_33-pp_8699_8709-1997-Sogandares_Fry
@@ -50,7 +50,7 @@ An attempt to measure the "purest available water" using photothermal techniques
 **Figures/Tables:**
 
 ![][Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3]
-[Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_absorption/img/Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3.png
+[Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_attenuation/img/Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3.png
   "Fig 1: Comparison of pure water absorption coefficient studies. This study uses a technique that is inherently free from scattering. The data collected by these investigators suggest that K_T(lambda) is the diffuse attenuation coefficient for irradiance (indicator of the cloudiness of water, how well light penetrates into a medium) and C_k is the average concentration of Chlorophyll a and pheopigments at a depth of one attenuation length, solid curves are calculated values, dotted curves are experimentally retrieved results"
 
 # Applied_Optics_36_33-pp_8710_8723-1997-Pope_Fry
@@ -80,7 +80,7 @@ This article considers the diffuse attenuation coefficient for natural waters as
 **Figures/Tables:**
 
 ![][Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3]
-[Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_absorption/img/Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3.png
+[Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_attenuation/img/Limnology_and_Oceanography_23_2-pp_260_267-1978-Smith_Baker-fig_3.png
   "Fig 3: K_T(lambda) is the diffuse attenuation coefficient for irradiance (indicator of the cloudiness of water, how well light penetrates into a medium) and C_k is the average concentration of Chlorophyll a and pheopigments at a depth of one attenuation length, solid curves are calculated values, dotted curves are experimentally retrieved results"
 
 # Limnology_and_Oceanography_52_1-pp_217_229-2007-Morel_Gentili
@@ -92,7 +92,7 @@ This paper proposes yet another investigation into the Inherent Optical Properti
 **Figures/Tables:**
 
 ![][Limnology_and_Oceanography_52_1-pp_217_229-2007-Morel_Gentili-fig_10]
-[Limnology_and_Oceanography_52_1-pp_217_229-2007-Morel_Gentili-fig_10]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_absorption/img/Limnology_and_Oceanography_52_1-pp_217_229-2007-Morel_Gentili-fig_10.png
+[Limnology_and_Oceanography_52_1-pp_217_229-2007-Morel_Gentili-fig_10]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_attenuation/img/Limnology_and_Oceanography_52_1-pp_217_229-2007-Morel_Gentili-fig_10.png
   "Fig 10: Composite of historical absorption coefficient data collected for pure water in blue and UV regions of the spectrum. A table in this paper also details absorption and scattering coefficient values obtained from multiple sources within this same region of the spectrum."
 
 # Optical_Aspects_of_Oceanography_1_1-pp_1_24-1974-Morel
@@ -104,5 +104,5 @@ Mentioned the source of the originator of the c=a+b equation, Jerlov (1968). The
 **Figures/Tables:**
 
 ![][Optical_Aspects_of_Oceanography_1_1-pp_1_24-1974-Morel-fig_4]
-[Optical_Aspects_of_Oceanography_1_1-pp_1_24-1974-Morel-fig_4]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_absorption/img/Optical_Aspects_of_Oceanography_1_1-pp_1_24-1974-Morel-fig_4.png
+[Optical_Aspects_of_Oceanography_1_1-pp_1_24-1974-Morel-fig_4]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/em_attenuation/img/Optical_Aspects_of_Oceanography_1_1-pp_1_24-1974-Morel-fig_4.png
   "Fig 4: Another comparison of the total attenuation coefficient, c(lambda), from multiple sources. This graph also denotes the difference between the total scattering coefficient for distilled water versus saltwater in comparison to the total attenuation coefficient."

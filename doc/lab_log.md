@@ -839,8 +839,15 @@ https://github.com/joshandnoodles/MS/raw/51be2e11d54665853058cb245ff6a80bfaa4345
 ## Action items
 
   - finish calculations for entire optical flow
-    - check 2/3 data points by hand to ensure charts align correctly
+    - check 2 or 3 data points by hand to ensure charts align correctly
+  - gain better understanding of quadrant photodiodes
+    - literature search
+    - their different uses
+    - their shortcomings 
   - determine gimbal system to use and mounting
+  - check to see if old RX transimpedence amplifier will be enough to hook up directly to ADC on PIC
+    - what are the lower limits that PIC's ADC can detect?
+    - can old RX first stage operate well at 500kHz?
   - design PCB that will be mounted on gimbal (separate from Mikromedia board) that contains the following
     - laser diode
     - TX driver circuitry
@@ -850,4 +857,4 @@ https://github.com/joshandnoodles/MS/raw/51be2e11d54665853058cb245ff6a80bfaa4345
     - ribbon cable or alternative connectivity to main Clicker board
   - (potentially) simulations in Blender
     - mainly for visualization purposes but possible for geometry issues and/or control feedback modeling
-    - export PCB to 3D model to place in Blender simulation, this would be very nice! 
+    - export PCB to 3D model to place in Blender simulation, this would be very nice! <!--se_discussion_list:{"q7UEkbFKvIqUS8fCo7PAhPci":{"selectionStart":50997,"type":"conflict","selectionEnd":51061,"discussionIndex":"q7UEkbFKvIqUS8fCo7PAhPci"}}-->

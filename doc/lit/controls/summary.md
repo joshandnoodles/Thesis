@@ -7,7 +7,7 @@ This article if very similar to Review_of_Scientific_Instruments_76_6-pp_1_3-200
 **Figures/Tables:**
 
 ![][Optics_and_Laser_Technology_39_5-pp_1098_1100-2007-Ng_Tan_Foo-fig_4]
-[Optics_and_Laser_Technology_39_5-pp_1098_1100-2007-Ng_Tan_Foo-fig_4]: https://github.com/joshandnoodles/MS/raw/master/lit/controls/img/Optics_and_Laser_Technology_39_5-pp_1098_1100-2007-Ng_Tan_Foo-fig_4.png
+[Optics_and_Laser_Technology_39_5-pp_1098_1100-2007-Ng_Tan_Foo-fig_4]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/controls/img/Optics_and_Laser_Technology_39_5-pp_1098_1100-2007-Ng_Tan_Foo-fig_4.png
   "Fig 4: An elliptical laser beam where the principal axis is not coincident with the major axes of the quadrant photodiode. This may present interesting/difficult analysis not only for beam diameter measurements but also for control feedback situations."
 
 # Review_of_Scientific_Instruments_76_6-pp_1_3-2005-Ng_Foo_Tan
@@ -24,13 +24,13 @@ Although existing techniques exist to measure Gaussian laser beam diameters, the
 **Figures/Tables:**
 
 ![][Review_of_Scientific_Instruments_76_6-pp_1_3-2005-Ng_Foo_Tan-fig_1]
-[Review_of_Scientific_Instruments_76_6-pp_1_3-2005-Ng_Foo_Tan-fig_1]: https://github.com/joshandnoodles/MS/raw/master/lit/controls/img/Review_of_Scientific_Instruments_76_6-pp_1_3-2005-Ng_Foo_Tan-fig_1.png
+[Review_of_Scientific_Instruments_76_6-pp_1_3-2005-Ng_Foo_Tan-fig_1]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/controls/img/Review_of_Scientific_Instruments_76_6-pp_1_3-2005-Ng_Foo_Tan-fig_1.png
   "Fig 1: The description of the system used to measure the diameter of a Gaussian laser beam. The translator in this figure should be able to move the quadrant photodiode in two dimensions parallel to the orientation of the quadrant photodiode. Conversely, the laser beam itself could be translated similarly. Notice that as the beam traverses the quadrants of the quadrant photodiode, information is able to be determined about the diameter of the laser beam assuming Gaussian laser beam characteristics."
 ![][Review_of_Scientific_Instruments_76_6-pp_1_3-2005-Ng_Foo_Tan-fig_2]
-[Review_of_Scientific_Instruments_76_6-pp_1_3-2005-Ng_Foo_Tan-fig_2]: https://github.com/joshandnoodles/MS/raw/master/lit/controls/img/Review_of_Scientific_Instruments_76_6-pp_1_3-2005-Ng_Foo_Tan-fig_2.png
+[Review_of_Scientific_Instruments_76_6-pp_1_3-2005-Ng_Foo_Tan-fig_2]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/controls/img/Review_of_Scientific_Instruments_76_6-pp_1_3-2005-Ng_Foo_Tan-fig_2.png
   "Fig 2: Plots of the voltage response of the left and right components of the received signal. These results were obtained using a He-Ne laser with 10mW operating at a wavelength of 632.8nm. The beam was translated on an optical mount with 10 microns resolution."
 ![][Review_of_Scientific_Instruments_76_6-pp_1_3-2005-Ng_Foo_Tan-fig_3]
-[Review_of_Scientific_Instruments_76_6-pp_1_3-2005-Ng_Foo_Tan-fig_3]: https://github.com/joshandnoodles/MS/raw/master/lit/controls/img/Review_of_Scientific_Instruments_76_6-pp_1_3-2005-Ng_Foo_Tan-fig_3.png
+[Review_of_Scientific_Instruments_76_6-pp_1_3-2005-Ng_Foo_Tan-fig_3]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/controls/img/Review_of_Scientific_Instruments_76_6-pp_1_3-2005-Ng_Foo_Tan-fig_3.png
   "Fig 3: Plots of the voltage response of the top and bottom components of the received signal. These results were obtained using a He-Ne laser with 10mW operating at a wavelength of 632.8nm. The beam was translated on an optical mount with 10 microns resolution.""
 
 # US_Patent_3714491-1970-McIntyre
@@ -42,10 +42,10 @@ The quadrant photodiode consists of a high-resistivity semiconductor substrate, 
 **Figures/Tables:**
 
 ![][US_Patent_3714491-1970-McIntyre-fig_3]
-[US_Patent_3714491-1970-McIntyre-fig_3]: https://github.com/joshandnoodles/MS/raw/master/lit/controls/img/US_Patent_3714491-1970-McIntyre-fig_3.png
+[US_Patent_3714491-1970-McIntyre-fig_3]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/controls/img/US_Patent_3714491-1970-McIntyre-fig_3.png
   "Fig 3: Original drawing detailing the quadrant photodiode. Notice the V-shaped grooves to redirect incident light into the quadrants. The ray traces of this phenomenon are detailed well in US_Patent_3714491-1970-McIntyre-fig_4."
 ![][US_Patent_3714491-1970-McIntyre-fig_5]
-[US_Patent_3714491-1970-McIntyre-fig_5]: https://github.com/joshandnoodles/MS/raw/master/lit/controls/img/US_Patent_3714491-1970-McIntyre-fig_5.png
+[US_Patent_3714491-1970-McIntyre-fig_5]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/controls/img/US_Patent_3714491-1970-McIntyre-fig_5.png
   "Fig 5: The relative response of the device as the laser beam moves across the regions. Notice the center region of the graph has an increasing response where light is incident on the angled surface of the V-shaped groove. This is attributed to enhanced quantum efficiency due to the light incident on the side of groove becoming totally internally reflected and trapped in the diode."
 
 # US_Patent_5790291-1998-Britz
@@ -57,8 +57,8 @@ This patent details a full-duplex communication link using a dual-quadrant track
 **Figures/Tables:**
 
 ![][US_Patent_5790291-1998-Britz-fig_2]
-[US_Patent_5790291-1998-Britz-fig_2]: https://github.com/joshandnoodles/MS/raw/master/lit/controls/img/US_Patent_5790291-1998-Britz-fig_2.png
+[US_Patent_5790291-1998-Britz-fig_2]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/controls/img/US_Patent_5790291-1998-Britz-fig_2.png
   "Fig 2: Diagram showing bean dual beam transmission and receiving. Notice that lens is placed in front of receiving device to direct light appropriately. This can be used to solve problems of a diverging beam becoming too large at distance."
 ![][US_Patent_5790291-1998-Britz-fig_3]
-[US_Patent_5790291-1998-Britz-fig_3]: https://github.com/joshandnoodles/MS/raw/master/lit/controls/img/US_Patent_5790291-1998-Britz-fig_3.png
+[US_Patent_5790291-1998-Britz-fig_3]: https://github.com/joshandnoodles/MS/raw/master/doc/lit/controls/img/US_Patent_5790291-1998-Britz-fig_3.png
   "Fig 3: High-level diagram of system described by patent. Even though the patent describes the benefits of this system (independence of detectors decreases cross-talk and Gaussian beam profile maintains highest intensity for central detector), this could be considered a negative. Separate devices increase intensity and still divides light source intensity between two detectors rather that dual utilization of control and data in the same detector."

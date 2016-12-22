@@ -1,6 +1,6 @@
 # Applied_Optics_20_2-pp_177_184-1981-Smith_Baker
 
-Optical properties of the clearest natural waters (200-800  nm)
+Optical properties of the clearest natural waters (200-800 nm)
 
 Well respected/cited article detailing IOP (and the derivation of IOPs from AOPs) of natural waters. The investigators used a UV submersible spectroradiometer to make measurements of the diffuse attenuation coefficient for irradiance, K(lambda), which is the most direct measure of the penetration of the radiant energy in ocean water. IOPs of pure water are important since they can be used to quantify the maximum penetration depth of light into natural waters. Radiative transfer theory can be used to infer the IOPs from the AOPs. It is important to note that the AOPs, like the IOPs, are dependent on dissolved and particulate material in the water in addition to the light distribution incident. An interesting finding that the inclusion of the particle backscattering coefficient, B * b_p^sw, would increase the diffuse attenuation coefficient, K_w^sw, by 6% in the 400-500nm region, 4% in the 350-440nm and 460-500nm region, any only a few percent in the reset of the spectrum. The article also outlines the following well known relationships between attenuation, absorption, and scattering:
 

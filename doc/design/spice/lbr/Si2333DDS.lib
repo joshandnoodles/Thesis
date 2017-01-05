@@ -1,0 +1,34 @@
+*Oct 07, 2013
+*ECN S13-2055, Rev. A
+*File Name: Si2333DDS_PS.txt, Si2333DDS_PS.lib
+*This document is intended as a SPICE modeling guideline and does not
+*constitute a commercial product datasheet. Designers should refer to the
+*appropriate datasheet of the same number for guaranteed specification
+*limits.
+.SUBCKT Si2333DDS D G S 
+M1 3 GX S S PMOS W= 1202500u L= 0.25u 
+M2 S GX S D NMOS W= 1202500u L= 4.572e-07 
+R1 D 3 1.285e-02 TC=1.539e-03 -1.902e-06 
+CGS GX S 5.134e-10 
+CGD GX D 1.757e-11 
+RG G GY 9.5 
+RTCV 100 S 1e6 TC=-8.536e-07 1.378e-06  
+ETCV GY GX 100 200 1 
+ITCV S 100 1u 
+VTCV 200 S 1 
+DBD D S DBD 1202500u 
+**************************************************************** 
+.MODEL PMOS PMOS ( LEVEL = 3 TOX = 2e-8 
++ RS = 0 KP = 5.608e-06 NSUB = 1.607e+15 
++ KAPPA = 1.605e-04 NFS = 1.000e+12 
++ LD = 0 IS = 0 TPG = -1 ) 
+*************************************************************** 
+.MODEL NMOS NMOS ( LEVEL = 3 TOX = 2e-8 
++NSUB = 1.189e+17 IS = 0 TPG = -1 ) 
+**************************************************************** 
+.MODEL DBD D ( 
++FC = 0.1 TT = 3.494e-08 T_MEASURED = 25 BV = 13 
++RS = 2.109e-02 N = 1.864e+00 IS = 1.000e-06 
++EG = 1.113e+00 XTI = -6.348e+00 TRS1 = 1.000e-05 
++CJO = 2.000e-11 VJ = 8.249e-01 M = 1.478e-01 ) 
+.ENDS 

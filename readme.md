@@ -21,7 +21,7 @@ An optically centric underwater wireless communication system
     - MCU firmware source code files and libraries
   - **/pcb** *-placeholder-*
     - board layout files and stackup
-  - **/schema** *-placeholder-*
+  - **/schema**
     - board schematic files
   
 ## Installation

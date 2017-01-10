@@ -1,7 +1,4 @@
-# Dropbox settings and caches
-.dropbox
-.dropbox.attr
-.dropbox.cache
-
-# Any private directory should not be pushed
-private/
+# Any logs or data from simualtions ran
+*.log
+*.raw
+*.net

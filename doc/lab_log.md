@@ -1,20 +1,3 @@
-
-[TOC]
-
-
-# Scratchpad
-
-http://learn.mikroe.com/ebooks/picmicrocontrollersprogramminginassembly/chapter/ccp-modules/
-
-https://www.mbeckler.org/coursework/2005-2006/ee2361lab10.pdf
-
-http://www.jensign.com/opto/ledlaserdrivers/
-
-PD TOO
-https://www.aptechnologies.co.uk/index.php/support/photodiodes/photodiode-theory-of-operation
-https://www.aptechnologies.co.uk/index.php/support/photodiodes/photodiode-operating-circuits
-
-
 # Take-away from Senior Design (UC the Fish - Fall 2015 and Spring 2016)
 
 ## Ethernet Compatibility
@@ -839,6 +822,7 @@ https://github.com/joshandnoodles/MS/raw/51be2e11d54665853058cb245ff6a80bfaa4345
 ## Action items
 
   - finish calculations for entire optical flow
+    -**Chelsea, smallest beam diameter measurement should use divergence in radians? Also, how did you figure out calculations for addition of lense (divergence and smallest diameter don't seem to line up)?** 
     - check 2 or 3 data points by hand to ensure charts align correctly
   - gain better understanding of quadrant photodiodes
     - literature search
@@ -857,4 +841,4 @@ https://github.com/joshandnoodles/MS/raw/51be2e11d54665853058cb245ff6a80bfaa4345
     - ribbon cable or alternative connectivity to main Clicker board
   - (potentially) simulations in Blender
     - mainly for visualization purposes but possible for geometry issues and/or control feedback modeling
-    - export PCB to 3D model to place in Blender simulation, this would be very nice! <!--se_discussion_list:{"q7UEkbFKvIqUS8fCo7PAhPci":{"selectionStart":50997,"type":"conflict","selectionEnd":51061,"discussionIndex":"q7UEkbFKvIqUS8fCo7PAhPci"}}-->
+    - export PCB to 3D model to place in Blender simulation, this would be very nice! <!--se_discussion_list:{"q7UEkbFKvIqUS8fCo7PAhPci":{"selectionStart":50785,"type":"conflict","selectionEnd":50849,"discussionIndex":"q7UEkbFKvIqUS8fCo7PAhPci"}}-->

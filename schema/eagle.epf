@@ -1,0 +1,25 @@
+[Eagle]
+Version="07 07 00"
+Platform="Windows"
+Serial="62191E841E-LSR-WLM-1EL"
+Globals="Globals"
+Desktop="Desktop"
+
+[Globals]
+AutoSaveProject=1
+UsedLibrary="C:/Users/josh/Dropbox/Projects/Eagle/lbr/diode.lbr"
+UsedLibrary="C:/Users/josh/Dropbox/Projects/Eagle/lbr/ic.lbr"
+UsedLibrary="C:/Users/josh/Dropbox/Projects/Eagle/lbr/io.lbr"
+UsedLibrary="C:/Users/josh/Dropbox/Projects/Eagle/lbr/misc.lbr"
+UsedLibrary="C:/Users/josh/Dropbox/Projects/Eagle/lbr/rcl.lbr"
+UsedLibrary="C:/Users/josh/Dropbox/Projects/Eagle/lbr/transistor.lbr"
+
+[Win_1]
+Type="Control Panel"
+Loc="0 0 2559 1329"
+State=1
+Number=0
+
+[Desktop]
+Screen="2560 1440"
+Window="Win_1"

@@ -17,8 +17,11 @@ Gaussian laser beam diameter measurement using a quadrant photodiode
 Although existing techniques exist to measure Gaussian laser beam diameters, they require precise optical alignment and require rotation of optical components to achieve diameter measurements in two orthogonal axes. This approach allows diameter measurements in two orthogonal axes and without rotation of components by exploiting a quadrant photodiode. Quadrant photodiodes have been already used successfully in applications such as atomic force microscopy, particle tracking, and photothermal diffusivity measurements. As light is incident on each quadrant, the voltages on each quadrant will be proportional to the amount of light power incident. By moving the quadrant photodiode along the y-axis, and interrogating V_L or V_R, the beam radius can be found. This technique is only limited by the resolution of the translator. The benefit of this setup is the possibility of integrating this beam measurement system into a system that is already tracking beam deflections. Relationships were also given to calculate the left, right, top, and bottom components of the control signal. Indices follow the standard quadrant numbering as used in the unit circle. These are known as the following:
 
 > V_L = V_1 + V_4
+
 > V_R = V_2 + V_3
+
 > V_T = V_1 + V_2
+
 > V_B = V_3 + V_4
 
 **Figures/Tables:**

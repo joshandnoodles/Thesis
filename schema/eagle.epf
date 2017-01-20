@@ -10,7 +10,9 @@ AutoSaveProject=1
 UsedLibrary="C:/Users/josh/Dropbox/Projects/Eagle/lbr/diode.lbr"
 UsedLibrary="C:/Users/josh/Dropbox/Projects/Eagle/lbr/ic.lbr"
 UsedLibrary="C:/Users/josh/Dropbox/Projects/Eagle/lbr/io.lbr"
+UsedLibrary="C:/Users/josh/Dropbox/Projects/Eagle/lbr/mechanical.lbr"
 UsedLibrary="C:/Users/josh/Dropbox/Projects/Eagle/lbr/misc.lbr"
+UsedLibrary="C:/Users/josh/Dropbox/Projects/Eagle/lbr/pad.lbr"
 UsedLibrary="C:/Users/josh/Dropbox/Projects/Eagle/lbr/rcl.lbr"
 UsedLibrary="C:/Users/josh/Dropbox/Projects/Eagle/lbr/transistor.lbr"
 

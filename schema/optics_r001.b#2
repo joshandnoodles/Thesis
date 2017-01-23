@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="1" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.5" altunitdist="mm" altunit="mm"/>
+<grid distance="0.07" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.5" altunitdist="mm" altunit="mm"/>
 <layers>
 <layer number="1" name="Top" color="1" fill="1" visible="yes" active="yes"/>
 <layer number="16" name="Bottom" color="12" fill="1" visible="no" active="yes"/>
@@ -124,6 +124,7 @@
 <layer number="219" name="219bmp" color="20" fill="1" visible="no" active="no"/>
 <layer number="220" name="220bmp" color="21" fill="1" visible="no" active="no"/>
 <layer number="221" name="221bmp" color="22" fill="1" visible="no" active="no"/>
+<layer number="222" name="222bmp" color="23" fill="1" visible="no" active="no"/>
 <layer number="223" name="223bmp" color="24" fill="1" visible="no" active="no"/>
 <layer number="224" name="224bmp" color="25" fill="1" visible="no" active="no"/>
 <layer number="225" name="225bmp" color="7" fill="1" visible="no" active="yes"/>
@@ -257,7 +258,6 @@
 <rectangle x1="59.99" y1="14.84" x2="60.55" y2="15.4" layer="30"/>
 <rectangle x1="60.83" y1="15.68" x2="61.39" y2="16.24" layer="30"/>
 <rectangle x1="60.83" y1="14.84" x2="61.39" y2="15.4" layer="30"/>
-<rectangle x1="61.67" y1="14.28" x2="62.23" y2="15.12" layer="30"/>
 <rectangle x1="60.83" y1="14" x2="61.39" y2="14.56" layer="30"/>
 <rectangle x1="59.99" y1="14" x2="60.55" y2="14.56" layer="30"/>
 <rectangle x1="59.99" y1="13.16" x2="60.55" y2="13.72" layer="30"/>
@@ -348,7 +348,7 @@
 <rectangle x1="59.99" y1="10.64" x2="60.55" y2="11.2" layer="22"/>
 <rectangle x1="60.83" y1="9.8" x2="61.39" y2="10.36" layer="22"/>
 <rectangle x1="60.83" y1="10.64" x2="61.39" y2="11.2" layer="22"/>
-<rectangle x1="61.67" y1="10.92" x2="62.23" y2="11.76" layer="22"/>
+<rectangle x1="61.67" y1="11.48" x2="62.23" y2="11.76" layer="22"/>
 <rectangle x1="60.83" y1="11.48" x2="61.39" y2="12.04" layer="22"/>
 <rectangle x1="59.99" y1="11.48" x2="60.55" y2="12.04" layer="22"/>
 <rectangle x1="59.99" y1="12.32" x2="60.55" y2="12.88" layer="22"/>
@@ -375,7 +375,6 @@
 <rectangle x1="59.99" y1="14.84" x2="60.55" y2="15.4" layer="16"/>
 <rectangle x1="60.83" y1="15.68" x2="61.39" y2="16.24" layer="16"/>
 <rectangle x1="60.83" y1="14.84" x2="61.39" y2="15.4" layer="16"/>
-<rectangle x1="61.67" y1="14.28" x2="62.23" y2="15.12" layer="16"/>
 <rectangle x1="60.83" y1="14" x2="61.39" y2="14.56" layer="16"/>
 <rectangle x1="59.99" y1="14" x2="60.55" y2="14.56" layer="16"/>
 <rectangle x1="59.99" y1="13.16" x2="60.55" y2="13.72" layer="16"/>
@@ -452,6 +451,15 @@
 <rectangle x1="58.31" y1="12.88" x2="59.71" y2="13.16" layer="16"/>
 <rectangle x1="59.99" y1="12.88" x2="61.39" y2="13.16" layer="16"/>
 <rectangle x1="61.67" y1="12.88" x2="62.23" y2="13.16" layer="16"/>
+<rectangle x1="60.55" y1="11.48" x2="60.83" y2="12.04" layer="16"/>
+<rectangle x1="61.67" y1="10.92" x2="62.23" y2="11.2" layer="22"/>
+<rectangle x1="61.67" y1="11.2" x2="62.23" y2="11.48" layer="16"/>
+<rectangle x1="61.67" y1="11.2" x2="62.23" y2="11.48" layer="30"/>
+<rectangle x1="61.67" y1="14.84" x2="62.23" y2="15.12" layer="16"/>
+<rectangle x1="61.67" y1="14.56" x2="62.23" y2="14.84" layer="22"/>
+<rectangle x1="61.67" y1="14.28" x2="62.23" y2="14.56" layer="16"/>
+<rectangle x1="61.67" y1="14.28" x2="62.23" y2="14.56" layer="30"/>
+<rectangle x1="61.67" y1="14.84" x2="62.23" y2="15.12" layer="30"/>
 </plain>
 <libraries>
 <library name="rcl">

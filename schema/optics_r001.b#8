@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="1" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.5" altunitdist="mm" altunit="mm"/>
+<grid distance="0.07" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.5" altunitdist="mm" altunit="mm"/>
 <layers>
 <layer number="1" name="Top" color="1" fill="1" visible="yes" active="yes"/>
 <layer number="16" name="Bottom" color="12" fill="1" visible="yes" active="yes"/>
@@ -411,7 +411,6 @@
 <rectangle x1="62.23" y1="10.92" x2="62.51" y2="11.76" layer="16"/>
 <rectangle x1="59.71" y1="10.64" x2="59.99" y2="11.2" layer="16"/>
 <rectangle x1="59.71" y1="11.48" x2="59.99" y2="12.04" layer="16"/>
-<rectangle x1="60.55" y1="11.48" x2="60.83" y2="12.04" layer="16"/>
 <rectangle x1="60.83" y1="11.2" x2="61.39" y2="11.48" layer="16"/>
 <rectangle x1="60.83" y1="12.04" x2="61.39" y2="12.32" layer="16"/>
 <rectangle x1="59.99" y1="12.04" x2="60.55" y2="12.32" layer="16"/>
@@ -422,8 +421,6 @@
 <rectangle x1="58.03" y1="11.48" x2="58.31" y2="12.04" layer="16"/>
 <rectangle x1="59.71" y1="9.8" x2="59.99" y2="10.64" layer="16"/>
 <rectangle x1="59.71" y1="12.32" x2="59.99" y2="12.88" layer="16"/>
-<rectangle x1="59.99" y1="12.88" x2="60.55" y2="13.02" layer="16"/>
-<rectangle x1="60.83" y1="12.88" x2="61.39" y2="13.02" layer="16"/>
 <rectangle x1="61.39" y1="12.32" x2="61.67" y2="12.88" layer="16"/>
 <rectangle x1="61.39" y1="11.48" x2="61.67" y2="12.04" layer="16"/>
 <rectangle x1="59.99" y1="11.2" x2="60.55" y2="11.48" layer="16"/>
@@ -431,20 +428,12 @@
 <rectangle x1="61.67" y1="11.76" x2="62.23" y2="12.04" layer="16"/>
 <rectangle x1="61.39" y1="12.04" x2="61.67" y2="12.32" layer="16"/>
 <rectangle x1="61.67" y1="12.04" x2="62.23" y2="12.53" layer="16"/>
-<rectangle x1="61.67" y1="12.88" x2="62.23" y2="13.02" layer="16"/>
-<rectangle x1="60.55" y1="12.88" x2="60.83" y2="13.02" layer="16"/>
 <rectangle x1="60.55" y1="12.32" x2="60.83" y2="12.88" layer="16"/>
 <rectangle x1="58.87" y1="12.32" x2="59.15" y2="12.88" layer="16"/>
 <rectangle x1="60.55" y1="11.2" x2="60.83" y2="11.48" layer="16"/>
 <rectangle x1="58.87" y1="11.2" x2="59.15" y2="11.48" layer="16"/>
 <rectangle x1="59.71" y1="12.04" x2="59.99" y2="12.32" layer="16"/>
-<rectangle x1="58.31" y1="12.88" x2="59.71" y2="13.02" layer="16"/>
-<rectangle x1="56.63" y1="12.88" x2="58.03" y2="13.02" layer="16"/>
-<rectangle x1="55.79" y1="12.88" x2="56.63" y2="13.02" layer="16"/>
-<rectangle x1="54.67" y1="12.88" x2="55.51" y2="13.02" layer="16"/>
 <rectangle x1="54.11" y1="12.04" x2="54.67" y2="12.88" layer="16"/>
-<rectangle x1="54.67" y1="12.04" x2="54.95" y2="12.53" layer="16"/>
-<rectangle x1="54.67" y1="12.53" x2="54.95" y2="12.6" layer="16"/>
 <rectangle x1="54.95" y1="12.6" x2="55.23" y2="12.88" layer="16"/>
 <rectangle x1="56.07" y1="12.6" x2="56.35" y2="12.88" layer="16"/>
 <rectangle x1="55.23" y1="12.04" x2="56.07" y2="12.6" layer="16"/>
@@ -458,6 +447,12 @@
 <rectangle x1="57.47" y1="11.2" x2="58.03" y2="11.48" layer="16"/>
 <rectangle x1="58.03" y1="10.92" x2="58.31" y2="11.2" layer="16"/>
 <rectangle x1="58.31" y1="12.04" x2="58.87" y2="12.32" layer="16"/>
+<rectangle x1="54.67" y1="12.04" x2="54.95" y2="12.6" layer="16"/>
+<rectangle x1="54.67" y1="12.88" x2="55.51" y2="13.16" layer="16"/>
+<rectangle x1="55.79" y1="12.88" x2="58.03" y2="13.16" layer="16"/>
+<rectangle x1="58.31" y1="12.88" x2="59.71" y2="13.16" layer="16"/>
+<rectangle x1="59.99" y1="12.88" x2="61.39" y2="13.16" layer="16"/>
+<rectangle x1="61.67" y1="12.88" x2="62.23" y2="13.16" layer="16"/>
 </plain>
 <libraries>
 <library name="rcl">
@@ -1393,7 +1388,7 @@ with the following modifications:
 <attribute name="EAGLEUP" value="C0805;;" x="20" y="17.5" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="TOL" value="10" x="20" y="17.5" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="C101" library="rcl" package="0805_WAVE" value="2p" x="56" y="28.5" smashed="yes" rot="R90">
+<element name="C101" library="rcl" package="0805_WAVE" value="2.2p" x="56" y="28.5" smashed="yes" rot="R90">
 <attribute name="NAME" x="57.5" y="26.5" size="1" layer="25" ratio="12" rot="R90" align="center-left"/>
 <attribute name="VALUE" x="56" y="28.5" size="0.45" layer="27" ratio="10" rot="R180" align="center"/>
 <attribute name="EAGLEUP" value="C0805;;" x="56" y="28.5" size="1.778" layer="27" rot="R90" display="off"/>
@@ -1403,7 +1398,7 @@ with the following modifications:
 <attribute name="NAME" x="46" y="26" size="1" layer="25" ratio="12" align="center-left"/>
 <attribute name="VALUE" x="48" y="27.5" size="0.45" layer="27" ratio="10" rot="R90" align="center"/>
 <attribute name="EAGLEUP" value="C0805;;" x="48" y="27.5" size="1.778" layer="27" display="off"/>
-<attribute name="TOL" value="1" x="48" y="27.5" size="1.778" layer="27" display="off"/>
+<attribute name="TOL" value="2" x="48" y="27.5" size="1.778" layer="27" display="off"/>
 </element>
 <element name="C2" library="rcl" package="0805_WAVE" value="0.1u" x="34" y="23.5" smashed="yes" rot="MR270">
 <attribute name="NAME" x="34" y="25.5" size="1" layer="26" ratio="12" rot="MR90" align="center-left"/>
@@ -1411,7 +1406,7 @@ with the following modifications:
 <attribute name="EAGLEUP" value="C0805;;" x="34" y="23.5" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="TOL" value="5" x="34" y="23.5" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
-<element name="C201" library="rcl" package="0805_WAVE" value="2p" x="47" y="33.5" smashed="yes" rot="R270">
+<element name="C201" library="rcl" package="0805_WAVE" value="2.2p" x="47" y="33.5" smashed="yes" rot="R270">
 <attribute name="NAME" x="45.5" y="35.5" size="1" layer="25" ratio="12" rot="R270" align="center-left"/>
 <attribute name="VALUE" x="47" y="33.5" size="0.45" layer="27" ratio="10" align="center"/>
 <attribute name="EAGLEUP" value="C0805;;" x="47" y="33.5" size="1.778" layer="27" rot="R270" display="off"/>
@@ -1421,7 +1416,7 @@ with the following modifications:
 <attribute name="NAME" x="57" y="36" size="1" layer="25" ratio="12" rot="R180" align="center-left"/>
 <attribute name="VALUE" x="55" y="34.5" size="0.45" layer="27" ratio="10" rot="R270" align="center"/>
 <attribute name="EAGLEUP" value="C0805;;" x="55" y="34.5" size="1.778" layer="27" rot="R180" display="off"/>
-<attribute name="TOL" value="1" x="55" y="34.5" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="TOL" value="2" x="55" y="34.5" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
 <element name="C3" library="rcl" package="0805_WAVE" value="2.2n" x="34" y="19" smashed="yes" rot="MR90">
 <attribute name="NAME" x="34" y="17" size="1" layer="26" ratio="12" rot="MR270" align="center-left"/>
@@ -1429,7 +1424,7 @@ with the following modifications:
 <attribute name="EAGLEUP" value="C0805;;" x="34" y="19" size="1.778" layer="28" rot="MR90" display="off"/>
 <attribute name="TOL" value="1" x="34" y="19" size="1.778" layer="28" rot="MR90" display="off"/>
 </element>
-<element name="C301" library="rcl" package="0805_WAVE" value="2p" x="47" y="9.5" smashed="yes" rot="R270">
+<element name="C301" library="rcl" package="0805_WAVE" value="2.2p" x="47" y="9.5" smashed="yes" rot="R270">
 <attribute name="NAME" x="45.5" y="11.5" size="1" layer="25" ratio="12" rot="R270" align="center-left"/>
 <attribute name="VALUE" x="47" y="9.5" size="0.45" layer="27" ratio="10" align="center"/>
 <attribute name="EAGLEUP" value="C0805;;" x="47" y="9.5" size="1.778" layer="27" rot="R270" display="off"/>
@@ -1439,7 +1434,7 @@ with the following modifications:
 <attribute name="NAME" x="57" y="12" size="1" layer="25" ratio="12" rot="R180" align="center-left"/>
 <attribute name="VALUE" x="55" y="10.5" size="0.45" layer="27" ratio="10" rot="R270" align="center"/>
 <attribute name="EAGLEUP" value="C0805;;" x="55" y="10.5" size="1.778" layer="27" rot="R180" display="off"/>
-<attribute name="TOL" value="1" x="55" y="10.5" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="TOL" value="2" x="55" y="10.5" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
 <element name="C4" library="rcl" package="0805_WAVE" value="47n" x="38" y="33.5" smashed="yes" rot="MR0">
 <attribute name="NAME" x="40" y="33.5" size="1" layer="26" ratio="12" rot="MR180" align="center-left"/>
@@ -1447,7 +1442,7 @@ with the following modifications:
 <attribute name="EAGLEUP" value="C0805;;" x="38" y="33.5" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="TOL" value="5" x="38" y="33.5" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
-<element name="C401" library="rcl" package="0805_WAVE" value="2p" x="56" y="4.5" smashed="yes" rot="R90">
+<element name="C401" library="rcl" package="0805_WAVE" value="2.2p" x="56" y="4.5" smashed="yes" rot="R90">
 <attribute name="NAME" x="57.5" y="3" size="1" layer="25" ratio="12" rot="R90" align="center-left"/>
 <attribute name="VALUE" x="56" y="4.5" size="0.45" layer="27" ratio="10" rot="R180" align="center"/>
 <attribute name="EAGLEUP" value="C0805;;" x="56" y="4.5" size="1.778" layer="27" rot="R90" display="off"/>
@@ -1457,7 +1452,7 @@ with the following modifications:
 <attribute name="NAME" x="46.5" y="2" size="1" layer="25" ratio="12" align="center-left"/>
 <attribute name="VALUE" x="48" y="3.5" size="0.45" layer="27" ratio="10" rot="R90" align="center"/>
 <attribute name="EAGLEUP" value="C0805;;" x="48" y="3.5" size="1.778" layer="27" display="off"/>
-<attribute name="TOL" value="1" x="48" y="3.5" size="1.778" layer="27" display="off"/>
+<attribute name="TOL" value="2" x="48" y="3.5" size="1.778" layer="27" display="off"/>
 </element>
 <element name="D1" library="diode" package="TO38-ICUT-PL_450B" value="" x="30.5" y="19" smashed="yes" rot="R270">
 <attribute name="MFR" value="OSRAM" x="30.5" y="19" size="1.778" layer="27" rot="R270" display="off"/>
@@ -1465,7 +1460,7 @@ with the following modifications:
 <attribute name="EAGLEUP" value="PL_450B;;" x="30.5" y="19" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="NAME" x="32.3" y="19" size="1" layer="25" ratio="12" rot="R270" align="bottom-center"/>
 <attribute name="VALUE" x="29.3" y="19" size="0.5" layer="27" ratio="10" rot="R270" align="center"/>
-<attribute name="PWR" value="80mW" x="30.5" y="19" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="PWR" value="0.08" x="30.5" y="19" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="I_F" value="100mA" x="30.5" y="19" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
 <element name="D2" library="diode" package="TO5-QP10-6" value="QP10-6" x="51.5" y="19" smashed="yes">
@@ -1598,7 +1593,7 @@ with the following modifications:
 </element>
 <element name="R4" library="rcl" package="T93YB" value="10k" x="32" y="34.5" smashed="yes" rot="R90">
 <attribute name="MFR" value="Vishay" x="32" y="34.5" size="1.778" layer="27" rot="R90" display="off"/>
-<attribute name="MPN" value="T93YB" x="32" y="34.5" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="T93YB103KT20" x="32" y="34.5" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="EAGLEUP" value="T93YB;;" x="32" y="34.5" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="NAME" x="26.9" y="31.9" size="1" layer="25" ratio="12" rot="R90"/>
 <attribute name="VALUE" x="36.7" y="36.8" size="0.5" layer="27" ratio="10" rot="R180"/>
@@ -1774,9 +1769,8 @@ with the following modifications:
 <attribute name="VDD" value="5" x="29.5" y="24" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="X3" library="io" package="MIKROBUS_SOCKET_NO_OUTLINE_COMPACT" value="MikroBus_3" x="12" y="23.5" smashed="yes" rot="R90">
-<attribute name="MPN" value="90147-1108" x="12" y="23.5" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="90147-1108,90147-1108" x="12" y="23.5" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MFR" value="Molex" x="12" y="23.5" size="1.778" layer="27" rot="R90" display="off"/>
-<attribute name="QTY" value="2" x="12" y="23.5" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="EAGLEUP" value="MIKROBUS_SOCKET;;" x="12" y="23.5" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="CIRCUITS" value="16" x="12" y="23.5" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
@@ -1821,7 +1815,7 @@ with the following modifications:
 <attribute name="NAME" x="4" y="22.5" size="0.5" layer="27" ratio="10" rot="R270" align="center"/>
 <attribute name="MFR" value="Kingbright" x="4" y="22.5" size="1.778" layer="27" display="off"/>
 </element>
-<element name="R10" library="rcl" package="0805_WAVE" value="82" x="41" y="26.5" smashed="yes" rot="R180">
+<element name="R10" library="rcl" package="0805_WAVE" value="80.6" x="41" y="26.5" smashed="yes" rot="R180">
 <attribute name="PWR" value="0.125" x="47" y="26.5" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="NAME" x="39.5" y="25.5" size="1" layer="25" ratio="12" rot="R270" align="center-left"/>
 <attribute name="VALUE" x="41" y="26.5" size="0.5" layer="27" ratio="10" rot="R270" align="center"/>
@@ -1839,7 +1833,7 @@ with the following modifications:
 <attribute name="NAME" x="41.5" y="29" size="0.5" layer="27" ratio="10" rot="R270" align="center"/>
 <attribute name="MFR" value="Kingbright" x="41.5" y="29" size="1.778" layer="27" display="off"/>
 </element>
-<element name="R12" library="rcl" package="0805_WAVE" value="82" x="62" y="11.5" smashed="yes" rot="R180">
+<element name="R12" library="rcl" package="0805_WAVE" value="80.6" x="62" y="11.5" smashed="yes" rot="R180">
 <attribute name="PWR" value="0.125" x="62" y="4.5" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="NAME" x="63.5" y="12.5" size="1" layer="25" ratio="12" rot="R90" align="center-left"/>
 <attribute name="VALUE" x="62" y="11.5" size="0.5" layer="27" ratio="10" rot="R270" align="center"/>
@@ -2850,8 +2844,8 @@ with the following modifications:
 <errors>
 <approved hash="7,39,c668ce67fdd3d455"/>
 <approved hash="7,39,e245b4e4ae762c15"/>
-<approved hash="18,29,992a549228e43070"/>
 <approved hash="18,29,c07fa4980d6a7bd2"/>
+<approved hash="18,29,992a549228e43070"/>
 </errors>
 </board>
 </drawing>

@@ -1,7 +1,7 @@
 version;4;5;http://eagleup.wordpress.com/;
 settings;C:/Users/josh/Dropbox/Projects/Eagle/models/;C:/Program Files/ImageMagick-7.0.4-Q16/convert.exe;C:/Program Files/ImageMagick-7.0.4-Q16/composite.exe;del;
 color;0x092356;0x133775;gold;white;
-images;C:/Users/josh/Dropbox/Documents/MS/schema/model/;eagleUp_optics_r001;png;1200;png;
+images;C:/Users/josh/Dropbox/Documents/MS/schema/model/;eagleUp_optics_r001;png;1200;jpg;
 outline-line;0.000000;0.000000;65.000000;0.000000;1.600000;
 outline-line;65.000000;0.000000;65.000000;38.000000;1.600000;
 outline-line;65.000000;38.000000;0.000000;38.000000;1.600000;

@@ -1,0 +1,4 @@
+For r002
+
+- place a resistor in series with R4 (current limit potentiometer) to ensure Vref cannot exceed ~2.05V (translates to 165mA assuming RK1=RK2=0ohms)
+- use smaller, more compact potentiometer with less accessible dial

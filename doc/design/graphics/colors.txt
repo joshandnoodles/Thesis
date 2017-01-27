@@ -1,0 +1,19 @@
+background
+rgb( 240, 234, 214 )
+
+420nm
+rgb( 106,0, 255 )
+Hex: #6a00ff
+
+430nm
+rgb( 61,0, 255 )
+Hex: #3d00ff
+
+440nm
+rgb( 0,0, 255 )
+Hex: #0000ff
+ 
+450nm
+rgb( 0,70, 255) 
+Hex: #0046ff
+

@@ -3226,8 +3226,12 @@ outside module</text>
 <part name="DS1" library="diode" deviceset="LED" device="/1206/KINGBRIGHT" technology="/YELLOW" value="P5V"/>
 <part name="GND10" library="misc" deviceset="GND" device=""/>
 <part name="GND11" library="misc" deviceset="GND" device=""/>
-<part name="R7" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="68"/>
-<part name="DS2" library="diode" deviceset="LED" device="/1206/KINGBRIGHT" technology="/YELLOW" value="P3_3V"/>
+<part name="R7" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="68">
+<attribute name="DNI" value="DNI"/>
+</part>
+<part name="DS2" library="diode" deviceset="LED" device="/1206/KINGBRIGHT" technology="/YELLOW" value="P3_3V">
+<attribute name="DNI" value="DNI"/>
+</part>
 <part name="R8" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="68"/>
 <part name="DS3" library="diode" deviceset="LED" device="/1206/KINGBRIGHT" technology="/RED" value="LSR_ENB"/>
 <part name="GND12" library="misc" deviceset="GND" device=""/>
@@ -3273,8 +3277,12 @@ outside module</text>
 <part name="GND28" library="misc" deviceset="GND" device=""/>
 <part name="MP1" library="mechanical" deviceset="LENS_HOLDER" device="/M9/LOW-PROFILE"/>
 <part name="GND30" library="misc" deviceset="GND" device=""/>
-<part name="R9" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="137"/>
-<part name="DS4" library="diode" deviceset="LED" device="/1206/KINGBRIGHT" technology="/YELLOW" value="LSR"/>
+<part name="R9" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="137">
+<attribute name="DNI" value="DNI"/>
+</part>
+<part name="DS4" library="diode" deviceset="LED" device="/1206/KINGBRIGHT" technology="/YELLOW" value="LSR">
+<attribute name="DNI" value="DNI"/>
+</part>
 <part name="GND29" library="misc" deviceset="GND" device=""/>
 <part name="R10" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="80.6"/>
 <part name="DS5" library="diode" deviceset="LED" device="/1206/KINGBRIGHT" technology="/BLUE" value="ID1"/>
@@ -3300,6 +3308,7 @@ outside module</text>
 <part name="P+6" library="misc" deviceset="P5V" device=""/>
 <part name="P+9" library="misc" deviceset="P3_3V" device=""/>
 <part name="DS9" library="diode" deviceset="LED" device="/TH/5MM/CREE" technology="/BLUE">
+<attribute name="DNI" value="DNI"/>
 <attribute name="EAGLEUP" value="LED5MM_GREEN;;DNI"/>
 </part>
 <part name="FRAME1" library="misc" deviceset="FRAME_B" device=""/>
@@ -3319,7 +3328,7 @@ on of pass transistor by
 start circuit)</text>
 <text x="-45" y="9" size="1" layer="97" ratio="12">I~=20mA w/
 V_f=2V</text>
-<text x="-25" y="-34" size="1" layer="97" ratio="12">I=20mA w/
+<text x="-25" y="-33" size="1" layer="97" ratio="12">I=20mA w/
 V_f=2V</text>
 <text x="-25" y="9" size="1" layer="97" ratio="12">I~=20mA w/
 V_f~=2V</text>
@@ -3360,7 +3369,7 @@ V_f=2V</text>
 <attribute name="MPN" x="1.5" y="22" size="1" layer="96" ratio="12" rot="MR90"/>
 </instance>
 <instance part="Q2" gate="G$1" x="1" y="-21">
-<attribute name="MPN" x="1" y="-21" size="1" layer="96" ratio="12"/>
+<attribute name="MPN" x="4" y="-22.5" size="1" layer="96" ratio="12"/>
 </instance>
 <instance part="D1" gate="G$1" x="76" y="11">
 <attribute name="MPN" x="78.5" y="9.5" size="1" layer="96" ratio="12"/>
@@ -3383,8 +3392,12 @@ V_f=2V</text>
 <instance part="DS1" gate="G$1" x="-29" y="-4"/>
 <instance part="GND10" gate="GND" x="-29" y="-56"/>
 <instance part="GND11" gate="GND" x="-29" y="-11"/>
-<instance part="R7" gate="G$1" x="-49" y="11" rot="MR270"/>
-<instance part="DS2" gate="G$1" x="-49" y="-4"/>
+<instance part="R7" gate="G$1" x="-49" y="11" rot="MR270">
+<attribute name="DNI" x="-52.5" y="12" size="1" layer="96" ratio="12" rot="MR270" display="name"/>
+</instance>
+<instance part="DS2" gate="G$1" x="-49" y="-4">
+<attribute name="DNI" x="-47" y="-7" size="1" layer="96" ratio="12" display="name"/>
+</instance>
 <instance part="R8" gate="G$1" x="-29" y="-31" rot="MR270"/>
 <instance part="DS3" gate="G$1" x="-29" y="-48"/>
 <instance part="GND12" gate="GND" x="-49" y="-11"/>
@@ -3444,8 +3457,12 @@ V_f=2V</text>
 <attribute name="MPN" x="68" y="7.5" size="1" layer="96" ratio="12" align="bottom-center"/>
 </instance>
 <instance part="GND30" gate="GND" x="61" y="8"/>
-<instance part="R9" gate="G$1" x="31" y="11" rot="MR270"/>
-<instance part="DS4" gate="G$1" x="31" y="-4"/>
+<instance part="R9" gate="G$1" x="31" y="11" rot="MR270">
+<attribute name="DNI" x="26.5" y="9.5" size="1" layer="96" ratio="12" rot="MR90" display="name"/>
+</instance>
+<instance part="DS4" gate="G$1" x="31" y="-4">
+<attribute name="DNI" x="33" y="-7" size="1" layer="96" ratio="12" display="name"/>
+</instance>
 <instance part="GND29" gate="GND" x="31" y="-11"/>
 <instance part="R10" gate="G$1" x="166" y="-98" rot="MR270"/>
 <instance part="DS5" gate="G$1" x="166" y="-113"/>
@@ -3470,7 +3487,9 @@ V_f=2V</text>
 <instance part="X2" gate="G$1" x="58" y="-109"/>
 <instance part="P+6" gate="+5V" x="75" y="-98"/>
 <instance part="P+9" gate="G$1" x="52" y="-98"/>
-<instance part="DS9" gate="G$1" x="91" y="11"/>
+<instance part="DS9" gate="G$1" x="91" y="11">
+<attribute name="DNI" x="93" y="9.5" size="1" layer="96" ratio="12" display="name"/>
+</instance>
 <instance part="FRAME1" gate="G$2" x="217" y="-192"/>
 <instance part="FRAME1" gate="G$1" x="-122.09" y="-192"/>
 </instances>

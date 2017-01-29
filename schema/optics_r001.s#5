@@ -1291,7 +1291,11 @@
 </symbols>
 <devicesets>
 <deviceset name="IC-HK" prefix="U" uservalue="yes">
-<description>Laser Switching Driver (155 MHz)</description>
+<description>Laser Switching Driver (155 MHz)
+
+&lt;p&gt;
+&lt;a href=https://www.ichaus.de/product/iC-HK%20iC-HKB&gt;https://www.ichaus.de/product/iC-HK%20iC-HKB&lt;/a&gt;
+&lt;/p&gt;</description>
 <gates>
 <gate name="G$1" symbol="IC-HK/B" x="0" y="0"/>
 </gates>
@@ -1328,7 +1332,11 @@
 </devices>
 </deviceset>
 <deviceset name="OPA2380" prefix="U" uservalue="yes">
-<description>Transimpedance Amp</description>
+<description>Transimpedance Amp
+
+&lt;p&gt;
+&lt;a href="http://www.ti.com/product/OPA2380"&gt;http://www.ti.com/product/OPA2380&lt;/a&gt;
+&lt;/p&gt;</description>
 <gates>
 <gate name="G$1" symbol="OPAMP_PWR" x="-10" y="0" addlevel="always"/>
 <gate name="_A" symbol="OPAMP" x="-10" y="0" swaplevel="1"/>
@@ -1648,6 +1656,11 @@
 </symbols>
 <devicesets>
 <deviceset name="PL_450B" prefix="D" uservalue="yes">
+<description>Blue Single-mode Laser Diode
+
+&lt;p&gt;
+&lt;a href="http://www.osram-os.com/osram_os/en/products/product-catalog/laser-diodes/visible-laser/blue-laser/index.jsp"&gt;http://www.osram-os.com/osram_os/en/products/product-catalog/laser-diodes/visible-laser/blue-laser/index.jsp&lt;/a&gt;
+&lt;/p&gt;</description>
 <gates>
 <gate name="G$1" symbol="LSR_W_CASE" x="0" y="0"/>
 </gates>
@@ -1659,12 +1672,12 @@
 <connect gate="G$1" pin="CASE" pad="2"/>
 </connects>
 <technologies>
-<technology name="/BLUE">
+<technology name="">
 <attribute name="EAGLEUP" value="PL_450B;;" constant="no"/>
 <attribute name="I_F" value="100mA" constant="no"/>
 <attribute name="MFR" value="OSRAM" constant="no"/>
 <attribute name="MPN" value="PL_450B" constant="no"/>
-<attribute name="PWR" value="80mW" constant="no"/>
+<attribute name="PWR" value="0.08" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -1748,6 +1761,11 @@
 </devices>
 </deviceset>
 <deviceset name="QP10-6" prefix="D" uservalue="yes">
+<description>Quadrant PIN photodiode (QP)
+
+&lt;p&gt;
+&lt;a href="http://www.first-sensor.com/en/products/optical-sensors/detectors/quadrant-pin-photodiodes-qp/"&gt;http://www.first-sensor.com/en/products/optical-sensors/detectors/quadrant-pin-photodiodes-qp/&lt;/a&gt;
+&lt;/p&gt;</description>
 <gates>
 <gate name="G$1" symbol="QUAD_PD" x="0" y="0"/>
 </gates>
@@ -2537,8 +2555,7 @@ BUS</text>
 <attribute name="CIRCUITS" value="16" constant="no"/>
 <attribute name="EAGLEUP" value="MIKROBUS_SOCKET;;" constant="no"/>
 <attribute name="MFR" value="Molex" constant="no"/>
-<attribute name="MPN" value="90147-1108" constant="no"/>
-<attribute name="QTY" value="2" constant="no"/>
+<attribute name="MPN" value="90147-1108,90147-1108" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -2980,10 +2997,10 @@ BUS</text>
 <variantdefs>
 </variantdefs>
 <parts>
-<part name="C1" library="rcl" deviceset="C" device="/0805/10V" technology="/1%" value="2p"/>
+<part name="C1" library="rcl" deviceset="C" device="/0805/10V" technology="/1%" value="2.2p"/>
 <part name="R1" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="10k"/>
 <part name="R2" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="100"/>
-<part name="C2" library="rcl" deviceset="C" device="/0805/10V" technology="/1%" value="100p"/>
+<part name="C2" library="rcl" deviceset="C" device="/0805/10V" technology="/2%" value="100p"/>
 <part name="TP1" library="pad" deviceset="TP" device="/CIRCLE_1.5"/>
 <part name="TP2" library="pad" deviceset="TP" device="/CIRCLE_1.5"/>
 <part name="TP3" library="pad" deviceset="TP" device="/CIRCLE_2"/>
@@ -3118,7 +3135,7 @@ outside module</text>
 <part name="R3" library="rcl" deviceset="R_SENSE" device="/1206/0.5W" technology="/1%" value="0.82"/>
 <part name="Q1" library="transistor" deviceset="MOSFET_P-TYPE" device="/SI2333DDS"/>
 <part name="Q2" library="transistor" deviceset="MOSFET_N-TYPE" device="/SI2342DS"/>
-<part name="D1" library="diode" deviceset="PL_450B" device="" technology="/BLUE"/>
+<part name="D1" library="diode" deviceset="PL_450B" device=""/>
 <part name="GND1" library="misc" deviceset="GND" device=""/>
 <part name="GND3" library="misc" deviceset="GND" device=""/>
 <part name="GND4" library="misc" deviceset="GND" device=""/>
@@ -4171,6 +4188,11 @@ V_f=2V</text>
 <approved hash="104,1,139,-34,U1G$1,V-,GND,,,"/>
 <approved hash="104,1,202,-24,U2G$1,V+,P5V,,,"/>
 <approved hash="104,1,202,-34,U2G$1,V-,GND,,,"/>
+<approved hash="113,1,3,17.4977,Q1,,,,,"/>
+<approved hash="113,1,-2.46265,-21,Q2,,,,,"/>
+<approved hash="113,1,77.6996,11,D1,,,,,"/>
+<approved hash="113,1,139.5,-28.1898,U1,,,,,"/>
+<approved hash="113,1,202.5,-28.1898,U2,,,,,"/>
 <approved hash="113,1,-46.5872,19,TP3,,,,,"/>
 <approved hash="113,1,-9,21.4128,TP1,,,,,"/>
 <approved hash="113,1,21,21.4128,TP2,,,,,"/>
@@ -4180,6 +4202,7 @@ V_f=2V</text>
 <approved hash="113,1,20,-33.5872,TP8,,,,,"/>
 <approved hash="113,1,-11,-20.5872,TP9,,,,,"/>
 <approved hash="113,1,5,-43.1034,TP10,,,,,"/>
+<approved hash="113,1,64.8888,11.096,MP1,,,,,"/>
 <approved hash="113,1,70.0955,-107.814,X1,,,,,"/>
 <approved hash="113,1,56.9045,-107.814,X2,,,,,"/>
 <approved hash="113,1,93.0337,11,DS9,,,,,"/>

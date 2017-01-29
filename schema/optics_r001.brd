@@ -1500,6 +1500,7 @@ with the following modifications:
 <attribute name="VALUE" x="1.6" y="19.5" size="0.5" layer="25" ratio="10" rot="R90" align="bottom-center"/>
 <attribute name="NAME" x="4" y="19.5" size="0.5" layer="27" ratio="10" rot="R270" align="center"/>
 <attribute name="MFR" value="Kingbright" x="4" y="19.5" size="1.778" layer="27" display="off"/>
+<attribute name="DNI" value="DNI" x="4" y="19.5" size="1.778" layer="27" display="off"/>
 </element>
 <element name="DS3" library="diode" package="1206_WAVE" value="LSR_ENB" x="4" y="28.5" smashed="yes">
 <attribute name="MPN" value="APT3216SURCK" x="4" y="28.5" size="1.778" layer="27" display="off"/>
@@ -1641,6 +1642,7 @@ with the following modifications:
 <attribute name="NAME" x="11" y="19.5" size="1" layer="25" ratio="12" align="center-left"/>
 <attribute name="VALUE" x="9" y="19.5" size="0.45" layer="27" ratio="10" rot="R90" align="center"/>
 <attribute name="TOL" value="1" x="9" y="19.5" size="1.778" layer="27" display="off"/>
+<attribute name="DNI" value="DNI" x="9" y="19.5" size="1.778" layer="27" display="off"/>
 </element>
 <element name="R8" library="rcl" package="0805_WAVE" value="68" x="9" y="28.5" smashed="yes">
 <attribute name="PWR" value="0.125" x="9" y="28.5" size="1.778" layer="27" display="off"/>
@@ -1809,6 +1811,7 @@ with the following modifications:
 <attribute name="NAME" x="11" y="22.5" size="1" layer="25" ratio="12" align="center-left"/>
 <attribute name="VALUE" x="9" y="22.5" size="0.45" layer="27" ratio="10" rot="R90" align="center"/>
 <attribute name="TOL" value="1" x="9" y="22.5" size="1.778" layer="27" display="off"/>
+<attribute name="DNI" value="DNI" x="9" y="22.5" size="1.778" layer="27" display="off"/>
 </element>
 <element name="DS4" library="diode" package="1206_WAVE" value="LSR" x="4" y="22.5" smashed="yes">
 <attribute name="MPN" value="APT3216SYCK" x="-3" y="23.5" size="1.778" layer="27" display="off"/>
@@ -1820,6 +1823,7 @@ with the following modifications:
 <attribute name="VALUE" x="1.6" y="22.5" size="0.5" layer="25" ratio="10" rot="R90" align="bottom-center"/>
 <attribute name="NAME" x="4" y="22.5" size="0.5" layer="27" ratio="10" rot="R270" align="center"/>
 <attribute name="MFR" value="Kingbright" x="4" y="22.5" size="1.778" layer="27" display="off"/>
+<attribute name="DNI" value="DNI" x="4" y="22.5" size="1.778" layer="27" display="off"/>
 </element>
 <element name="R10" library="rcl" package="0805_WAVE" value="80.6" x="41" y="26.5" smashed="yes" rot="R180">
 <attribute name="PWR" value="0.125" x="47" y="26.5" size="1.778" layer="27" rot="R180" display="off"/>
@@ -1925,7 +1929,7 @@ with the following modifications:
 <attribute name="LUM" value="7065mcd" x="26.3" y="19" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="I_F" value="30mA" x="26.3" y="19" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="EAGLEUP" value="LED5MM_GREEN;;DNI" x="26.3" y="19" size="1.778" layer="28" rot="MR270" display="off"/>
-<attribute name="DNI" value="" x="24.3" y="19.5" size="0.508" layer="28" rot="MR270" display="name"/>
+<attribute name="DNI" value="DNI" x="24.3" y="19.5" size="0.508" layer="28" rot="MR270" display="name"/>
 <attribute name="NAME" x="26.3" y="15.3" size="1" layer="26" ratio="12" rot="MR0" align="bottom-center"/>
 <attribute name="VALUE" x="24.8" y="19" size="0.5" layer="28" ratio="10" rot="MR270" align="center"/>
 <attribute name="MFR" value="Cree" x="26.3" y="19" size="1.778" layer="28" rot="MR270" display="off"/>

@@ -1677,7 +1677,7 @@
 <attribute name="I_F" value="100mA" constant="no"/>
 <attribute name="MFR" value="OSRAM" constant="no"/>
 <attribute name="MPN" value="PL_450B" constant="no"/>
-<attribute name="PWR" value="80mW" constant="no"/>
+<attribute name="PWR" value="0.08" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -2555,8 +2555,7 @@ BUS</text>
 <attribute name="CIRCUITS" value="16" constant="no"/>
 <attribute name="EAGLEUP" value="MIKROBUS_SOCKET;;" constant="no"/>
 <attribute name="MFR" value="Molex" constant="no"/>
-<attribute name="MPN" value="90147-1108" constant="no"/>
-<attribute name="QTY" value="2" constant="no"/>
+<attribute name="MPN" value="90147-1108,90147-1108" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -2998,10 +2997,10 @@ BUS</text>
 <variantdefs>
 </variantdefs>
 <parts>
-<part name="C1" library="rcl" deviceset="C" device="/0805/10V" technology="/1%" value="2p"/>
+<part name="C1" library="rcl" deviceset="C" device="/0805/10V" technology="/1%" value="2.2p"/>
 <part name="R1" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="10k"/>
 <part name="R2" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="100"/>
-<part name="C2" library="rcl" deviceset="C" device="/0805/10V" technology="/1%" value="100p"/>
+<part name="C2" library="rcl" deviceset="C" device="/0805/10V" technology="/2%" value="100p"/>
 <part name="TP1" library="pad" deviceset="TP" device="/CIRCLE_1.5"/>
 <part name="TP2" library="pad" deviceset="TP" device="/CIRCLE_1.5"/>
 <part name="TP3" library="pad" deviceset="TP" device="/CIRCLE_2"/>
@@ -3207,10 +3206,10 @@ outside module</text>
 <part name="R9" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="137"/>
 <part name="DS4" library="diode" deviceset="LED" device="/1206/KINGBRIGHT" technology="/YELLOW" value="LSR"/>
 <part name="GND29" library="misc" deviceset="GND" device=""/>
-<part name="R10" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="82"/>
+<part name="R10" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="80.6"/>
 <part name="DS5" library="diode" deviceset="LED" device="/1206/KINGBRIGHT" technology="/BLUE" value="ID1"/>
 <part name="GND31" library="misc" deviceset="GND" device=""/>
-<part name="R12" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="82"/>
+<part name="R12" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="80.6"/>
 <part name="DS7" library="diode" deviceset="LED" device="/1206/KINGBRIGHT" technology="/BLUE" value="ID3"/>
 <part name="GND32" library="misc" deviceset="GND" device=""/>
 <part name="R11" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="150"/>

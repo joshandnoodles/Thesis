@@ -8,30 +8,30 @@
 </settings>
 <grid distance="1" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.5" altunitdist="mm" altunit="mm"/>
 <layers>
-<layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
-<layer number="17" name="Pads" color="2" fill="1" visible="no" active="no"/>
-<layer number="18" name="Vias" color="2" fill="1" visible="no" active="no"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="no"/>
-<layer number="20" name="Dimension" color="15" fill="1" visible="no" active="no"/>
-<layer number="21" name="tPlace" color="25" fill="1" visible="no" active="no"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="25" name="tNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="no" active="no"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="no" active="no"/>
+<layer number="1" name="Top" color="1" fill="1" visible="yes" active="no"/>
+<layer number="16" name="Bottom" color="12" fill="1" visible="yes" active="no"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="no"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="no"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="no"/>
+<layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="no"/>
+<layer number="21" name="tPlace" color="25" fill="1" visible="yes" active="no"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="no"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="no"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="no"/>
-<layer number="30" name="bStop" color="7" fill="6" visible="no" active="no"/>
+<layer number="30" name="bStop" color="15" fill="6" visible="no" active="no"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="no"/>
 <layer number="32" name="bCream" color="7" fill="5" visible="no" active="no"/>
 <layer number="33" name="tFinish" color="6" fill="3" visible="no" active="no"/>
 <layer number="34" name="bFinish" color="6" fill="6" visible="no" active="no"/>
 <layer number="35" name="tGlue" color="7" fill="4" visible="no" active="no"/>
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="no"/>
-<layer number="37" name="tTest" color="7" fill="1" visible="no" active="no"/>
-<layer number="38" name="bTest" color="7" fill="1" visible="no" active="no"/>
+<layer number="37" name="tTest" color="7" fill="1" visible="yes" active="no"/>
+<layer number="38" name="bTest" color="7" fill="1" visible="yes" active="no"/>
 <layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="no"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="no"/>
 <layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="no"/>
@@ -39,17 +39,17 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="no"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="no"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="no" active="no"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="no" active="no"/>
-<layer number="47" name="Measures" color="7" fill="1" visible="no" active="no"/>
-<layer number="48" name="Document" color="7" fill="1" visible="no" active="no"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="no" active="no"/>
-<layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
-<layer number="51" name="tDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="52" name="bDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
-<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
-<layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
-<layer number="57" name="tCAD" color="7" fill="1" visible="no" active="no"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="no"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="yes" active="no"/>
+<layer number="48" name="Document" color="7" fill="1" visible="yes" active="no"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="no"/>
+<layer number="50" name="dxf" color="7" fill="1" visible="yes" active="no"/>
+<layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="yes" active="no"/>
+<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="yes" active="no"/>
+<layer number="56" name="wert" color="7" fill="1" visible="yes" active="no"/>
+<layer number="57" name="tCAD" color="7" fill="1" visible="yes" active="no"/>
 <layer number="90" name="Modules" color="5" fill="1" visible="yes" active="yes"/>
 <layer number="91" name="Nets" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="92" name="Busses" color="1" fill="1" visible="yes" active="yes"/>
@@ -405,8 +405,25 @@
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="EAGLEUP" value="C0603" constant="no"/>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
+</technology>
+<technology name="/10%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="10" constant="no"/>
+</technology>
+<technology name="/2%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="2" constant="no"/>
+</technology>
+<technology name="/20%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="20" constant="no"/>
+</technology>
+<technology name="/5%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="5" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -416,8 +433,25 @@
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="EAGLEUP" value="C0603" constant="no"/>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
+</technology>
+<technology name="/10%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="10" constant="no"/>
+</technology>
+<technology name="/2%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="2" constant="no"/>
+</technology>
+<technology name="/20%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="20" constant="no"/>
+</technology>
+<technology name="/5%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="5" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -427,8 +461,25 @@
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="EAGLEUP" value="C0603" constant="no"/>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
+</technology>
+<technology name="/10%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="10" constant="no"/>
+</technology>
+<technology name="/2%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="2" constant="no"/>
+</technology>
+<technology name="/20%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="20" constant="no"/>
+</technology>
+<technology name="/5%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="5" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -438,8 +489,25 @@
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="EAGLEUP" value="C0603" constant="no"/>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
+</technology>
+<technology name="/10%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="10" constant="no"/>
+</technology>
+<technology name="/2%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="2" constant="no"/>
+</technology>
+<technology name="/20%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="20" constant="no"/>
+</technology>
+<technology name="/5%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="5" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -449,8 +517,25 @@
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="EAGLEUP" value="C0603" constant="no"/>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
+</technology>
+<technology name="/10%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="10" constant="no"/>
+</technology>
+<technology name="/2%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="2" constant="no"/>
+</technology>
+<technology name="/20%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="20" constant="no"/>
+</technology>
+<technology name="/5%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="5" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -460,8 +545,25 @@
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="EAGLEUP" value="C0603" constant="no"/>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
+</technology>
+<technology name="/10%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="10" constant="no"/>
+</technology>
+<technology name="/2%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="2" constant="no"/>
+</technology>
+<technology name="/20%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="20" constant="no"/>
+</technology>
+<technology name="/5%">
+<attribute name="EAGLEUP" value="C0603;;" constant="no"/>
+<attribute name="TOL" value="5" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -471,8 +573,25 @@
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="EAGLEUP" value="C0805" constant="no"/>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
+</technology>
+<technology name="/10%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="10" constant="no"/>
+</technology>
+<technology name="/2%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="2" constant="no"/>
+</technology>
+<technology name="/20%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="20" constant="no"/>
+</technology>
+<technology name="/5%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="5" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -482,8 +601,25 @@
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="EAGLEUP" value="C0805" constant="no"/>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
+</technology>
+<technology name="/10%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="10" constant="no"/>
+</technology>
+<technology name="/2%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="2" constant="no"/>
+</technology>
+<technology name="/20%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="20" constant="no"/>
+</technology>
+<technology name="/5%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="5" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -493,8 +629,25 @@
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="EAGLEUP" value="C0805" constant="no"/>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
+</technology>
+<technology name="/10%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="10" constant="no"/>
+</technology>
+<technology name="/2%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="2" constant="no"/>
+</technology>
+<technology name="/20%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="20" constant="no"/>
+</technology>
+<technology name="/5%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="5" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -504,8 +657,25 @@
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="EAGLEUP" value="C0805" constant="no"/>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
+</technology>
+<technology name="/10%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="10" constant="no"/>
+</technology>
+<technology name="/2%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="2" constant="no"/>
+</technology>
+<technology name="/20%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="20" constant="no"/>
+</technology>
+<technology name="/5%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="5" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -515,8 +685,25 @@
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="EAGLEUP" value="C0805" constant="no"/>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
+</technology>
+<technology name="/10%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="10" constant="no"/>
+</technology>
+<technology name="/2%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="2" constant="no"/>
+</technology>
+<technology name="/20%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="20" constant="no"/>
+</technology>
+<technology name="/5%">
+<attribute name="EAGLEUP" value="C0805;;" constant="no"/>
+<attribute name="TOL" value="5" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -526,8 +713,25 @@
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="EAGLEUP" value="C1206" constant="no"/>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
+</technology>
+<technology name="/10%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="10" constant="no"/>
+</technology>
+<technology name="/2%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="2" constant="no"/>
+</technology>
+<technology name="/20%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="20" constant="no"/>
+</technology>
+<technology name="/5%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="5" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -537,8 +741,25 @@
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="EAGLEUP" value="C1206" constant="no"/>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
+</technology>
+<technology name="/10%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="10" constant="no"/>
+</technology>
+<technology name="/2%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="2" constant="no"/>
+</technology>
+<technology name="/20%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="20" constant="no"/>
+</technology>
+<technology name="/5%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="5" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -548,8 +769,25 @@
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="EAGLEUP" value="C1206" constant="no"/>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
+</technology>
+<technology name="/10%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="10" constant="no"/>
+</technology>
+<technology name="/2%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="2" constant="no"/>
+</technology>
+<technology name="/20%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="20" constant="no"/>
+</technology>
+<technology name="/5%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="5" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -559,8 +797,25 @@
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="EAGLEUP" value="C1206" constant="no"/>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
+</technology>
+<technology name="/10%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="10" constant="no"/>
+</technology>
+<technology name="/2%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="2" constant="no"/>
+</technology>
+<technology name="/20%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="20" constant="no"/>
+</technology>
+<technology name="/5%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="5" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -570,8 +825,25 @@
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="EAGLEUP" value="C1206" constant="no"/>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
+</technology>
+<technology name="/10%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="10" constant="no"/>
+</technology>
+<technology name="/2%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="2" constant="no"/>
+</technology>
+<technology name="/20%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="20" constant="no"/>
+</technology>
+<technology name="/5%">
+<attribute name="EAGLEUP" value="C1206;;" constant="no"/>
+<attribute name="TOL" value="5" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -582,15 +854,26 @@
 <gate name="G$1" symbol="R" x="0" y="0"/>
 </gates>
 <devices>
-<device name="/1206/0.25W" package="1206_WAVE">
+<device name="/1206/0.5W" package="1206_WAVE">
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
 <connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
-<technology name="">
+<technology name="/0.1%">
 <attribute name="EAGLEUP" value="R1206;;" constant="no"/>
-<attribute name="PWR" value="0.25" constant="no"/>
+<attribute name="PWR" value="0.5" constant="no"/>
+<attribute name="TOL" value="0.1" constant="no"/>
+</technology>
+<technology name="/0.5%">
+<attribute name="EAGLEUP" value="R1206;;" constant="no"/>
+<attribute name="PWR" value="0.5" constant="no"/>
+<attribute name="TOL" value="0.5" constant="no"/>
+</technology>
+<technology name="/1%">
+<attribute name="EAGLEUP" value="R1206;;" constant="no"/>
+<attribute name="PWR" value="0.5" constant="no"/>
+<attribute name="TOL" value="1" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -2697,10 +2980,10 @@ BUS</text>
 <variantdefs>
 </variantdefs>
 <parts>
-<part name="C1" library="rcl" deviceset="C" device="/0805/10V" value="2p"/>
+<part name="C1" library="rcl" deviceset="C" device="/0805/10V" technology="/1%" value="2p"/>
 <part name="R1" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="10k"/>
 <part name="R2" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="100"/>
-<part name="C2" library="rcl" deviceset="C" device="/0805/10V" value="100p"/>
+<part name="C2" library="rcl" deviceset="C" device="/0805/10V" technology="/1%" value="100p"/>
 <part name="TP1" library="pad" deviceset="TP" device="/CIRCLE_1.5"/>
 <part name="TP2" library="pad" deviceset="TP" device="/CIRCLE_1.5"/>
 <part name="TP3" library="pad" deviceset="TP" device="/CIRCLE_2"/>
@@ -2829,10 +3112,10 @@ outside module</text>
 <part name="R1" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="22k"/>
 <part name="R2" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="10k"/>
 <part name="U3" library="ic" deviceset="IC-HK" device="" technology="B" value="iC-HKB"/>
-<part name="C1" library="rcl" deviceset="C" device="/0805/10V" value="1u"/>
-<part name="C2" library="rcl" deviceset="C" device="/0805/10V" value="0.1u"/>
-<part name="C3" library="rcl" deviceset="C" device="/0805/10V" value="2.2n"/>
-<part name="R3" library="rcl" deviceset="R_SENSE" device="/1206/0.25W" value="0.82"/>
+<part name="C1" library="rcl" deviceset="C" device="/0805/10V" technology="/10%" value="1u"/>
+<part name="C2" library="rcl" deviceset="C" device="/0805/10V" technology="/5%" value="0.1u"/>
+<part name="C3" library="rcl" deviceset="C" device="/0805/10V" technology="/1%" value="2.2n"/>
+<part name="R3" library="rcl" deviceset="R_SENSE" device="/1206/0.5W" technology="/1%" value="0.82"/>
 <part name="Q1" library="transistor" deviceset="MOSFET_P-TYPE" device="/SI2333DDS"/>
 <part name="Q2" library="transistor" deviceset="MOSFET_N-TYPE" device="/SI2342DS"/>
 <part name="D1" library="diode" deviceset="PL_450B" device="" technology="/BLUE"/>
@@ -2841,14 +3124,16 @@ outside module</text>
 <part name="GND4" library="misc" deviceset="GND" device=""/>
 <part name="GND5" library="misc" deviceset="GND" device=""/>
 <part name="GND6" library="misc" deviceset="GND" device=""/>
-<part name="R4" library="rcl" deviceset="R_POT" device="/T93YB" value="10k"/>
+<part name="R4" library="rcl" deviceset="R_POT" device="/T93YB" value="10k">
+<attribute name="MPN" value="T93YB103KT20"/>
+</part>
 <part name="R5" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="4.7k"/>
 <part name="GND7" library="misc" deviceset="GND" device=""/>
 <part name="RK1" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="0"/>
 <part name="RK2" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="0"/>
 <part name="GND2" library="misc" deviceset="GND" device=""/>
 <part name="GND8" library="misc" deviceset="GND" device=""/>
-<part name="C4" library="rcl" deviceset="C" device="/0805/10V" value="47n"/>
+<part name="C4" library="rcl" deviceset="C" device="/0805/10V" technology="/5%" value="47n"/>
 <part name="GND9" library="misc" deviceset="GND" device=""/>
 <part name="R6" library="rcl" deviceset="R" device="/0805/0.125W" technology="/1%" value="150"/>
 <part name="DS1" library="diode" deviceset="LED" device="/1206/KINGBRIGHT" technology="/YELLOW" value="P5V"/>

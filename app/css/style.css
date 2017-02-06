@@ -1,0 +1,269 @@
+
+
+* { 
+  margin: 0; 
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #content {
+  height: 100%;
+  width: 100%;
+  font-family: Garamond, Georgia, serif;
+}
+
+body, #content, .curtain {
+  background-color: rgba( 240, 234, 214, 1 );
+  /*background-color: rgba( 25, 255, 255, 1 );*/
+}
+
+
+
+body {
+  overflow: hidden;
+}
+
+button:focus {
+  outline:0;
+}
+
+.sidebarContainer {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  width: 370px;
+  min-height: 100%;
+  max-height: 100%;
+  top: 0;
+  right: 0px;
+  opacity: 0.95;
+  color: rgba( 255, 255, 255, 1 );
+  background-color: rgba( 0, 0, 255, 0.5 );
+  border-left-style: solid;
+  border-left-color: rgba( 255, 255, 255, 1 );
+  border-left-width: 3px;
+  border-bottom-style: solid;
+  border-bottom-color: rgba( 255, 255, 255, 1 );
+  border-bottom-width: 3px;
+  z-index: 4;
+  transition: all 0.5s ease;
+}
+
+.sidebarContainer.shrink {
+  min-height: 0px;
+  transform: translate(330px,0);    /* 370px - 35px - 5px */
+}
+
+.sidebarContents {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 9px 8px 0px 3px;
+}
+
+.sidebarContents.shrink {
+  display: none;
+}
+
+.sidebarIcons {
+  justify-content: flex-start;
+  flex-basis: 35px;
+  flex-shrink: 0;
+}
+
+.sidebarIcon {
+  display: block;
+  flex-basis: inherit;
+  flex-shrink: 0;
+  margin-top: 5px;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.sidebarIcon object {
+  pointer-events: none;
+}
+  
+.sidebarItem {
+  flex-basis: 25px;
+  margin-bottom: 5px;
+  overflow: hidden;
+}
+.sidebarItem .header {
+  height: 25px;
+  line-height: 23px;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  border: solid 2px white;
+  background-color: rgba( 0, 0, 255, 0.5 );
+  user-select: none;
+  cursor: pointer;
+}
+
+.sidebarItem::-webkit-scrollbar { 
+    display: none; 
+}
+.sidebarItem.open {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+/* Log.js */
+
+.logContainer {
+  width: 100%;
+  height: 100%;
+  padding: 0px;
+  overflow: hidden;
+  color: rgba( 255, 255, 255, 1 );
+}
+
+.logElement {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 5px;
+  padding-left: 5px;
+  font-size: medium;
+  border-left: thick double rgba( 255, 255, 255, 1 );
+  -webkit-user-select: text;
+}
+
+.logElement.edit {
+  cursor: text;
+}
+
+/* Controls.js */
+
+.controlContainer {
+  display: flex;
+  flex-direction: column;
+  align-content: stretch;
+  width: 100%;
+  padding-bottom: 25px;
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: row;
+  flex: 1 1;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  padding-top: 5px;
+}
+
+.controlGroup .header {
+  width: 100%;
+  height: 15px;
+  line-height: 15px;
+  font-variant: small-caps;
+  text-align: left;
+  font-weight: normal;
+  border: none;
+  border-bottom: solid 1px white;
+  background-color: transparent;
+  user-select: none;
+  cursor: default;
+}
+
+.controlItem {
+  flex: 1 1 20%;
+  text-align: center;
+  margin: 5px;
+  padding: 8px 2px 8px 2px;
+  border: solid 2px white;
+  background-color: rgba( 0, 0, 255, 0.5 );
+  user-select: none;
+  cursor: pointer;
+}
+
+/* Generic */
+
+.container {
+  position: absolute;
+  display: flex;
+  left: 0px;
+  width: 100%;
+  height: 50%;
+  flex-flow: row wrap;
+}
+
+.containerItem {
+  box-sizing: border-box;
+  flex: 1;
+  flex-basis: 50%;
+}
+
+/* Graph.js */
+
+.graphContainer {
+  bottom: 0px;
+}
+
+.line {
+  stroke: black;
+  stroke-width: 2;
+  fill: none;
+}
+
+.axis path {
+  stroke: black;
+  stroke-width: 2;
+  fill: none;
+  shape-rendering: crispEdges;
+}
+
+/* Heatmap.js */
+
+.heatmapContainer {
+  top: 0px;
+}
+
+/* base.js */
+
+.curtain {
+  display: block;
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  width: 100%;
+  height: 100%;
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 1s, opacity 1s ease-in-out;
+  pointer-events: none;
+  background-image: url(../img/bouncing_ball.svg);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center; 
+  z-index: 50;
+}
+
+.bar {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 3px;
+  width: 100%;
+  background: rgb( 255, 160, 0 );
+  z-index: 20;
+}
+
+.bar.active {
+  background-color: rgb( 80, 200, 120 );
+}
+
+.bar.inactive {
+  background-color: rgb( 255, 0, 0 );
+}
+
+/* general */
+
+.noSelect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

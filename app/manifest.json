@@ -1,0 +1,22 @@
+{
+  "name": "MS_optics_r001",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "minimum_chrome_version": "50.0.2661",
+  "icons": {
+    "128": "128.png"
+  },
+  "app": {
+    "background": {
+      "scripts": [ "background.js" ]
+    }
+  },
+  "permissions": [ 
+    "hid", {
+      "usbDevices":
+        [ { "vendorId": 4617, 
+            "productId": 1 } ]
+      },
+    "system.display"
+  ]
+}

@@ -138,15 +138,13 @@ void main() {
   SYS_Initialize( NULL );      // all MPLAB Harmony modules, including app(s)
   initAdc();                // ADC configuration
   initCoreTimer();          // core timer
+  initDelay();
   initDebug();              // debug hardware on the Clicker 2
   initLsr();                // laser driver and diode circuitry
   
   // set the following pins as analog: 
   // AN8, AN9, AN10, AN11, AN13, AN14, AN15
   //AD1PCFG &= ~0b1111111100000000;
-  unsigned int tick = getCoreTimer();
-  unsigned int tock;
-  
   /*
   AD1PCFG = 0xFFFF;
   JTAGEN_bit = 0;
@@ -165,7 +163,10 @@ void main() {
   EnableInterrupts();       // Enable all interrupts
   
   */
-
+  unsigned int counter = 0x0;
+  //lsrLoadSwitchOn();
+  //lsrSetHigh();
+  
   while (1) {     // loop forever
     
     // run operations for MPLAB Harmony modules and application(s)
@@ -174,18 +175,21 @@ void main() {
     // trigger action when button is pressed (action occurs on release)
     if ( debugBtn1State() ) {             // wait for button to be depressed
       while( debugBtn1State() );          // hold here until button is released
-      //!! delayUs( BTN_DEBOUNCE_US );    // pause to avoid debounce issues
+      delayUs( BTN_DEBOUNCE_US );    // pause to avoid de-bounce issues
       debugLed1Tog();
       lsrLoadSwitchTog();
-    }
-    tock = getCoreTimer();
-    if ( ( getCoreTimer() - tick ) > 4000000 ) {
-      tick = tock;
-      debugLed2Tog();
-      lsrReadVrefVSenseReg();
-      //lsrReadISenseReg();
+      lsrTog();
     }
     
+    //delayMs(1000);
+    //debugLed2Tog();
+    lsrReadVrefVSenseReg();
+    lsrReadISenseReg();
+    lsrCheckAlarms();
+      
+    
+
+      
     // check T1 button
     /*
     if (Button(&PORTE, 4, 2, 0)) {                // Detect logical zero

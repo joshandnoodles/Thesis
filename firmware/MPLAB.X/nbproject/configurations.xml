@@ -97,6 +97,7 @@
         <itemPath>../lib/lsr.h</itemPath>
         <itemPath>../lib/adc.h</itemPath>
         <itemPath>../lib/timer.h</itemPath>
+        <itemPath>../lib/delay.h</itemPath>
       </logicalFolder>
       <logicalFolder name="src" displayName="src" projectFiles="true">
         <itemPath>../src/hardware_config.h</itemPath>
@@ -170,6 +171,7 @@
         <itemPath>../lib/lsr.c</itemPath>
         <itemPath>../lib/adc.c</itemPath>
         <itemPath>../lib/timer.c</itemPath>
+        <itemPath>../lib/delay.c</itemPath>
       </logicalFolder>
       <logicalFolder name="src" displayName="src" projectFiles="true">
         <itemPath>../src/main.c</itemPath>

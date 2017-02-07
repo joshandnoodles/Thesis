@@ -22,8 +22,8 @@ extern "C" {
 #endif
 
 // acceptable current limit Vref range
-#define LSR_VREF_VSENSE_MIN     0.0f        //!! Vref minimum (in volts)
-#define LSR_VREF_VSENSE_MAX     100.0f      //!! Vref maximum (in volts)
+#define LSR_VREF_VSENSE_MIN     0.0f        // Vref minimum (in volts)
+#define LSR_VREF_VSENSE_MAX     1.95f       // Vref maximum (in volts)
 
 // specify resistance of current sense resistor in series with laser
 #define LSR_ISENSE_RES          0.82f       // sense resistor (in ohms)
@@ -39,7 +39,7 @@ extern "C" {
 //      - absolute maximum peak current = 100mA
     
 #define LSR_ISENSE_MIN            0.0f      // minimum diode current (in mA)
-#define LSR_ISENSE_MAX            145.0f    // maximum diode current (in mA)
+#define LSR_ISENSE_MAX            45.0f    // maximum diode current (in mA)
 
 // variables available to external modules
 extern unsigned char lsrLoadSwitchState;

@@ -16,7 +16,7 @@ extern "C" {
 #endif
 
 // specify time to wait to after button switch off to avoid debounce issues
-#define BTN_DEBOUNCE_US = 30
+#define BTN_DEBOUNCE_US     10000
 
 // function prototypes
 void initDebug( void );

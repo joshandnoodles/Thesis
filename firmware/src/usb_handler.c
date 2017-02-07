@@ -15,6 +15,8 @@
 #include <p32mx460f512l.h>
 #include "hardware_config.h"
 
+#include <string.h>   // memset
+
 #include "lsr.h"
 #include "debug.h"
 
@@ -119,7 +121,7 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
     
   // reset counter for building our tx buffer
   txIdx = 0;
-  //memset( &txDataBuffer[0], 0, sizeof(txDataBuffer) );
+  memset( &txDataBuffer[0], 0, sizeof(txDataBuffer) );
     
   // we got a packet, check what the hosts wants us to do and do it,
   // the packet contains a command id at the beginning followed by one or
@@ -218,7 +220,6 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
       // set load switch on or off
       
       // set load switch to certain state
-      // set the debug led on or off depending on input
       if ( (rxDataBuffer[idx++]<<0) == 0 ) {
         lsrLoadSwitchOff();
       } else {

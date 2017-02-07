@@ -48,20 +48,19 @@ extern "C" {
 #define LSR_VREF_VSENSE_AN_MASK (1<<8)          // AN8
 #define LSR_VREF_VSENSE_AN_CH   8               // channel index of ADC port
 
-
-// hardware configuration for laser current low-side sense //!! add analog config register
-#define LSR_ISENSE_LS_TRIS      TRISB           // port TRIS I/O buffer register
-#define LSR_ISENSE_LS_MASK      (1<<9)          // RB9
-#define LSR_ISENSE_LS_AN_BUF    ADC1BUF0        // ADC result buffer register
-#define LSR_ISENSE_LS_AN_MASK   (1<<9)          // AN9
-#define LSR_ISENSE_LS_AN_CH     9               // channel index of ADC port
+// hardware configuration for laser current low-side current sense positive node
+#define LSR_ISENSE_LS_P_TRIS    TRISB           // port TRIS I/O buffer register
+#define LSR_ISENSE_LS_P_MASK    (1<<9)          // RB9
+#define LSR_ISENSE_LS_P_AN_BUF  ADC1BUF0        // ADC result buffer register
+#define LSR_ISENSE_LS_P_AN_MASK (1<<9)          // AN9
+#define LSR_ISENSE_LS_P_AN_CH   9               // channel index of ADC port
     
-// hardware configuration for laser current high-side sense //!! add analog config register
-#define LSR_ISENSE_HS_TRIS      TRISB           // port TRIS I/O buffer register
-#define LSR_ISENSE_HS_MASK      (1<<10)         // RB10
-#define LSR_ISENSE_HS_AN_BUF    ADC1BUF0        // ADC result buffer register
-#define LSR_ISENSE_HS_AN_MASK   (1<<10)         // AN10
-#define LSR_ISENSE_HS_AN_CH     10              // channel index of ADC port
+// hardware configuration for laser low-side current sense negative node
+#define LSR_ISENSE_LS_N_TRIS    TRISB           // port TRIS I/O buffer register
+#define LSR_ISENSE_LS_N_MASK    (1<<10)         // RB10
+#define LSR_ISENSE_LS_N_AN_BUF  ADC1BUF0        // ADC result buffer register
+#define LSR_ISENSE_LS_N_AN_MASK (1<<10)         // AN10
+#define LSR_ISENSE_LS_N_AN_CH   10              // channel index of ADC port
 
 // debug.h configuration
 

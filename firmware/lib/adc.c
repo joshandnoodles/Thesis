@@ -132,11 +132,6 @@ void adcInitCh(
   
   unsigned int idx;
   
-  // ON: ADC Operating Mode bit(1)
-  // turn ADC module off, it is not recommend to write to configuration
-  // registers while ADC module is on
-  AD1CON1 &= ~(0b1<<15);
-  
   // update mask representing all enabled AN ADC channels
   adcMask |= mask;
   
@@ -155,18 +150,23 @@ void adcInitCh(
   // update analog pin configuration for newly added channel
   AD1PCFG &= ~(mask);
   
-  // ON: ADC Operating Mode bit(1)
-  // turn ADC module back on
-  AD1CON1 |= 0b1<<15;
-  
   return;
 }
 
 volatile unsigned int * adcRead( unsigned char ch ) {
   
+  // ON: ADC Operating Mode bit(1)
+  // turn ADC module off, it is not recommend to write to configuration
+  // registers while ADC module is on
+  AD1CON1 &= ~(0b1<<15);
+  
   // CH0SA<3:0>: Positive Input Select bits for MUX A Multiplexer Setting 
   // set AN<ch> as MUX A Channel 0 positive input 
-  AD1CHS |= ch<<16;
+  AD1CHS = ch<<16;
+  
+  // ON: ADC Operating Mode bit(1)
+  // turn ADC module back on
+  AD1CON1 |= 0b1<<15;
   
   // SAMP: ADC Sample Enable bit
   // start ADC SHA sampling

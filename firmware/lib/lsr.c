@@ -17,6 +17,8 @@
 #include <p32mx460f512l.h>
 #include "hardware_config.h"
 
+#include <stdlib.h>
+
 #include "adc.h"
 
 #include "lsr.h"
@@ -50,30 +52,30 @@ void initLsr( void ) {
   // it is smart to start off with no power to the driver/diode
   lsrLoadSwitchOff();
   
-  // configure ADC channel for Vref measurements
+  // configure ADC channel for Vref measurement
   adcInitCh( &LSR_VREF_VSENSE_AN_BUF,
           LSR_VREF_VSENSE_AN_MASK,
           &LSR_VREF_VSENSE_TRIS,
           LSR_VREF_VSENSE_MASK );
   
-  // configure ADC channel for laser current low-side measurements
-  adcInitCh( &LSR_ISENSE_LS_AN_BUF,
-          LSR_ISENSE_LS_AN_MASK,
-          &LSR_ISENSE_LS_TRIS,
-          LSR_ISENSE_LS_MASK );
+  // configure ADC channel for laser low-side current sense positive measurement
+  adcInitCh( &LSR_ISENSE_LS_P_AN_BUF,
+          LSR_ISENSE_LS_P_AN_MASK,
+          &LSR_ISENSE_LS_P_TRIS,
+          LSR_ISENSE_LS_P_MASK );
   
-  // configure ADC channel for laser current high-side measurements
-  adcInitCh( &LSR_ISENSE_HS_AN_BUF,
-          LSR_ISENSE_HS_AN_MASK,
-          &LSR_ISENSE_HS_TRIS,
-          LSR_ISENSE_HS_MASK );
+  // configure ADC channel for laser low-side current sense negative measurement
+  adcInitCh( &LSR_ISENSE_LS_N_AN_BUF,
+          LSR_ISENSE_LS_N_AN_MASK,
+          &LSR_ISENSE_LS_N_TRIS,
+          LSR_ISENSE_LS_N_MASK );
   
   // pre-calculate register equivalent values for current and Vref 
   // minimum/maximum limits to test ADC results against after ADC readings
   lsrVrefVSenseMinReg = (unsigned int)(LSR_VREF_VSENSE_MIN / ADC_REF_V * ((1<<ADC_BITS)-1));
   lsrVrefVSenseMaxReg = (unsigned int)(LSR_VREF_VSENSE_MAX / ADC_REF_V * ((1<<ADC_BITS)-1));
-  lsrISenseMinReg = (unsigned int)(LSR_ISENSE_MIN / ADC_REF_V * ((1<<ADC_BITS)-1) / LSR_ISENSE_RES) ;
-  lsrISenseMaxReg = (unsigned int)(LSR_ISENSE_MAX / ADC_REF_V * ((1<<ADC_BITS)-1) / LSR_ISENSE_RES);
+  lsrISenseMinReg = (unsigned int)(LSR_ISENSE_MIN / ADC_REF_V * ((1<<ADC_BITS)-1) * LSR_ISENSE_RES);
+  lsrISenseMaxReg = (unsigned int)(LSR_ISENSE_MAX / ADC_REF_V * ((1<<ADC_BITS)-1) * LSR_ISENSE_RES);
 
   return;
 }
@@ -81,8 +83,11 @@ void initLsr( void ) {
 unsigned char lsrLoadSwitchOn( void ) {
   
   // only turn on the load switch if the current limit Vref node is within the 
-  // acceptable range, force this check by calling Vref read function
-  lsrLastVrefVSenseReg = lsrReadVrefVSenseReg();
+  // acceptable range and the current sense for the laser is within the
+  // specified ranges (both of these should be zero, but an early check here
+  // may stop damages from shorts), force these check by calling read functions
+  lsrReadVrefVSenseReg();
+  lsrReadISenseReg();
   
   // do not continue with load switch turn on procedure if we have an alarm flag
   if ( lsrVrefVSenseAlarm )
@@ -128,15 +133,15 @@ float lsrReadVrefVSense( void ) {
 
 unsigned int lsrReadVrefVSenseReg( void ) {
   
-  volatile unsigned int * vrefReg;
+  unsigned int vrefReg;
   
   // use modular ADC read function to sample, convert, and return ADC buffer 
   // result, this assumes the particular channel being read has already been
   // initialized through the ADC channel initialization function
-  vrefReg = adcRead( LSR_VREF_VSENSE_AN_CH );
+  vrefReg = (unsigned int)(*(adcRead( LSR_VREF_VSENSE_AN_CH )));
   
   // store value as normal unsigned int value (not pointer)
-  lsrLastVrefVSenseReg = (unsigned int)(*vrefReg);
+  lsrLastVrefVSenseReg = vrefReg;
 
   // reset alarm flag
   lsrVrefVSenseAlarm = 0x0;
@@ -150,20 +155,32 @@ unsigned int lsrReadVrefVSenseReg( void ) {
   return lsrLastVrefVSenseReg;
 }
 
+float lsrReadISense( void ) {
+  
+  // call on appropriate function that samples, converts, and returns the ADC 
+  // buffer result register and send that register reference to decimal
+  // conversion function
+  // Note: since this is a current sense measurement, it will need to be 
+  //  modified to reflect the sense resistor circuitry (i.e. V=IR)
+  return adcRegToFloat( lsrReadISenseReg() ) / LSR_ISENSE_RES;
+}
+
 unsigned int lsrReadISenseReg( void ) {
   
-  volatile unsigned int * iSenseLsReg;
-  volatile unsigned int * iSenseHsReg;
+  unsigned int iSensePReg;
+  unsigned int iSenseNReg;
   
   // use modular ADC read function to sample, convert, and return ADC buffer 
   // result, this assumes the particular channel being read has already been
   // initialized through the ADC channel initialization function
-  iSenseLsReg = adcRead( LSR_ISENSE_LS_AN_CH );
-  iSenseHsReg = adcRead( LSR_ISENSE_HS_AN_CH );
+  iSensePReg = (unsigned int)(*(adcRead( LSR_ISENSE_LS_P_AN_CH )));
+  iSenseNReg = (unsigned int)(*(adcRead( LSR_ISENSE_LS_N_AN_CH )));
   
-  // calculate current value using high-side and low-side ADC measurements along
-  // with knowledge of sense circuitry
-  lsrLastISenseReg = *iSenseHsReg - *iSenseLsReg;
+  // calculate current value using positive and negative node ADC measurements
+  // along with knowledge of sense circuitry
+  // Note: absolute value is necessary to return realistic numbers when sense
+  //  terminal are floating2
+  lsrLastISenseReg = abs( iSensePReg - iSenseNReg );
   
   // reset alarm flag
   lsrISenseAlarm = 0x0;

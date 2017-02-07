@@ -12,6 +12,10 @@ function Graph( parentDiv, varargin={} ) {
   this.xLabelText = Graph.DEFAULT_X_LABEL
   this.yLabelText = Graph.DEFAULT_Y_LABEL
   
+  // set inital axis fit events/automation variables
+  this.fitYRngEveryMs = Graph.DEFAULT_FIT_Y_EVERY_MS
+  this.fitYRngEvent = Graph.DEFAULT_FIT_Y_EVENT
+  
   // override any default values if specified in varargin
   for ( key in varargin )
     if ( this.hasOwnProperty( key ) )
@@ -117,32 +121,40 @@ function Graph( parentDiv, varargin={} ) {
       parentDivChildren[idx].obj.render()
   
   // attach render function to window resize events
-  this.lisResizeFunc = window.addEventListener( 'resize', this.render.bind( this ), false )
+  this.lisResizeFuncH = window.addEventListener( 'resize', this.render.bind( this ), false )
+  
+  // attach function every * ms if variable is set to resize the 
+  // y-axis automatically
+  if ( this.fitYRngEveryMs )
+    this.lisFitYRngH = window.setInterval( this.fitYRng.bind(this), this.fitYRngEveryMs )
+  else
+    this.lisFitYRngH = null
   
   // attach event listener for to interactively resize the y-axis
-  this.div.addEventListener( 'click', function() { 
-    lastNSamples = 2
-    //this.data = this.data.slice(
-    //  this.data.length-lastNSamples, 
-    //  this.data.length )
-    this.fitYRng( lastNSamples )
-  }.bind(this) )
+  if ( this.fitYRngEvent )
+    this.div.addEventListener( this.fitYRngEvent, function() { 
+      lastNSamples = 1
+      //this.data = this.data.slice(
+      //  this.data.length-lastNSamples, 
+      //  this.data.length )
+      this.fitYRng( lastNSamples )
+    }.bind(this) )
   
   return
 }
 
 // constants relating to underlying magic
 Graph.DIV_BASE_ID= 'graph'
-Graph.MAX_DATA_SIZE = 5000
+Graph.MAX_DATA_SIZE = 1500
 
 // contants relating to axes stuff
-Graph.DEFAULT_X_RNG = [-5*1000,0.5*1000]
+Graph.DEFAULT_X_RNG = [-30*1000,5*1000]
 Graph.DEFAULT_Y_RNG = [0,1]
 Graph.Y_RNG_BUF = 0.01
 Graph.DEFAULT_X_LABEL = ''
 Graph.DEFAULT_Y_LABEL = ''
 
-// constants for pop pep
+// constants for pop and pep
 Graph.DEFAULT_COLOR = 'orange'
 
 // contants relating to visual appeal
@@ -156,13 +168,19 @@ Graph.MARGINS = {
   right: 15
 }
 
+// constants relating to dynamic events
+Graph.DEFAULT_FIT_Y_EVERY_MS = null
+Graph.DEFAULT_FIT_Y_EVENT = null
+
 Graph.prototype.destroy = function() {
   
   // remove div container from DOM
   this.parentDiv.removeChild( this.div )
   
-  // remove render on resize event handler from window
-  window.removeEventListener( 'resize', this.lisResizeFunc )
+  // remove event handlers from window
+  window.removeEventListener( 'resize', this.lisResizeFuncH )
+  if ( this.lisFitYRngH )
+    window.clearInterval( this.lisFitYRngH )
   
   // this really doesn't do anything (JS is garbage collected) but it's
   // nice to look at...?

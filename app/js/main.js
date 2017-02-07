@@ -132,38 +132,21 @@ var CMDS = {
 }
 
 var CONTROLS = [
-  [ 'Main', 'Go',
-    null ],
-  [ 'Main', 'Stop',
-    null ],
-  [ 'Sub-Main', 'Start Scanning - Sprinkler',
-    function() { startScan( 'scanStepSprinkler' ) } ],
-  [ 'Sub-Main', 'Start Scanning - Snake',
-    function() { startScan( 'scanStepSnake' ) } ],
-  [ 'Sub-Main', 'Start Scanning - Circular',
-    function() { startScan( 'scanStepCircular' ) } ],
-  [ 'Sub-Main', 'Stop Scanning',
-    stopScan ],
-  [ 'Sub-Main', 'Start Measuring',
-    startMeasure ],
-  [ 'Sub-Main', 'Stop Measuring',
-    stopMeasure ],
-  [ 'Sub-Main', 'Start Graph Scrolling',
-    startTickTock ],
-  [ 'Sub-Main', 'Stop Graph Scrolling',
-    stopTickTock ],
-  [ 'Sub-Main', 'Recolorize Heatmaps',
-     recolorizeHeatmaps ],
+  [ 'Main', 'Go', null ],
+  [ 'Main', 'Stop', null ],
+  [ 'Sub-Main', 'Start Scanning - Sprinkler', function() { startScan( 'scanStepSprinkler' ) } ],
+  [ 'Sub-Main', 'Start Scanning - Snake', function() { startScan( 'scanStepSnake' ) } ],
+  [ 'Sub-Main', 'Start Scanning - Circular', function() { startScan( 'scanStepCircular' ) } ],
+  [ 'Sub-Main', 'Stop Scanning', stopScan ],
+  [ 'Sub-Main', 'Start Measuring', startMeasure ],
+  [ 'Sub-Main', 'Stop Measuring', stopMeasure ],
+  [ 'Sub-Main', 'Start Graph Scrolling', startTickTock ],
+  [ 'Sub-Main', 'Stop Graph Scrolling', stopTickTock ],
+  [ 'Sub-Main', 'Recolorize Heatmaps', recolorizeHeatmaps ],
   [ 'Laser', 'Load Switch', function() { sendHandler( [ CMDS['CMD_LSR_LOAD_SWTICH_TOG'].address ] ) } ],
   [ 'Laser', 'Toggle Laser', function() { sendHandler( [ CMDS['CMD_LSR_TOG'].address ] ) } ],
-  [ 'Laser', 'Current VSense', function() { sendHandler( [ CMDS['CMD_LSR_ISENSE_GET'].address ] ) } ],
-  [ 'Laser', 'Vref VSense', function() { sendHandler( [ CMDS['CMD_LSR_VREF_VSENSE_GET'].address ] ) } ],
-  [ 'Measure', 'TOBJ1',
-    function() { sendHandler( [ CMDS['CMD_TOBJ1_GET'].address ] ) } ],
-  [ 'Measure', 'TOBJ2',
-    function() { sendHandler( [ CMDS['CMD_TOBJ2_GET'].address ] ) } ],
-  [ 'Measure', 'TAMB',
-    function() { sendHandler( [ CMDS['CMD_TAMB_GET'].address ] ) } ],
+  [ 'Laser', 'Current Sense', function() { sendHandler( [ CMDS['CMD_LSR_ISENSE_GET'].address ] ) } ],
+  [ 'Laser', 'Vref Voltage Sense', function() { sendHandler( [ CMDS['CMD_LSR_VREF_VSENSE_GET'].address ] ) } ],
   [ 'Gimbal', 'Pan -1°', function() { 
       gimbal.set( [ gimbal.pan-1.0, gimbal.tilt+0.0 ] )
       sendHandler( SCAN_CMD_PKT() )
@@ -209,22 +192,14 @@ var CONTROLS = [
                     gimbal.tiltRngLim[0] ] )
       sendHandler( SCAN_CMD_PKT() )
     } ],
-  [ 'Gimbal', 'Get Pan',
-    function() { sendHandler( [ CMDS['CMD_PAN_GET'].address ] ) } ],
-  [ 'Gimbal', 'Get Tilt',
-    function() { sendHandler( [ CMDS['CMD_TILT_GET'].address ] ) } ],
-  [ 'HID USB', 'Connect',
-    hidConnect ],
-  [ 'HID USB', 'Disconnect',
-    hidDisconnect ],
-  [ 'Debug', 'LED1',
-    function() { sendHandler( [ CMDS['CMD_LED1_TOG'].address ] ) } ],
-  [ 'Debug', 'LED2',
-    function() { sendHandler( [ CMDS['CMD_LED2_TOG'].address ] ) } ],
-  [ 'Debug', 'BTN1',
-    function() { sendHandler( [ CMDS['CMD_BTN1_GET'].address ] ) } ],
-  [ 'Debug', 'BTN2',
-    function() { sendHandler( [ CMDS['CMD_BTN2_GET'].address ] ) } ],
+  [ 'Gimbal', 'Get Pan', function() { sendHandler( [ CMDS['CMD_PAN_GET'].address ] ) } ],
+  [ 'Gimbal', 'Get Tilt', function() { sendHandler( [ CMDS['CMD_TILT_GET'].address ] ) } ],
+  [ 'HID USB', 'Connect', hidConnect ],
+  [ 'HID USB', 'Disconnect', hidDisconnect ],
+  [ 'Debug', 'LED1', function() { sendHandler( [ CMDS['CMD_LED1_TOG'].address ] ) } ],
+  [ 'Debug', 'LED2', function() { sendHandler( [ CMDS['CMD_LED2_TOG'].address ] ) } ],
+  [ 'Debug', 'BTN1', function() { sendHandler( [ CMDS['CMD_BTN1_GET'].address ] ) } ],
+  [ 'Debug', 'BTN2', function() { sendHandler( [ CMDS['CMD_BTN2_GET'].address ] ) } ],
 ]
 
 // initalize underlying magic  ...
@@ -295,10 +270,29 @@ function hidConnect() {
       window.clearInterval( mcuPollerH )
       mcuPollerH = null
     }
-      
+    
     // now that we are connected to our MCU, we should set up a poller to
-    // get information every so often
-    mcuPollerH = window.setInterval( function() { sendHandler( DEFAULT_MCU_PKT() ) }, 100 )
+    // get information every so often (only if it is a resonable size and
+    // we see that response packet will also be reasonably sized
+    mcuPollerTxSize = 0
+    mcuPollerRxSize = 0
+    DEFAULT_MCU_PKT().forEach( function( address, idx1, arr ) {
+      cmdKeys = Object.keys(CMDS)
+      for ( var idx2=0; idx2<cmdKeys.length; idx2++ ) {
+        if ( CMDS[cmdKeys[idx2]].address == address ) {
+          mcuPollerTxSize += ( CMDS[cmdKeys[idx2]].txBytes + 1 )
+          mcuPollerRxSize += ( CMDS[cmdKeys[idx2]].rxBytes + 1 )
+          break
+        }
+      }
+    } )
+    if ( mcuPollerTxSize <= Hid.BUF_SIZE ) {
+      mcuPollerRate = 100
+      mcuPollerH = window.setInterval( function() { sendHandler( DEFAULT_MCU_PKT() ) }, mcuPollerRate )
+      console.log( 'Polling MCU with ' + mcuPollerTxSize + '-byte packet, expecting to receive ' + mcuPollerRxSize + '-byte packet every ' + mcuPollerRate + 'ms.' )
+    } else {
+      console.log( 'Unable to start default MCU polling, projected TX packet size is ' + mcuPollerTxSize + ' bytes and projected RX packet size is ' + mcuPollerRxSize + ' bytes.' )
+    }
     
     // have graphs updated nicely and scroll appropriately
     startTickTock()
@@ -371,19 +365,17 @@ var newGraph = ( function( varargin ) {
 } )
 var graphVrefVSense = newGraph( ( {
   xLabelText: 'Laser Vref (V)',
-  xRng: [-30*1000,5*1000]
-} ) )
-var graphVrefISense = newGraph( ( {
-  xLabelText: 'Laser ISense (mA)',
-  xRng: [-30*1000,5*1000]
+  fitYRngEvent: 'click'
 } ) )
 var graphLoadSwitchState = newGraph( ( {
-  xLabelText: 'Load Switch State',
-  xRng: [-30*1000,5*1000]
+  xLabelText: 'Load Switch State'
+} ) )
+var graphISense = newGraph( ( {
+  xLabelText: 'Laser Current (mA)',
+  fitYRngEvent: 'click'
 } ) )
 var graphLaserState = newGraph( ( {
-  xLabelText: 'Laser State',
-  xRng: [-30*1000,5*1000]
+  xLabelText: 'Laser State'
 } ) )
 
 // ... heatmaps
@@ -522,23 +514,12 @@ function stopScan() {
 }
 
 
-var fitYRngH = []
 function startTickTock() {
   
   // start ticking (only if graph already isn't ticking)
   graphs.forEach( function( graph ) {
     if ( !graph.tickTockRunning )
       graph.tickTock( false, 1500, 'bounce' )
-  } )
-  
-  // also scale y axis of each graph once every x range
-  fitYRngH.forEach( function( h ) { window.clearInterval( h ) } )  // clear first
-  fitYRngH = []
-  fitYRngH = graphs.map( function( graph ) {                   // then (re)set
-    fitYRngH.push( window.setInterval(
-      graph.fitYRng.bind(graph),
-      graph.xRng[1]-graph.xRng[0]
-  ) )
   } )
   
   return
@@ -548,13 +529,9 @@ function stopTickTock() {
   
   // stop ticking (only if graph is already ticking)
   graphs.forEach( function( graph ) {
-      if ( graph.tickTockRunning )
-        graph.tickTockStop = true
-    } )
-  
-  // also clear y axis update handlers
-  fitYRngH.forEach( function( h ) { window.clearInterval( h ) } )
-  fitYRngH = []
+    if ( graph.tickTockRunning )
+      graph.tickTockStop = true
+  } )
   
   return
 }
@@ -697,21 +674,38 @@ function receiveHandler( dataBuf ) {
         var dataBytes = getDataBytes( 'CMD_LSR_VREF_VSENSE_GET' )
         
         // build up 16-bit register contents
-        var adcReg = bytesToUnsignedInt( dataBytes.slice(0,2) )
-        
-        // calculate angle from knowledge of transmione of angles
-        var angle = gimbalReg * 360 / ((1<<16)-1)
+        var reg = bytesToUnsignedInt( dataBytes.slice(0,2) )
         
         // calculate voltage value assuming 10-bit ADC with 3.3V reference
-        vref = adcReg * 3.3 / ((1<<10)-1)
+        vref = reg * 3.3 / ((1<<10)-1)
         
         // graphically update value field in control (or graph
         // if we have one set up for this variable)
         if ( typeof graphVrefVSense !== 'undefined' )
           graphVrefVSense.addPoint( vref )
         else
-          controls.controlsByGroup["Laser"]["Vref VSense"].querySelector( '#value' ).innerHTML = " (" + vref.toFixed(3) + ")"
+          controls.controlsByGroup["Laser"]["Vref Voltage Sense"].querySelector( '#value' ).innerHTML = " (" + vref.toFixed(3) + ")"
         
+        break
+        
+      case CMDS['CMD_LSR_ISENSE_GET'].address:
+        
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_LSR_ISENSE_GET' )
+        
+        // build up 16-bit register contents
+        var reg = bytesToUnsignedInt( dataBytes.slice(0,2) )
+        
+        // calculate voltage value assuming 10-bit ADC with 3.3V reference
+        // and a 0.82 sense resistor with a desired unit of mA
+        iSense = reg * 3.3 / ((1<<10)-1) / 0.82 * 1000
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphISense !== 'undefined' )
+          graphISense.addPoint( iSense )
+        else
+          controls.controlsByGroup["Laser"]["Current Sense"].querySelector( '#value' ).innerHTML = " (" + vref.toFixed(3) + ")"
         
         break
         

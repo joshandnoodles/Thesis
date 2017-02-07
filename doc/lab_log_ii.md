@@ -1,4 +1,4 @@
-# Weekly One-One - January 12, 2016
+# Weekly One-One - January 12, 2017
 
 Updates for work done over Christmas Break
 
@@ -14,14 +14,14 @@ Major items:
 ## Action Items
   - finish PCB layout and review extensively
 
-## Week 1
+# Week 1
 
   - finished optics board r001 layout with minor changes to schematics
   - created 3D model of optics board along with servos and gimbal
   - corrected mechanical issues found through 3D modeling
   - picked new (better) optical lensing system with proper M9 PCB focusing mount
 
-# Weekly One-One - January 12, 2016
+# Weekly One-One - January 12, 2017
 
 Final review of optical communication system before parts are to be ordered
 
@@ -84,3 +84,14 @@ Put together two PICKit3 programmer adapters to interface with the Clicker 2 fiv
 ### Everything
 
 Place components either on a 1:1 printout or actual PCB footprints (if optics_r001 has arrived yet) and examine against Eagle/3D model to prepare for any impending reworks and to check devices in Eagle for each component (silkscreen, tdocu, hole size, pad size, etc.)
+
+# Week Four
+
+Busy wee, got parts and board in. 
+
+  - working through bring-up Excel for first optics_r001 board
+  - all components mounted except LD and QP
+  - power-up with no issues as of yet
+  - currently characterizing power rails and simultaneously writing firmware for inital DVT
+
+# Weekly One-One - February 2, 2017

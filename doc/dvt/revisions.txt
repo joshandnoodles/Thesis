@@ -1,4 +1,11 @@
 For r002
 
 - place a resistor in series with R4 (current limit potentiometer) to ensure Vref cannot exceed ~2.05V (translates to 165mA assuming RK1=RK2=0ohms)
-- use smaller, more compact potentiometer with less accessible dial
+- correctly mask large vias in Eagle
+- X shortened DS values to display correctly next to component
+- X removed value from D2 (QP10-6), MPN attribute should be displayed instead
+- X fixed foliage logo (combine rectanges and silkscreen along inside trunk)
+- unsmashed all components and re-positioned all labels (to update any library changes)
+- change text values to larger ratio (maybe 15 or 18%) and lower size to 0.4 for inside R,C on all libraries
+- change dot for pin one indicator on inside R,C for all libraries
+- consider putting MPN label inside instead of value for diode, transistors, etc on all libraries

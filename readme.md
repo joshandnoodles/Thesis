@@ -2,7 +2,7 @@
 
 An optically centric underwater wireless communication system
 
-*This project uses the OpenROV 2.8 as a testing medium in saltwater conditions. However, no affiliation with OpenROV has been declared. Learn more about OpenROV's vision here (http://www.openrov.com/).*
+*This project uses the OpenROV 2.8 as a testing medium to verify the system’s ability to create a communication link in saltwater conditions. No affiliation with OpenROV has been declared. Learn more about OpenROV's vision here (http://www.openrov.com/).*
 
 ## Structure
 
@@ -16,7 +16,7 @@ An optically centric underwater wireless communication system
     - **/design**
       - preliminary research of high-level design (feasibility studies, calculation notes, block diagrams, preliminary component selection tasks)
     - **/dvt**
-      - design verification test of system
+      - design verification test of system (rework diagrams, board tracking, next generation revision notes, validation test data)
     - **/lit**
       - published papers and other external literature relevant to this project
   - **/firmware** *-placeholder-*
@@ -27,12 +27,10 @@ An optically centric underwater wireless communication system
   
 ## Installation
 
-This system acts as a standalone communication system to replace the Ethernet link between two endpoints. Therefore, no software installation is needed for normal operation. Physical connections to the system will need to made to begin wireless transmission. To bring the link up, simply plug the Ethernet interface of the system into two Ethernet ports of endpoints to be connected (in the case of the OpenROV, the Ethernet port of the on-board BeagleBone and the Ethernet port of the PC running the Cockpit software). Then, provide power to the system using *-placeholder-*.
+This system acts as a standalone communication system to replace the Ethernet link between two endpoints. Therefore, no software installation is needed for normal operation. Physical connections to the system will need to made to begin wireless transmission. To bring the link up, simply plug the Ethernet interface of the system into the two Ethernet ports of the endpoints to be connected (in the case of the OpenROV, the Ethernet port of the on-board BeagleBone and the Ethernet port of the PC running the Cockpit software). Then, provide power to the system using a USB on the PC side and the 3-pin adapter connector on the OpenROV side. At this point, the system will initialize and bring up the communication link independently of any user interaction.
 
-A second installation step may be necessary if the Chrome App debug interface is needed. The source code files are located in the /app directory. Chrome must be installed to operate the debug interface. With Chrome open, follow the following steps to access the Chrome App debug interface:
-
+A second installation step may be necessary if the Chrome App debug interface is needed. The source code files are located in the /app directory. Google Chrome must be installed on the PC endpoint wishing to operate the debug interface. With Chrome open, follow the steps to access the Chrome App debug interface:
   - Open Chrome and go to **Menu > (More) Tools > Extensions**
   - Click **Developer mode > Load unpacked extensions...**
-  - Browse to and **Select** the folder where your manifest.json file is and logo (wherever your local **/app** folder resides)
-
-ref *https://support.google.com/chrome/a/answer/2714278?hl=en*
+  - Browse to and **Select** the **/app** directory
+  - Click **Launch**

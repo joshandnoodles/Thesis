@@ -21,8 +21,8 @@ extern "C" {
 
 // clock speed characteristic
 #define FOSC            (80000000ul)            // main osicallator freq in Hz
-#define FCY             (FOSC/2)                // effective execution freq in Hz
-#define FPB             (FOSC/4)                // peripheral clock freq in Hz
+#define FCY             (FOSC/2)                // execution freq in Hz
+#define FPB             (FOSC/2)                // peripheral clock freq in Hz
 
 // lsr.h configuration
 
@@ -61,6 +61,19 @@ extern "C" {
 #define LSR_ISENSE_LS_N_AN_BUF  ADC1BUF0        // ADC result buffer register
 #define LSR_ISENSE_LS_N_AN_MASK (1<<10)         // AN10
 #define LSR_ISENSE_LS_N_AN_CH   10              // channel index of ADC port
+
+// mod.h configuration
+
+// hardware configuration for modulation timer entity and interrupts
+#define MOD_TIMER_CON            T2CON           // type B timer control register
+#define MOD_TIMER_PERIOD         PR2             // type B timer period register
+#define MOD_TIMER_REG            TMR2            // type B timer count register
+#define MOD_TIMER_INT_ENB        IEC0            // type B timer interrupt enable
+#define MOD_TIMER_INT_PRIO       IPC2            // type B timer intterupt priority
+#define MOD_TIMER_INT_FLAG       IFS0            // type B timer interrupt flag
+#define MOD_TIMER_PRIO_OFFSET    2               // interrupt priority level bit offset
+#define MOD_TIMER_SUBPRIO_OFFSET 0               // interrupt subpriority level bit offset
+#define MOD_TIMER_INT_MASK       (1<<8)          // type B timer interrupt mask
 
 // debug.h configuration
 

@@ -25,6 +25,7 @@
 
 #include "lsr.h"
 #include "timer.h"
+#include "mod.h"
 #include "adc.h"
 #include "debug.h"
 
@@ -32,6 +33,7 @@
 #include <stdbool.h>                    // Defines true
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "system/common/sys_module.h"   // SYS function prototypes
+
 
 /*
 // pin definitions
@@ -130,17 +132,28 @@ void Timer2_3Interrupt() iv IVT_TIMER_3 ilevel 7 ics ICS_SRS {
   T2CON = 0x8008;
 }
 */
-    
+
+
 // main function
 void main() {
   
+
+
+
   // before we begin anything, initialize the following:
-  SYS_Initialize( NULL );      // all MPLAB Harmony modules, including app(s)
+  SYS_Initialize( NULL );   // all MPLAB Harmony modules, including app(s)
   initAdc();                // ADC configuration
   initCoreTimer();          // core timer
-  initDelay();
+  initDelay();              // blocking delays
   initDebug();              // debug hardware on the Clicker 2
   initLsr();                // laser driver and diode circuitry
+  initMod();                // modulation processes/hardware
+  
+  lsrLoadSwitchOn();
+  //modSetFreqHz( 5000000 );
+  //modOn();
+  
+  lsrSetLow();
   
   // set the following pins as analog: 
   // AN8, AN9, AN10, AN11, AN13, AN14, AN15
@@ -163,24 +176,29 @@ void main() {
   EnableInterrupts();       // Enable all interrupts
   
   */
-  unsigned int counter = 0x0;
-  //lsrLoadSwitchOn();
-  //lsrSetHigh();
   
   while (1) {     // loop forever
+    
     
     // run operations for MPLAB Harmony modules and application(s)
     SYS_Tasks();
     
     // trigger action when button is pressed (action occurs on release)
-    if ( debugBtn1State() ) {             // wait for button to be depressed
-      while( debugBtn1State() );          // hold here until button is released
+    //if ( debugBtn1State() ) {             // wait for button to be depressed
+    //  while( debugBtn1State() );          // hold here until button is released
+    //  delayUs( BTN_DEBOUNCE_US );    // pause to avoid de-bounce issues
+    //  debugLed1Tog();
+    //  lsrLoadSwitchTog();
+    //  lsrTog();
+    //}
+    
+    if ( debugBtn2State() ) {             // wait for button to be depressed
+      while( debugBtn2State() );          // hold here until button is released
       delayUs( BTN_DEBOUNCE_US );    // pause to avoid de-bounce issues
       debugLed1Tog();
       lsrLoadSwitchTog();
       lsrTog();
-    }
-    
+    }    
     //delayMs(1000);
     //debugLed2Tog();
     lsrReadVrefVSenseReg();
@@ -214,3 +232,6 @@ void main() {
     */
   }
 }
+
+
+

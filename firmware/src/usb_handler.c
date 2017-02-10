@@ -18,6 +18,7 @@
 #include <string.h>   // memset
 
 #include "lsr.h"
+#include "mod.h"
 #include "debug.h"
 
 #include "usb_handler.h"
@@ -66,7 +67,12 @@ static const PktInfo CMD_LSR_ISENSE_GET       = { 0x74,   2,        0       };
 static const PktInfo CMD_LSR_TOG              = { 0x75,   1,        0       };
 static const PktInfo CMD_LSR_SET              = { 0x76,   0,        1       };
 static const PktInfo CMD_LSR_GET              = { 0x77,   1,        0       };
-// 0x8* 
+// 0x8* modulation activities
+static const PktInfo CMD_MOD_TOG              = { 0x80,   1,        0       };
+static const PktInfo CMD_MOD_SET              = { 0x81,   0,        1       };
+static const PktInfo CMD_MOD_GET              = { 0x82,   1,        0       };
+static const PktInfo CMD_MOD_FREQ_HZ_SET      = { 0x83,   0,        4       };
+static const PktInfo CMD_MOD_FREQ_HZ_GET      = { 0x84,   4,        0       };
 // 0x9* 
 // 0xA*
 // 0xB*
@@ -250,6 +256,55 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
       insertTxBufUnsignedInt( txDataBuffer, (unsigned int)(lsrLastISenseReg) );
       
+    } else if ( rxDataCmd == CMD_MOD_TOG.address ) {
+      // toggle modulation on and off
+      
+      // set modulation to opposite state
+      modTog();
+      
+      // echo back command id to host along with load switch state
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedChar( txDataBuffer, (unsigned char)(modState) );
+    
+    } else if ( rxDataCmd == CMD_MOD_SET.address ) {
+      // set modulation on or off
+      
+      // set modulation to certain state
+      if ( (rxDataBuffer[idx++]<<0) == 0 ) {
+        modOff();
+      } else {
+        modOn();
+      }
+      
+      // echo back command id to host
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      
+    } else if ( rxDataCmd == CMD_MOD_GET.address ) {
+      // get state of modulation
+      
+      // echo back command id to host along with modulation state
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedChar( txDataBuffer, (unsigned char)(modState) );
+    
+    } else if ( rxDataCmd == CMD_MOD_FREQ_HZ_SET.address ) {
+      // set rate of modulation
+      
+      // set received packets as new desired modulation rate (in Hz)
+      modSetFreqHz( (unsigned long)(
+              (rxDataBuffer[(idx++)]<<24) |
+              (rxDataBuffer[(idx++)]<<16) |
+              (rxDataBuffer[(idx++)]<<8) |
+              (rxDataBuffer[(idx++)]<<0) ) );
+      
+      // echo back command id to host
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+    
+    } else if ( rxDataCmd == CMD_MOD_FREQ_HZ_GET.address ) {
+      // get rate of modulation
+      
+      // echo back command id to host along with modulation rate
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedLong( txDataBuffer, (unsigned long)(modFreqHz) );
     
     /*} else if ( rxDataCmd == CMD_LSR_TOG.address ) {
       // set laser on/off

@@ -122,7 +122,32 @@ var CMDS = {
     rxBytes:  1,
     txBytes:  0,
     },
-  // 0x8* 
+  // 0x8* modulation activities
+  'CMD_MOD_TOG': {
+    address:  0x80,
+    rxBytes:  1,
+    txBytes:  0,
+  },
+  'CMD_MOD_SET': {
+    address:  0x81,
+    rxBytes:  0,
+    txBytes:  1,
+  },
+  'CMD_MOD_GET': {
+    address:  0x82,
+    rxBytes:  1,
+    txBytes:  0,
+  },
+  'CMD_MOD_FREQ_HZ_SET': {
+    address:  0x83,
+    rxBytes:  0,
+    txBytes:  4,
+  },
+  'CMD_MOD_FREQ_HZ_GET': {
+    address:  0x84,
+    rxBytes:  4,
+    txBytes:  0,
+  },  
   // 0x9* 
   // 0xA*
   // 0xB*
@@ -135,18 +160,24 @@ var CONTROLS = [
   [ 'Main', 'Go', null ],
   [ 'Main', 'Stop', null ],
   [ 'Sub-Main', 'Start Scanning - Sprinkler', function() { startScan( 'scanStepSprinkler' ) } ],
-  [ 'Sub-Main', 'Start Scanning - Snake', function() { startScan( 'scanStepSnake' ) } ],
-  [ 'Sub-Main', 'Start Scanning - Circular', function() { startScan( 'scanStepCircular' ) } ],
   [ 'Sub-Main', 'Stop Scanning', stopScan ],
-  [ 'Sub-Main', 'Start Measuring', startMeasure ],
-  [ 'Sub-Main', 'Stop Measuring', stopMeasure ],
   [ 'Sub-Main', 'Start Graph Scrolling', startTickTock ],
   [ 'Sub-Main', 'Stop Graph Scrolling', stopTickTock ],
-  [ 'Sub-Main', 'Recolorize Heatmaps', recolorizeHeatmaps ],
   [ 'Laser', 'Load Switch', function() { sendHandler( [ CMDS['CMD_LSR_LOAD_SWTICH_TOG'].address ] ) } ],
   [ 'Laser', 'Toggle Laser', function() { sendHandler( [ CMDS['CMD_LSR_TOG'].address ] ) } ],
   [ 'Laser', 'Current Sense', function() { sendHandler( [ CMDS['CMD_LSR_ISENSE_GET'].address ] ) } ],
   [ 'Laser', 'Vref Voltage Sense', function() { sendHandler( [ CMDS['CMD_LSR_VREF_VSENSE_GET'].address ] ) } ],
+  [ 'Modulation', 'Modulate', function() { sendHandler( [ CMDS['CMD_MOD_TOG'].address ] ) } ],
+  [ 'Modulation', 'Set 3Hz', function() { sendHandler( MOD_CMD_PKT(3) ) } ],
+  [ 'Modulation', 'Set 100kHz', function() { sendHandler( MOD_CMD_PKT(100e3) ) } ],
+  [ 'Modulation', 'Set 500kHz', function() { sendHandler( MOD_CMD_PKT(500e3) ) } ],
+  [ 'Modulation', '-100kHz', function() { sendHandler( MOD_CMD_PKT(modFreqHz-100e3) ) } ],
+  [ 'Modulation', '-100Hz', function() { sendHandler( MOD_CMD_PKT(modFreqHz-100) ) } ],
+  [ 'Modulation', '+100Hz', function() { sendHandler( MOD_CMD_PKT(modFreqHz+100) ) } ],
+  [ 'Modulation', '+100kHz', function() { sendHandler( MOD_CMD_PKT(modFreqHz+100e3) ) } ],
+  [ 'Modulation', '-1Hz', function() { sendHandler( MOD_CMD_PKT(modFreqHz-1) ) } ],
+  [ 'Modulation', 'Current Rate', function() { sendHandler( [ CMDS['CMD_MOD_FREQ_HZ_GET'].address ] ) } ],
+  [ 'Modulation', '+1Hz', function() { sendHandler( MOD_CMD_PKT(modFreqHz+1) ) } ],
   [ 'Gimbal', 'Pan -1°', function() { 
       gimbal.set( [ gimbal.pan-1.0, gimbal.tilt+0.0 ] )
       sendHandler( SCAN_CMD_PKT() )
@@ -209,7 +240,7 @@ initBase()
 
 // ... our DOM grid
 var graphContainerDiv = document.getElementById( 'graphs' )
-var heatmapContainerDiv = document.getElementById( 'heatmaps' )
+//var heatmapContainerDiv = document.getElementById( 'heatmaps' )
 var controlsContainerDiv = document.getElementById( 'rightSidebarToolbox1' )
 var terminalContainerDiv = document.getElementById( 'rightSidebarToolbox2' )
 var otherContainerDiv = document.getElementById( 'rightSidebarToolbox3' )
@@ -217,6 +248,8 @@ var otherContainerDiv = document.getElementById( 'rightSidebarToolbox3' )
 // ... gimbal helper class
 var gimbal = new Gimbal()
 
+// variable to keep track of modulation rate
+var modFreqHz = null
 
 // inialize USB ...
 
@@ -235,19 +268,31 @@ var MEAS_CMD_PKT = ( function() { return [
   CMDS['CMD_TOBJ2_GET'].address,
   CMDS['CMD_TAMB_GET'].address,
 ] } )
-var SCAN_CMD_PKT = ( function(){ return [
+var SCAN_CMD_PKT = ( function() { return [
   CMDS['CMD_PAN_SET'].address,
-    Math.round(gimbal.panBytes)>>8,
-    Math.round(gimbal.panBytes)>>0,
+    (Math.round(gimbal.panBytes)>>8)%256,
+    (Math.round(gimbal.panBytes)>>0)%256,
   CMDS['CMD_TILT_SET'].address,
-    Math.round(gimbal.tiltBytes)>>8,
-    Math.round(gimbal.tiltBytes)>>0,
+    (Math.round(gimbal.tiltBytes)>>8)%256,
+    (Math.round(gimbal.tiltBytes)>>0)%256,
 ] } )
+var MOD_CMD_PKT = ( function( rateHz ) { 
+  modFreqHz = rateHz
+  return [
+    CMDS['CMD_MOD_FREQ_HZ_SET'].address,
+      (Math.round(rateHz)>>24)%256,
+      (Math.round(rateHz)>>16)%256,
+      (Math.round(rateHz)>>8)%256,
+      (Math.round(rateHz)>>0)%256,
+    ] 
+} )
 var DEFAULT_MCU_PKT = ( function() { return [
   CMDS['CMD_LSR_LOAD_SWTICH_GET'].address,
   CMDS['CMD_LSR_VREF_VSENSE_GET'].address,
   CMDS['CMD_LSR_ISENSE_GET'].address,
   CMDS['CMD_LSR_GET'].address,
+  CMDS['CMD_MOD_GET'].address,
+  CMDS['CMD_MOD_FREQ_HZ_GET'].address,
   CMDS['CMD_LED1_GET'].address,
   CMDS['CMD_LED2_GET'].address,
   CMDS['CMD_BTN1_GET'].address,
@@ -264,6 +309,9 @@ function hidConnect() {
     
     // set our status bar to show that device is connected
     setStatusBar( 'active' )
+    
+    // send an initial MCU poll to get useful updates to our interface
+    sendHandler( DEFAULT_MCU_PKT() )
     
     // try to cancel any existing MCU poller
     if ( mcuPollerH != null ) {
@@ -365,17 +413,29 @@ var newGraph = ( function( varargin ) {
 } )
 var graphVrefVSense = newGraph( ( {
   xLabelText: 'Laser Vref (V)',
-  fitYRngEvent: 'click'
+  yRng: [ 0, 2 ],
 } ) )
 var graphLoadSwitchState = newGraph( ( {
-  xLabelText: 'Load Switch State'
+  xLabelText: 'Load Switch State',
+  fitYRngEvent: null,
+  yRng: [ -0.1, 1.1 ],
 } ) )
 var graphISense = newGraph( ( {
   xLabelText: 'Laser Current (mA)',
-  fitYRngEvent: 'click'
+  yRng: [ 0, 40 ],
 } ) )
 var graphLaserState = newGraph( ( {
-  xLabelText: 'Laser State'
+  xLabelText: 'Laser State',
+  fitYRngEvent: null,
+  yRng: [ -0.1, 1.1 ],
+} ) )
+var graphModRate = newGraph( ( {
+  xLabelText: 'Mod Rate (Hz)',
+} ) )
+var graphModState = newGraph( ( {
+  xLabelText: 'Mod State',
+  fitYRngEvent: null,
+  yRng: [ -0.1, 1.1 ],
 } ) )
 
 // ... heatmaps
@@ -384,7 +444,7 @@ var newHeatmap = ( function( varargin ) {
   heatmaps.push( new Heatmap( heatmapContainerDiv, varargin ) )
   return heatmaps[heatmaps.length-1] 
 } )
-var heatmapTObj1 = newHeatmap()
+//var heatmapTObj1 = newHeatmap()
 
 // ... terminal
 var terminal = new Log( terminalContainerDiv )
@@ -587,7 +647,8 @@ function receiveHandler( dataBuf ) {
   // handler function that can decode data from the device
   
   // quick conversion to make data usable
-  var dataArr = new Uint8Array( dataBuf )
+  var dataArr = new Uint8Array( Hid.BUF_SIZE )
+  dataArr = new Uint8Array( dataBuf )
   
   // don't trust sender, check data to see if it is the right size
   if ( dataArr.length !== Hid.BUF_SIZE ) {
@@ -663,7 +724,7 @@ function receiveHandler( dataBuf ) {
         // if we have one set up for this variable)
         if ( typeof graphLoadSwitchState !== 'undefined' )
           graphLoadSwitchState.addPoint( dataBytes[0] )
-        else
+        //else
           controls.controlsByGroup["Laser"]["Load Switch"].querySelector( '#value' ).innerHTML = " (" + dataBytes[0] + ")"
         
         break
@@ -719,11 +780,43 @@ function receiveHandler( dataBuf ) {
         // if we have one set up for this variable)
         if ( typeof graphLaserState !== 'undefined' )
           graphLaserState.addPoint( dataBytes[0] )
-        else
+        //else
           controls.controlsByGroup["Laser"]["Toggle Laser"].querySelector( '#value' ).innerHTML = " (" + dataBytes[0] + ")"
         
         break
+        
+      case CMDS['CMD_MOD_TOG'].address:
+      case CMDS['CMD_MOD_GET'].address:
+        
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_MOD_GET' )
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphModState !== 'undefined' )
+          graphModState.addPoint( dataBytes[0] )
+        //else
+          controls.controlsByGroup["Modulation"]["Modulate"].querySelector( '#value' ).innerHTML = " (" + dataBytes[0] + ")"
+        
+        break
       
+      case CMDS['CMD_MOD_FREQ_HZ_GET'].address:
+        
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_MOD_FREQ_HZ_GET' )
+        
+        // update modulation rate variable for tracking
+        modFreqHz = bytesToUnsignedLong(dataBytes.slice(0,4))
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphModRate !== 'undefined' )
+          graphModRate.addPoint( modFreqHz )
+        //else
+          controls.controlsByGroup["Modulation"]["Current Rate"].querySelector( '#value' ).innerHTML = " (" + modFreqHz + ")"
+        
+        break
+        
       case CMDS['CMD_LED1_GET'].address:
       case CMDS['CMD_LED1_TOG'].address:
         

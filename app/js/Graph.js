@@ -15,6 +15,10 @@ function Graph( parentDiv, varargin={} ) {
   // set inital axis fit events/automation variables
   this.fitYRngEveryMs = Graph.DEFAULT_FIT_Y_EVERY_MS
   this.fitYRngEvent = Graph.DEFAULT_FIT_Y_EVENT
+  this.fitYRngResetEvent = Graph.DEFAULT_FIT_Y_RESET_EVENT
+  
+  // set inital fit range to full data set
+  this.fitYRngLastNSamples = Graph.MAX_DATA_SIZE
   
   // override any default values if specified in varargin
   for ( key in varargin )
@@ -130,14 +134,19 @@ function Graph( parentDiv, varargin={} ) {
   else
     this.lisFitYRngH = null
   
-  // attach event listener for to interactively resize the y-axis
+  // attach event listener to interactively resize the y-axis
   if ( this.fitYRngEvent )
     this.div.addEventListener( this.fitYRngEvent, function() { 
-      lastNSamples = 1
-      //this.data = this.data.slice(
-      //  this.data.length-lastNSamples, 
-      //  this.data.length )
-      this.fitYRng( lastNSamples )
+      this.fitYRngLastNSamples = 1
+      this.fitYRng()
+      console.log(4)
+    }.bind(this) )
+  
+  // attach event listener to reset any changes of resizing the y-axis
+  if ( this.fitYRngResetEvent )
+    this.div.addEventListener( this.fitYRngResetEvent, function() { 
+      this.fitYRngLastNSamples = Graph.MAX_DATA_SIZE
+      this.fitYRng()
     }.bind(this) )
   
   return
@@ -163,14 +172,15 @@ Graph.TICK_TOCK_REFRESH_MS = 250
 Graph.GRAPHS_PER_ROW = 2
 Graph.MARGINS = { 
   bottom: 45,
-  top: 5,
-  left: 40,
+  top: 15,
+  left: 60,
   right: 15
 }
 
 // constants relating to dynamic events
 Graph.DEFAULT_FIT_Y_EVERY_MS = null
-Graph.DEFAULT_FIT_Y_EVENT = null
+Graph.DEFAULT_FIT_Y_EVENT = 'click'
+Graph.DEFAULT_FIT_Y_RESET_EVENT = 'dblclick'
 
 Graph.prototype.destroy = function() {
   
@@ -340,7 +350,7 @@ Graph.prototype.fitYRng = function( lastNSamples=null ) {
   
   // decide subset of data to use to fit y-axis over
   if ( lastNSamples == null )
-    lastNSamples = this.data.length
+    lastNSamples = this.fitYRngLastNSamples
   var dataSubset = this.data.slice(
     this.data.length-lastNSamples, 
     this.data.length )
@@ -376,6 +386,7 @@ Graph.prototype.addPoint = function( newTemp, newTime=null ) {
     this.data.shift()
   
   // if we need to resize the y-axis, do it now
+  this.fitYRngLastNSamples++
   if ( ( this.data[this.data.length-1].temp < this.yRng[0] ) ||
        ( this.data[this.data.length-1].temp > this.yRng[1] ) )
     this.fitYRng()

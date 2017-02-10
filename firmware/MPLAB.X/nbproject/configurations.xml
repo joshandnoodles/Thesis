@@ -98,10 +98,12 @@
         <itemPath>../lib/adc.h</itemPath>
         <itemPath>../lib/timer.h</itemPath>
         <itemPath>../lib/delay.h</itemPath>
+        <itemPath>../lib/interrupt.h</itemPath>
       </logicalFolder>
       <logicalFolder name="src" displayName="src" projectFiles="true">
         <itemPath>../src/hardware_config.h</itemPath>
         <itemPath>../src/usb_handler.h</itemPath>
+        <itemPath>../src/mod.h</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
@@ -172,10 +174,12 @@
         <itemPath>../lib/adc.c</itemPath>
         <itemPath>../lib/timer.c</itemPath>
         <itemPath>../lib/delay.c</itemPath>
+        <itemPath>../lib/interrupt.c</itemPath>
       </logicalFolder>
       <logicalFolder name="src" displayName="src" projectFiles="true">
         <itemPath>../src/main.c</itemPath>
         <itemPath>../src/usb_handler.c</itemPath>
+        <itemPath>../src/mod.c</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -389,7 +393,6 @@
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
         <property key="UART1" value="true"/>
         <property key="UART2" value="true"/>
-        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>

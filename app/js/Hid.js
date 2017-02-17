@@ -21,7 +21,7 @@ function Hid( receiveHandler, onConnect=null, onDisconnect=null ) {
   // for GUIs and visiualization purposes)
   if ( onConnect == null )
     chrome.hid.onDeviceAdded.addListener( ( function( hidDeviceInfo ) { 
-      this.connect( targetDeviceInfo=hidDeviceInfo )
+      this.connect()
     } ).bind(this) )
   else 
     chrome.hid.onDeviceAdded.addListener( onConnect )
@@ -68,11 +68,16 @@ Hid.prototype.connect = function( targetDeviceInfo=null,
     if ( devicesHidDeviceInfo.length==0 ) {
       failureFunc()
       return    // we are done here, we don't see anything
-    } else if ( devicesHidDeviceInfo.length > 1 ) {
-      console.log( 'I do not know what to do since we found multiple devices matching criteria...exiting connect function.' )
-      failureFunc()
-      return   // probably shouldn't find multiple devices, support for this could be added
+    } else if ( devicesHidDeviceInfo.length >= 1 ) {
+      // determine what numerical app instance is open
+      var appInstance = 0;
+      chrome.app.window.getAll().forEach( function( appWindow, idx ) {
+        if ( appWindow == chrome.app.window.current() )
+          appInstance = idx
+      } )
     }
+    console.log(appInstance)
+    
     
     // if we made it here, we are still okay, continue with trying to connect
     
@@ -91,7 +96,7 @@ Hid.prototype.connect = function( targetDeviceInfo=null,
       }
     } else {
       // otherwise, take what we can get
-      this.hidDeviceInfo = devicesHidDeviceInfo[0]
+      this.hidDeviceInfo = devicesHidDeviceInfo[appInstance]
     }
     
     // have our chrome app connect to this device

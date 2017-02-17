@@ -224,14 +224,25 @@ Log.prototype.prompt = function( recur=false, onEnter=null, initStr='' ) {
         
         // build up CMD array to send to handler
         var dataArr = id.innerHTML.split( ' ' )
-        dataArr = dataArr.map( function( obj ) {
-          if ( ( this.cmdHash.hasOwnProperty( obj ) ) &&
-               ( this.cmdHash[obj].address != undefined ) )
-            return this.cmdHash[obj].address
-          else
-            return parseInt( obj, 16 )
-        } )
-        onEnter( dataArr )
+        var dataArrBytes = []
+        var idx = 0
+        while ( idx<dataArr.length ) {
+          if ( ( this.cmdHash.hasOwnProperty( dataArr[idx] ) ) &&
+               ( this.cmdHash[dataArr[idx]].address != undefined ) ) {
+            dataArrBytes.push( this.cmdHash[dataArr[idx++]].address )
+          } else if ( dataArr[idx].startsWith( 'uint32_t=' ) ) {
+            dataArrBytes.push( (Math.round(dataArr[idx].replace('uint32_t=',''))>>24)%256 )
+            dataArrBytes.push( (Math.round(dataArr[idx].replace('uint32_t=',''))>>16)%256 )
+            dataArrBytes.push( (Math.round(dataArr[idx].replace('uint32_t=',''))>>8)%256 )
+            dataArrBytes.push( (Math.round(dataArr[idx++].replace('uint32_t=',''))>>0)%256 )
+          } else if ( dataArr[idx].startsWith( 'uint16_t=' ) ) {
+            dataArrBytes.push( (Math.round(dataArr[idx].replace('uint32_t=',''))>>8)%256 )
+            dataArrBytes.push( (Math.round(dataArr[idx++].replace('uint32_t=',''))>>0)%256 )
+          } else {
+            dataArrBytes.push( parseInt( dataArr[idx++], 16 ) )
+          }
+        }
+        onEnter( dataArrBytes )
       }
       
       if ( recur ) {

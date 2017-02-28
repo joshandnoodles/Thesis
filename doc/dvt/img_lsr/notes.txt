@@ -1,0 +1,2 @@
+current measurements taken using Fluke Y8100 
+scale for current measurements: 2V = 20A

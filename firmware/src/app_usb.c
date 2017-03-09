@@ -53,6 +53,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 // *****************************************************************************
 
+#include <stdint.h>
 #include "system_definitions.h"
 #include "app_usb.h"
 #include "usb_handler.h"
@@ -247,16 +248,14 @@ void APP_USB_Initialize ( void )
     /* Place the App state machine in its initial state. */
     appData.state = APP_USB_STATE_INIT;
 
-    if ( USB_ENB) {
-      appData.usbDevHandle = USB_DEVICE_HANDLE_INVALID;
-      appData.usbDeviceConfigured = 0x0;
-      appData.usbTxTransferHandle = USB_DEVICE_HID_TRANSFER_HANDLE_INVALID;
-      appData.usbRxTransferHandle = USB_DEVICE_HID_TRANSFER_HANDLE_INVALID;
-      appData.hidDataReceived = 0x0;
-      appData.hidDataTransmitted = 0x1;
-      appData.usbRxDataBuffer = &usbRxDataBuffer[0];
-      appData.usbTxDataBuffer = &usbTxDataBuffer[0];
-    }
+    appData.usbDevHandle = USB_DEVICE_HANDLE_INVALID;
+    appData.usbDeviceConfigured = 0x0;
+    appData.usbTxTransferHandle = USB_DEVICE_HID_TRANSFER_HANDLE_INVALID;
+    appData.usbRxTransferHandle = USB_DEVICE_HID_TRANSFER_HANDLE_INVALID;
+    appData.hidDataReceived = 0x0;
+    appData.hidDataTransmitted = 0x1;
+    appData.usbRxDataBuffer = &usbRxDataBuffer[0];
+    appData.usbTxDataBuffer = &usbTxDataBuffer[0];
     
     return;
 }
@@ -278,84 +277,83 @@ void APP_USB_Tasks ( void ) {
   switch (appData.state) {
     case APP_USB_STATE_INIT:
       
-      if ( USB_ENB ) {
-        /* Open the device layer */
-        appData.usbDevHandle = USB_DEVICE_Open( USB_DEVICE_INDEX_0, DRV_IO_INTENT_READWRITE );
+      /* Open the device layer */
+      appData.usbDevHandle = USB_DEVICE_Open( USB_DEVICE_INDEX_0, DRV_IO_INTENT_READWRITE );
 
-        if(appData.usbDevHandle != USB_DEVICE_HANDLE_INVALID) {
-          /* Register a callback with device layer to get event notification (for end point 0) */
-          USB_DEVICE_EventHandlerSet(appData.usbDevHandle, APP_USB_USBDeviceEventHandler, 0);
+      if(appData.usbDevHandle != USB_DEVICE_HANDLE_INVALID) {
+        /* Register a callback with device layer to get event notification (for end point 0) */
+        USB_DEVICE_EventHandlerSet(appData.usbDevHandle, APP_USB_USBDeviceEventHandler, 0);
 
-          appData.state = APP_USB_STATE_WAIT_FOR_CONFIGURATION;
-        } else {
-          /* The Device Layer is not ready to be opened. We should try
-           * again later. */
-        }
+        appData.state = APP_USB_STATE_WAIT_FOR_CONFIGURATION;
+      } else {
+        /* The Device Layer is not ready to be opened. We should try
+         * again later. */
       }
       
       break;
 
     case APP_USB_STATE_WAIT_FOR_CONFIGURATION:
       
-      if ( USB_ENB) {
-        if (appData.usbDeviceConfigured == 0x1) {
-          /* Device is ready to run the main task */
-          appData.hidDataReceived = 0x0;
-          appData.hidDataTransmitted = 0x1;
-          appData.state = APP_USB_STATE_MAIN_TASK;
+      if (appData.usbDeviceConfigured == 0x1) {
+        /* Device is ready to run the main task */
+        appData.hidDataReceived = 0x0;
+        appData.hidDataTransmitted = 0x1;
+        appData.state = APP_USB_STATE_MAIN_TASK;
 
-          /* Place a new read request. */
-          USB_DEVICE_HID_ReportReceive (
-              USB_DEVICE_HID_INDEX_0,
-              &appData.usbRxTransferHandle, appData.usbRxDataBuffer,
-              USB_BUF_SIZE );
-        }
+        /* Place a new read request. */
+        USB_DEVICE_HID_ReportReceive (
+            USB_DEVICE_HID_INDEX_0,
+            &appData.usbRxTransferHandle, appData.usbRxDataBuffer,
+            USB_BUF_SIZE );
       }
       
       break;
 
     case APP_USB_STATE_MAIN_TASK:
       
-      if ( USB_ENB ) {
-        if (!appData.usbDeviceConfigured) {
-          
-          // device is not configured yet, set flag
-          appData.state = APP_USB_STATE_WAIT_FOR_CONFIGURATION;
-          
-        } else if ( appData.hidDataReceived ) {
-          
-          // normal operation, form tx and rx buffers for processing
-          usbHandler( 
-                  appData.usbRxDataBuffer, 
-                  appData.usbTxDataBuffer, 
-                  USB_BUF_SIZE );
-          
-          // reset transmit data flag
-          appData.hidDataTransmitted = 0x0;
+      if (!appData.usbDeviceConfigured) {
 
-          // prepare the USB module to send the tx data buffer to the host
-          USB_DEVICE_HID_ReportSend(
-                  USB_DEVICE_HID_INDEX_0,
-                  &appData.usbTxTransferHandle,
-                  appData.usbTxDataBuffer,
-                  USB_BUF_SIZE );
+        // device is not configured yet, set flag
+        appData.state = APP_USB_STATE_WAIT_FOR_CONFIGURATION;
 
-          // reset receive data flag
-          appData.hidDataReceived = 0x0;
+      } else if ( appData.hidDataReceived ) {
 
-          // re-arm the OUT endpoint to ready ourselves for the next OUT packet 
-          // from the host by placing a new read request
-          USB_DEVICE_HID_ReportReceive(
-                  USB_DEVICE_HID_INDEX_0,
-                  &appData.usbRxTransferHandle,
-                  appData.usbRxDataBuffer,
-                  USB_BUF_SIZE );
-        }
+        // normal operation, form tx and rx buffers for processing
+        usbHandler( 
+                appData.usbRxDataBuffer, 
+                appData.usbTxDataBuffer, 
+                USB_BUF_SIZE );
+
+        // reset transmit data flag
+        appData.hidDataTransmitted = 0x0;
+
+        // prepare the USB module to send the tx data buffer to the host
+        USB_DEVICE_HID_ReportSend(
+                USB_DEVICE_HID_INDEX_0,
+                &appData.usbTxTransferHandle,
+                appData.usbTxDataBuffer,
+                USB_BUF_SIZE );
+
+        // reset receive data flag
+        appData.hidDataReceived = 0x0;
+
+        // re-arm the OUT endpoint to ready ourselves for the next OUT packet 
+        // from the host by placing a new read request
+        USB_DEVICE_HID_ReportReceive(
+                USB_DEVICE_HID_INDEX_0,
+                &appData.usbRxTransferHandle,
+                appData.usbRxDataBuffer,
+                USB_BUF_SIZE );
       }
       
-    case APP_USB_STATE_ERROR:
       break;
+      
+    case APP_USB_STATE_ERROR:
+      
+      break;
+      
     default:
+      
       break;
   }
 } 

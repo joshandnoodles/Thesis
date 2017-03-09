@@ -59,27 +59,56 @@ var CMDS = {
     txBytes:  2,
     },
   // 0x5* gimbal commands
-  'CMD_PAN_SET': {
+  'CMD_GIMBAL_PAN_TOG': {
     address:  0x50,
-    rxBytes:  0,
-    txBytes:  2,
-    }, // (2 bytes) / 360 = resolution of 0.00549deg
-  'CMD_PAN_GET': {
+    rxBytes:  1,
+    txBytes:  0,
+    },
+  'CMD_GIMBAL_PAN_SET': {
     address:  0x51,
-    rxBytes:  2,
-    txBytes:  0,
-    }, // (2 bytes) / 360 = resolution of 0.00549deg
-  'CMD_TILT_SET': {
+    rxBytes:  0,
+    txBytes:  1,
+    },
+  'CMD_GIMBAL_PAN_GET': {
     address:  0x52,
+    rxBytes:  1,
+    txBytes:  0,
+    },
+  'CMD_GIMBAL_TILT_TOG': {
+    address:  0x53,
+    rxBytes:  1,
+    txBytes:  0,
+    },
+  'CMD_GIMBAL_TILT_SET': {
+    address:  0x54,
+    rxBytes:  0,
+    txBytes:  1,
+    },
+  'CMD_GIMBAL_TILT_GET': {
+    address:  0x55,
+    rxBytes:  1,
+    txBytes:  0,
+    },
+  'CMD_GIMBAL_PAN_ANG_SET': {
+    address:  0x56,
     rxBytes:  0,
     txBytes:  2,
-    }, // (2 bytes) / 360 = resolution of 0.00549deg
-  'CMD_TILT_GET': {
-    address:  0x53,
+    },  // (2 bytes) / 360 = resolution of 0.00549deg
+  'CMD_GIMBAL_PAN_ANG_GET': {
+    address:  0x57,
     rxBytes:  2,
     txBytes:  0,
-    }, // (2 bytes) / 360 = resolution of 0.00549deg
-  // 0x6* 
+    },  // (2 bytes) / 360 = resolution of 0.00549deg
+  'CMD_GIMBAL_TILT_ANG_SET': {
+    address:  0x58,
+    rxBytes:  0,
+    txBytes:  2,
+    },  // (2 bytes) / 360 = resolution of 0.00549deg
+  'CMD_GIMBAL_TILT_ANG_GET': {
+    address:  0x59,
+    rxBytes:  2,
+    txBytes:  0,
+    },  // (2 bytes) / 360 = resolution of 0.00549deg
   // 0x6 quadrant photodiode activities
   'CMD_QP_CH1_VSENSE_GET': {
     address:  0x60,
@@ -197,14 +226,7 @@ var CONTROLS = [
   [ 'Quadrant Photodiode', 'Channel 2', function() { sendHandler( [ CMDS['CMD_QP_CH2_VSENSE_GET'].address ] ) } ],
   [ 'Quadrant Photodiode', 'Channel 3', function() { sendHandler( [ CMDS['CMD_QP_CH3_VSENSE_GET'].address ] ) } ],
   [ 'Quadrant Photodiode', 'Channel 4', function() { sendHandler( [ CMDS['CMD_QP_CH4_VSENSE_GET'].address ] ) } ],
-  [ 'Quadrant Photodiode', 'Bulk Read', function() {
-      // stop default poller since this is a bulk activity
-      stopPoller()
-      // send packet to start bulk action
-      sendHandler( [ CMDS['CMD_QP_ALL_BULK_RUN'].address, 0, 0, 0, 0 ] ) 
-      // graphically update value field in control
-      controls.controlsByGroup["Quadrant Photodiode"]["Bulk Read"].querySelector( '#value' ).innerHTML = ' - ' + 'Reading ADCs...'
-    } ],
+  [ 'Quadrant Photodiode', 'Bulk Read', function() { sendHandler( [ CMDS['CMD_QP_ALL_BULK_RUN'].address, 0, 0, 0, 0 ] ) } ],
   [ 'Laser', 'Load Switch', function() { sendHandler( [ CMDS['CMD_LSR_LOAD_SWTICH_TOG'].address ] ) } ],
   [ 'Laser', 'Toggle Laser', function() { sendHandler( [ CMDS['CMD_LSR_TOG'].address ] ) } ],
   [ 'Laser', 'Current Sense', function() { sendHandler( [ CMDS['CMD_LSR_ISENSE_GET'].address ] ) } ],
@@ -220,53 +242,25 @@ var CONTROLS = [
   [ 'Modulation', '-1Hz', function() { sendHandler( MOD_CMD_PKT(modFreqHz-1) ) } ],
   [ 'Modulation', 'Current Rate', function() { sendHandler( [ CMDS['CMD_MOD_FREQ_HZ_GET'].address ] ) } ],
   [ 'Modulation', '+1Hz', function() { sendHandler( MOD_CMD_PKT(modFreqHz+1) ) } ],
-  [ 'Gimbal', 'Pan -1°', function() { 
-      gimbal.set( [ gimbal.pan-1.0, gimbal.tilt+0.0 ] )
-      sendHandler( SCAN_CMD_PKT() )
-    } ],
-  [ 'Gimbal', 'Pan -0.1°',
-    function() { 
-      gimbal.set( [ gimbal.pan-0.1, gimbal.tilt+0.0 ] )
-      sendHandler( SCAN_CMD_PKT() )
-    } ],
-  [ 'Gimbal', 'Pan +0.1°',
-    function() { 
-      gimbal.set( [ gimbal.pan+0.1, gimbal.tilt+0.0 ] )
-      sendHandler( SCAN_CMD_PKT() )
-    } ],
-  [ 'Gimbal', 'Pan +1°',
-    function() { 
-      gimbal.set( [ gimbal.pan+1.0, gimbal.tilt+0.0 ] )
-      sendHandler( SCAN_CMD_PKT() )
-    } ],
-  [ 'Gimbal', 'Tilt -1°',
-    function() { 
-      gimbal.set( [ gimbal.pan+0.0, gimbal.tilt-1.0 ] )
-      sendHandler( SCAN_CMD_PKT() )
-    } ],
-  [ 'Gimbal', 'Tilt -0.1°',
-    function() { 
-      gimbal.set( [ gimbal.pan+0.0, gimbal.tilt-0.1 ] )
-      sendHandler( SCAN_CMD_PKT() )
-    } ],
-  [ 'Gimbal', 'Tilt +0.1°',
-    function() { 
-      gimbal.set( [ gimbal.pan+0.0, gimbal.tilt+0.1 ] )
-      sendHandler( SCAN_CMD_PKT() )
-    } ],
-  [ 'Gimbal', 'Tilt +1.0°',
-    function() { 
-      gimbal.set( [ gimbal.pan+0.0, gimbal.tilt+1.0 ] )
-      sendHandler( SCAN_CMD_PKT() )
-    } ],
-  [ 'Gimbal', 'Origin',
-    function() { 
-      gimbal.set( [ (gimbal.panRngLim[1]-gimbal.panRngLim[0])/2+gimbal.panRngLim[0],
-                    gimbal.tiltRngLim[0] ] )
-      sendHandler( SCAN_CMD_PKT() )
-    } ],
-  [ 'Gimbal', 'Get Pan', function() { sendHandler( [ CMDS['CMD_PAN_GET'].address ] ) } ],
-  [ 'Gimbal', 'Get Tilt', function() { sendHandler( [ CMDS['CMD_TILT_GET'].address ] ) } ],
+  [ 'Gimbal', 'Toggle Pan Power', function() { sendHandler( [ CMDS['CMD_GIMBAL_PAN_TOG'].address ] ) } ],
+  [ 'Gimbal', 'Set Pan 0°', function() { sendHandler( SCAN_CMD_PKT( [ 0, gimbal.tilt ] ) ) } ],
+  [ 'Gimbal', 'Set Pan 90°', function() { sendHandler( SCAN_CMD_PKT( [ 90, gimbal.tilt ] ) ) } ],
+  [ 'Gimbal', 'Set Pan 180°', function() { sendHandler( SCAN_CMD_PKT( [ 180, gimbal.tilt ] ) ) } ],
+  [ 'Gimbal', 'Pan -5.0°', function() { sendHandler( SCAN_CMD_PKT( [ gimbal.pan-5.0, gimbal.tilt+0.0 ] ) ) } ],
+  [ 'Gimbal', 'Pan -0.15°', function() { sendHandler( SCAN_CMD_PKT( [ gimbal.pan-0.15, gimbal.tilt+0.0 ] ) ) } ],
+  [ 'Gimbal', 'Pan +0.15°', function() { sendHandler( SCAN_CMD_PKT( [ gimbal.pan+0.15, gimbal.tilt+0.0 ] ) ) } ],
+  [ 'Gimbal', 'Pan +5.0°', function() { sendHandler( SCAN_CMD_PKT( [ gimbal.pan+5.0, gimbal.tilt+0.0 ] ) ) } ],
+  [ 'Gimbal', 'Toggle Tilt Power', function() { sendHandler( [ CMDS['CMD_GIMBAL_TILT_TOG'].address ] ) } ],
+  [ 'Gimbal', 'Set Tilt 0°', function() { sendHandler( SCAN_CMD_PKT( [ gimbal.pan, 0 ] ) ) } ],
+  [ 'Gimbal', 'Set Tilt 90°', function() { sendHandler( SCAN_CMD_PKT( [ gimbal.pan, 90 ] ) ) } ],
+  [ 'Gimbal', 'Set Tilt 180°', function() { sendHandler( SCAN_CMD_PKT( [ gimbal.pan, 180 ] ) ) } ],
+  [ 'Gimbal', 'Tilt -5.0°', function() { sendHandler( SCAN_CMD_PKT( [ gimbal.pan+0.0, gimbal.tilt-5.0 ] ) ) } ],
+  [ 'Gimbal', 'Tilt -0.15°', function() { sendHandler( SCAN_CMD_PKT( [ gimbal.pan+0.0, gimbal.tilt-0.15 ] ) ) } ],
+  [ 'Gimbal', 'Tilt +0.15°', function() { sendHandler( SCAN_CMD_PKT( [ gimbal.pan+0.0, gimbal.tilt+0.15 ] ) ) } ],
+  [ 'Gimbal', 'Tilt +5.0°', function() { sendHandler( SCAN_CMD_PKT( [ gimbal.pan+0.0, gimbal.tilt+5.0 ] ) ) } ],
+  [ 'Gimbal', 'Get Pan', function() { sendHandler( [ CMDS['CMD_GIMBAL_PAN_ANG_GET'].address ] ) } ],
+  [ 'Gimbal', 'Get Tilt', function() { sendHandler( [ CMDS['CMD_GIMBAL_TILT_ANG_GET'].address ] ) } ],
+  [ 'Gimbal', 'Origin', function() { sendHandler( SCAN_CMD_PKT( [ 90, 90 ] ) ) } ],
   [ 'HID USB', 'Connect', hidConnect ],
   [ 'HID USB', 'Disconnect', hidDisconnect ],
   [ 'Debug', 'LED1', function() { sendHandler( [ CMDS['CMD_LED1_TOG'].address ] ) } ],
@@ -310,19 +304,18 @@ var scanFlag = false
 
 // ... generic command packets for common tasks (use as building blocks
 // for larger queries
-var MEAS_CMD_PKT = ( function() { return [
-  CMDS['CMD_TOBJ1_GET'].address,
-  CMDS['CMD_TOBJ2_GET'].address,
-  CMDS['CMD_TAMB_GET'].address,
-] } )
-var SCAN_CMD_PKT = ( function() { return [
-  CMDS['CMD_PAN_SET'].address,
-    (Math.round(gimbal.panBytes)>>8)%256,
-    (Math.round(gimbal.panBytes)>>0)%256,
-  CMDS['CMD_TILT_SET'].address,
-    (Math.round(gimbal.tiltBytes)>>8)%256,
-    (Math.round(gimbal.tiltBytes)>>0)%256,
-] } )
+var SCAN_CMD_PKT = ( function( panTilt=null ) {
+  if ( panTilt != null )
+    gimbal.set( panTilt )
+  return [
+    CMDS['CMD_GIMBAL_PAN_ANG_SET'].address,
+      (Math.round(gimbal.panBytes)>>8)%256,
+      (Math.round(gimbal.panBytes)>>0)%256,
+    CMDS['CMD_GIMBAL_TILT_ANG_SET'].address,
+      (Math.round(gimbal.tiltBytes)>>8)%256,
+      (Math.round(gimbal.tiltBytes)>>0)%256,
+    ]
+} )
 var MOD_CMD_PKT = ( function( rateHz ) { 
   modFreqHz = rateHz
   return [
@@ -344,6 +337,10 @@ var DEFAULT_MCU_PKT = ( function() { return [
   CMDS['CMD_LSR_GET'].address,
   CMDS['CMD_MOD_GET'].address,
   CMDS['CMD_MOD_FREQ_HZ_GET'].address,
+  CMDS['CMD_GIMBAL_PAN_GET'].address,
+  CMDS['CMD_GIMBAL_TILT_GET'].address,
+  CMDS['CMD_GIMBAL_PAN_ANG_GET'].address,
+  CMDS['CMD_GIMBAL_TILT_ANG_GET'].address,
   CMDS['CMD_LED1_GET'].address,
   CMDS['CMD_LED2_GET'].address,
   CMDS['CMD_BTN1_GET'].address,
@@ -410,10 +407,6 @@ function hidConnect() {
     // have graphs updated nicely and scroll appropriately
     startTickTock()
     
-    // reset our flags
-    measureFlag = false
-    scanFlag = false
-    
     return
     
   }, function() {
@@ -427,10 +420,6 @@ function hidConnect() {
   return
 }
 function hidDisconnect() { 
-  
-  // stop macro packet sending
-  stopMeasure()
-  stopScan()
   
   // attempt to disconnect from USB device, define callbacks to
   // run if success/failure
@@ -474,42 +463,50 @@ var newGraph = ( function( varargin ) {
   return graphs[graphs.length-1] 
 } )
 var graphVrefVSense = newGraph( ( {
-  xLabelText: 'Laser Vref (V)',
+  yLabelText: 'Laser Vref (V)',
   yRng: [ 0, 2 ],
 } ) )
 var graphLoadSwitchState = newGraph( ( {
-  xLabelText: 'Load Switch State',
+  yLabelText: 'Load Switch State',
   fitYRngEvent: null,
   yRng: [ -0.1, 1.1 ],
 } ) )
 var graphISense = newGraph( ( {
-  xLabelText: 'Laser Current (mA)',
+  yLabelText: 'Laser Current (mA)',
   yRng: [ 0, 40 ],
 } ) )
 var graphLaserState = newGraph( ( {
-  xLabelText: 'Laser State',
+  yLabelText: 'Laser State',
   fitYRngEvent: null,
   yRng: [ -0.1, 1.1 ],
 } ) )
 var graphModRate = newGraph( ( {
-  xLabelText: 'Mod Rate (Hz)',
+  yLabelText: 'Mod Rate (Hz)',
 } ) )
 var graphModState = newGraph( ( {
-  xLabelText: 'Mod State',
+  yLabelText: 'Mod State',
   fitYRngEvent: null,
   yRng: [ -0.1, 1.1 ],
 } ) )
+var graphPan = newGraph( ( {
+  yLabelText: 'Pan Servo (°)',
+  yRng: [ 0, 180 ],
+} ) )
+var graphTilt = newGraph( ( {
+  yLabelText: 'Tilt Servo (°)',
+  yRng: [ 0, 180 ],
+} ) )
 var graphCh1VSense = newGraph( ( {
-  xLabelText: 'Channel 1 (mV)',
+  yLabelText: 'Channel 1 (mV)',
 } ) )
 var graphCh4VSense = newGraph( ( {
-  xLabelText: 'Channel 4 (mV)',
+  yLabelText: 'Channel 4 (mV)',
 } ) )
 var graphCh2VSense = newGraph( ( {
-  xLabelText: 'Channel 2 (mV)',
+  yLabelText: 'Channel 2 (mV)',
 } ) )
 var graphCh3VSense = newGraph( ( {
-  xLabelText: 'Channel 3 (mV)',
+  yLabelText: 'Channel 3 (mV)',
 } ) )
 
 
@@ -553,101 +550,6 @@ hideCurtain()
 document.getElementById( 'rightSidebarMenuButton' ).click()
 // and set menu button to currect state
 window.setTimeout( function() { hamburger( 'un' ) }, 1000 )
-
-function startMeasureScan() {
-  
-  // simply call both pieces to get real-time measuring and scanning up
-  startMeasure()
-  startScan()
-  
-  return
-}
-
-function stopMeasureScan() {
-  
-  // simply call both pieces to take down real-time measuring and scanning
-  stopMeasure()
-  stopScan()
-  
-  return
-}
-
-function startMeasure() {
-  
-  // only should be doing this if we are connected to USB device
-  if ( !hid.connection )
-    return
-  
-  // enable flag to tell receive handler to recall same calling
-  // of command packet once we receive data from previous packet
-  measureFlag = true
-  
-  // have graphs updated nicely and scroll appropriately
-  startTickTock()
-    
-  // send first command packet to device, once the device sends a
-  // response for this packet, the same command packet will be sent
-  // again (assuming flag is still set ),
-  // however, if other active flags are set, setting the flag will be
-  // enough to update this new behavior on next iteration
-  if ( !scanFlag )
-    sendHandler( MEAS_CMD_PKT().concat( CMDS['CMD_MEAS_FLAG'].address ) )
-  
-  return
-}
-
-function stopMeasure() {
-  
-  // first things first, turn off the flag for recursive
-  // sending of command packet
-  measureFlag = false
-  
-  // stop graphs from updating nicely and scrolling
-  stopTickTock()
-  
-  return
-}
-
-function startScan( scanMethod=null ) {
-  
-  // only should be doing this if we are connected to USB device
-  if ( !hid.connection )
-    return
-  
-  // choose correct scanning operation based on function inputs
-  if ( scanMethod!=null && gimbal[scanMethod]!=undefined )
-    gimbal.scanStepFunc = scanMethod
-  
-  // set inital state of gimbal before we start scanning
-  gimbal.scanPanIdx = 0
-  gimbal.scanTiltIdx = 0
-  
-  // enable flag to tell receive handler to recall same calling
-  // of command packet once we receive data from previous packet
-  scanFlag = true
-  
-  // send first command packet to device, once the device sends a
-  // response for this packet, the same command packet will be sent
-  // again (assuming flag is still set ),
-  // however, if other active flags are set, setting the flag will be
-  // enough to update this new behavior on next iteration
-  if ( !measureFlag )
-    sendHandler( SCAN_CMD_PKT().concat( CMDS['CMD_SCAN_FLAG'].address ) )
-  
-  return
-}
-
-function stopScan() {
-  
-  // first things first, turn off the flag for recursive
-  // sending of command packet
-  scanFlag = false
-  
-  // um...and that's enough for this one
-  
-  return
-}
-
 
 function startTickTock() {
   
@@ -756,27 +658,40 @@ function receiveHandler( dataBuf ) {
     // determine what to do with the following data
     switch ( headerByte ) {
       
-      case CMDS['CMD_PAN_GET'].address:
+      case CMDS['CMD_GIMBAL_PAN_GET'].address:
+      case CMDS['CMD_GIMBAL_PAN_TOG'].address:
         
         // extract data bytes from packet
-        var dataBytes = getDataBytes( 'CMD_PAN_GET' )
+        var dataBytes = getDataBytes( 'CMD_GIMBAL_PAN_GET' )
         
-        // build up 16-bit register contents
-        var gimbalReg = bytesToUnsignedInt( dataBytes.slice(0,2) )
-        
-        // calculate angle from knowledge of transmione of angles
-        var angle = gimbalReg / ((1<<16)-1)* 360 
-        
-        
-        // update value field in control
-        controls.controlsByGroup["Gimbal"]["Get Pan"].querySelector( '#value' ).innerHTML = " - " + angle.toFixed(3) + "&deg;"
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphGimbalPanState !== 'undefined' )
+          graphGimbalPanState.addPoint( dataBytes[0] )
+        //else
+          controls.controlsByGroup["Gimbal"]["Toggle Pan Power"].querySelector( '#value' ).innerHTML = " (" + dataBytes[0] + ")"
         
         break
         
-      case CMDS['CMD_TILT_GET'].address:
+      case CMDS['CMD_GIMBAL_TILT_GET'].address:
+      case CMDS['CMD_GIMBAL_TILT_TOG'].address:
         
         // extract data bytes from packet
-        var dataBytes = getDataBytes( 'CMD_TILT_GET' )
+        var dataBytes = getDataBytes( 'CMD_GIMBAL_TILT_GET' )
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphGimbalTiltState !== 'undefined' )
+          graphGimbalTiltState.addPoint( dataBytes[0] )
+        //else
+          controls.controlsByGroup["Gimbal"]["Toggle Tilt Power"].querySelector( '#value' ).innerHTML = " (" + dataBytes[0] + ")"
+        
+        break
+        
+      case CMDS['CMD_GIMBAL_PAN_ANG_GET'].address:
+        
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_GIMBAL_PAN_ANG_GET' )
         
         // build up 16-bit register contents
         var gimbalReg = bytesToUnsignedInt( dataBytes.slice(0,2) )
@@ -784,8 +699,38 @@ function receiveHandler( dataBuf ) {
         // calculate angle from knowledge of transmione of angles
         var angle = gimbalReg * 360 / ((1<<16)-1)
         
-        // graphically update value field in control
-        controls.controlsByGroup["Gimbal"]["Get Tilt"].querySelector( '#value' ).innerHTML = " - " + angle.toFixed(3) + "&deg;"
+        // update gimbal object with new angle
+        gimbal.set( [ angle, gimbal.tilt ] )
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphPan !== 'undefined' )
+          graphPan.addPoint( angle )
+        //else
+          controls.controlsByGroup["Gimbal"]["Get Pan"].querySelector( '#value' ).innerHTML = " - " + angle.toFixed(3) + "&deg;"
+        
+        break
+        
+      case CMDS['CMD_GIMBAL_TILT_ANG_GET'].address:
+        
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_GIMBAL_TILT_ANG_GET' )
+        
+        // build up 16-bit register contents
+        var gimbalReg = bytesToUnsignedInt( dataBytes.slice(0,2) )
+        
+        // calculate angle from knowledge of transmione of angles
+        var angle = gimbalReg * 360 / ((1<<16)-1)
+        
+        // update gimbal object with new angle
+        gimbal.set( [ gimbal.pan, angle ] )
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphTilt !== 'undefined' )
+          graphTilt.addPoint( angle )
+        //else
+          controls.controlsByGroup["Gimbal"]["Get Tilt"].querySelector( '#value' ).innerHTML = " - " + angle.toFixed(3) + "&deg;"
         
         break
       
@@ -873,6 +818,9 @@ function receiveHandler( dataBuf ) {
         
         // stop default poller since this is a bulk activity
         stopPoller()
+        
+        // graphically update value field in control
+        controls.controlsByGroup["Quadrant Photodiode"]["Bulk Read"].querySelector( '#value' ).innerHTML = ' - ' + 'Reading ADCs...'
         
         // clear buffers holding ADC information
         qpBulkBuffer = []

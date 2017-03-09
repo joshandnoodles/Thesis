@@ -19,12 +19,16 @@
 
 #include "mod.h"
 
+
+uint32_t randomStr = 0b1011010111011000101101001100101;
+uint8_t counterStr = 0; 
+
 // variables to keep track of modulation rate
-unsigned long modFreqHz;
-unsigned long modPeriodNs;
+uint32_t modFreqHz;
+uint32_t modPeriodNs;
 
 // variables to keep track of state changes
-unsigned char modState;
+uint8_t modState;
 
 void initMod( void ) {
   
@@ -34,18 +38,20 @@ void initMod( void ) {
           &MOD_TIMER_PERIOD,
           &MOD_TIMER_REG,
           0,
-          256,
+          1,
           16,
           'i' );
 
   // initialize the actual interrupts
   initInterrupt( 
-      &MOD_TIMER_INT_ENB,
-      &MOD_TIMER_INT_PRIO,
-      &MOD_TIMER_INT_FLAG,
-      MOD_TIMER_PRIO_OFFSET,
-      MOD_TIMER_SUBPRIO_OFFSET,
-      MOD_TIMER_INT_MASK );
+          &MOD_TIMER_INT_ENB,
+          &MOD_TIMER_INT_PRIO,
+          &MOD_TIMER_INT_FLAG,
+          MOD_TIMER_PRIO_OFFSET,
+          5,
+          MOD_TIMER_SUBPRIO_OFFSET,
+          1,
+          MOD_TIMER_INT_MASK );
   
   // set default modulation rate
   modSetFreqHz( DEFAULT_MOD_FREQ_HZ );
@@ -53,7 +59,7 @@ void initMod( void ) {
   return;
 }
 
-unsigned char modOn( void ) {
+uint8_t modOn( void ) {
   
   // check modulation power supply source before trying to begin modulation
   if ( !lsrLoadSwitchState )
@@ -72,7 +78,7 @@ unsigned char modOn( void ) {
 }
 
 
-unsigned char modOff( void ) {
+uint8_t modOff( void ) {
   
   // turn off the timer to stop any additionally interrupts from calling
   timerBOff( &MOD_TIMER_CON );
@@ -86,7 +92,7 @@ unsigned char modOff( void ) {
   return 0x1;
 }
 
-unsigned char modTog( void ) {
+uint8_t modTog( void ) {
   
   // look at modulation state and toggle appropriately
   if ( modState )
@@ -96,7 +102,7 @@ unsigned char modTog( void ) {
   
 }
 
-unsigned char modSetFreqHz( unsigned long freqHz ) {
+uint8_t modSetFreqHz( uint32_t freqHz ) {
   
   // check if new modulation rate is within all specified limitations
   if ( ( freqHz < MOD_FREQ_HZ_MIN ) || ( freqHz > MOD_FREQ_HZ_MAX ) )
@@ -110,23 +116,33 @@ unsigned char modSetFreqHz( unsigned long freqHz ) {
   return timerBSetPeriodNs( &MOD_TIMER_CON, &MOD_TIMER_PERIOD, modPeriodNs );
 }
 
-
-
 /*
 This code example demonstrates a simple interrupt service routine for Timer
 interrupts. The user?s code at this ISR handler should perform any application
 specific operations and must clear the corresponding Timer interrupt status flag
 before exiting.
 */
-void __ISR( _TIMER_2_VECTOR, IPL5 ) _TIMER2_HANDLER( void ) {
+void __ISR( _TIMER_4_VECTOR, IPL5 ) _TIMER4_HANDLER( void ) {
 
   //... perform application specific operations in response to the interrupt
   
   // toggle the modulation source
-  LSR_EN_CH1_LAT ^= LSR_EN_CH1_MASK;
+  //LSR_EN_CH1_LAT ^= LSR_EN_CH1_MASK;
+  
+  if ( counterStr == 31 ) {
+    counterStr = 0;
+  }
+  
+  if ( ( randomStr & (1<<counterStr) ) == 0 ) {
+    LSR_EN_CH1_LAT &= ~LSR_EN_CH1_MASK;
+  } else {
+    LSR_EN_CH1_LAT |= LSR_EN_CH1_MASK;
+  }
+  
+  counterStr += 1;
   
   // clear the TxIF interrupt flag bit
-  IFS0CLR = 0b1<<8;
+  IFS0CLR = MOD_TIMER_INT_MASK;
   
   return;
 }

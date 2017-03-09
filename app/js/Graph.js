@@ -86,11 +86,11 @@ function Graph( parentDiv, varargin={} ) {
   
   // add labels to the axes
   this.xLabel = this.graph.append( 'text' )
-    .attr( 'transform', 'rotate(-90)' )
     .attr( 'dy', '1em' )
     .style( 'text-anchor', 'middle' )
     .text( this.xLabelText )
   this.yLabel = this.graph.append( 'text' )
+    .attr( 'transform', 'rotate(-90)' )
     .attr( 'dy', '1em' )
     .style( 'text-anchor', 'middle' )
     .text( this.yLabelText )
@@ -258,11 +258,11 @@ Graph.prototype.render = function() {
   
   // update position of axes labels
   this.xLabel
-    .attr( 'y', 0 - Graph.MARGINS.left )
-    .attr( 'x', 0 - (this.graphHeight/2) )
-  this.yLabel
     .attr( 'x', this.graphWidth/2 )
     .attr( 'y', this.graphHeight + Graph.MARGINS.bottom )
+  this.yLabel
+    .attr( 'y', 0 - Graph.MARGINS.left )
+    .attr( 'x', 0 - (this.graphHeight/2) )
   
   // update clip path rectangle
   this.clip

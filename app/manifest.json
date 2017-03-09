@@ -12,13 +12,11 @@
     }
   },
   "permissions": [
-    "gcm",
     "hid", {
       "usbDevices":
         [ { "vendorId": 4617, 
             "productId": 1 } ]
       },
-    "management",
     "system.display"
   ]
 }

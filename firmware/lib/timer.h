@@ -31,6 +31,7 @@ void initTimerB(
         unsigned char,
         char );
 unsigned char timerBSetPrescaler( volatile unsigned int *, unsigned int );
+unsigned int timerBGetPrescaler( volatile unsigned int * );
 void timerBOn( volatile unsigned int * );
 void timerBOff( volatile unsigned int * );
 void timerBReset( volatile unsigned int * );
@@ -38,6 +39,8 @@ unsigned char timerBSetPeriodNs(
         volatile unsigned int *,
         volatile unsigned int *,
         unsigned long );
+
+// static function prototypes
 
 #ifdef	__cplusplus
 }

@@ -20,8 +20,10 @@ void initInterrupt( volatile unsigned int *,
         volatile unsigned int *,
         volatile unsigned int *,
         unsigned int,
+        unsigned char,
         unsigned int,
-        unsigned int );
+        unsigned char,
+        unsigned );
 
 #ifdef	__cplusplus
 }

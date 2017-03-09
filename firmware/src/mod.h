@@ -15,6 +15,8 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 // define default values for initial configuration
 #define DEFAULT_MOD_FREQ_HZ            3
 
@@ -23,15 +25,15 @@ extern "C" {
 #define MOD_FREQ_HZ_MAX                100000000
 
 // variables available to external modules
-extern unsigned char modState;
-extern unsigned long modFreqHz;
+extern uint8_t modState;
+extern uint32_t modFreqHz;
 
 // function prototypes
 void initMod( void );
-unsigned char modOn( void );
-unsigned char modOff( void );
-unsigned char modTog( void );
-unsigned char modSetFreqHz( unsigned long );
+uint8_t modOn( void );
+uint8_t modOff( void );
+uint8_t modTog( void );
+uint8_t modSetFreqHz( uint32_t );
 
 #ifdef	__cplusplus
 }

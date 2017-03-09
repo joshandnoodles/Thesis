@@ -115,9 +115,6 @@ typedef enum {
     Application strings and buffers are be defined outside this structure.
  */
 
-// flag to enable/disable USH HID in application
-#define USB_ENB         0x1
-
 // specify USB buffer size (in bytes) for tx & rx communication
 #define USB_BUF_SIZE    64
 

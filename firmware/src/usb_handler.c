@@ -15,15 +15,18 @@
 #include <p32mx460f512l.h>
 #include "hardware_config.h"
 
+#include <stdint.h>
 #include <string.h>   // memset
 
+#include "qp.h"
 #include "lsr.h"
 #include "mod.h"
+#include "gimbal.h"
 #include "debug.h"
 
 #include "usb_handler.h"
 
-unsigned int txIdx;
+uint16_t txIdx;
 
 // packet information for different tx/rx items
 // "address" part of packet stores information about what is being sent,
@@ -31,9 +34,9 @@ unsigned int txIdx;
 // identifies what the following data represents, txBytes and rxBytes defines 
 // how many data bytes are sent or received for each corresponding address type
 typedef struct { 
-  const unsigned char address;
-  const unsigned char txBytes;
-  const unsigned char rxBytes;
+  const uint8_t address;
+  const uint8_t txBytes;
+  const uint8_t rxBytes;
 } PktInfo;
 
 // 0x1* debugging commands
@@ -51,13 +54,24 @@ static const PktInfo CMD_BTN2_GET             = { 0x17,   1,        0       };
 static const PktInfo CMD_DELAY_US             = { 0x40,   0,        2       };
 static const PktInfo CMD_DELAY_MS             = { 0x41,   0,        2       };
 static const PktInfo CMD_DELAY_S              = { 0x42,   0,        2       };
-
 // 0x5* gimbal commands
-static const PktInfo CMD_PAN_SET              = { 0x60,   0,        2       };  // (2 bytes) / 360 = resolution of 0.00549deg
-static const PktInfo CMD_PAN_GET              = { 0x61,   2,        0       };  // (2 bytes) / 360 = resolution of 0.00549deg
-static const PktInfo CMD_TILT_SET             = { 0x62,   0,        2       };  // (2 bytes) / 360 = resolution of 0.00549deg
-static const PktInfo CMD_TILT_GET             = { 0x63,   2,        0       };  // (2 bytes) / 360 = resolution of 0.00549deg
-// 0x6* 
+static const PktInfo CMD_GIMBAL_PAN_TOG       = { 0x50,   1,        0       };
+static const PktInfo CMD_GIMBAL_PAN_SET       = { 0x51,   0,        1       };
+static const PktInfo CMD_GIMBAL_PAN_GET       = { 0x52,   1,        0       };
+static const PktInfo CMD_GIMBAL_TILT_TOG      = { 0x53,   1,        0       };
+static const PktInfo CMD_GIMBAL_TILT_SET      = { 0x54,   0,        1       };
+static const PktInfo CMD_GIMBAL_TILT_GET      = { 0x55,   1,        0       };
+static const PktInfo CMD_GIMBAL_PAN_ANG_SET   = { 0x56,   0,        2       };  // (2 bytes) / 360 = resolution of 0.00549deg
+static const PktInfo CMD_GIMBAL_PAN_ANG_GET   = { 0x57,   2,        0       };  // (2 bytes) / 360 = resolution of 0.00549deg
+static const PktInfo CMD_GIMBAL_TILT_ANG_SET  = { 0x58,   0,        2       };  // (2 bytes) / 360 = resolution of 0.00549deg
+static const PktInfo CMD_GIMBAL_TILT_ANG_GET  = { 0x59,   2,        0       };  // (2 bytes) / 360 = resolution of 0.00549deg
+// 0x6 quadrant photodiode activities
+static const PktInfo CMD_QP_CH1_VSENSE_GET    = { 0x60,   2,        0       };
+static const PktInfo CMD_QP_CH2_VSENSE_GET    = { 0x61,   2,        0       };
+static const PktInfo CMD_QP_CH3_VSENSE_GET    = { 0x62,   2,        0       };
+static const PktInfo CMD_QP_CH4_VSENSE_GET    = { 0x63,   2,        0       };
+static const PktInfo CMD_QP_ALL_BULK_RUN      = { 0x64,   0,        4       };
+static const PktInfo CMD_QP_ALL_BULK_GET      = { 0x65,   62,       0       };
 // 0x7* laser activities
 static const PktInfo CMD_LSR_LOAD_SWTICH_TOG  = { 0x70,   1,        0       };
 static const PktInfo CMD_LSR_LOAD_SWTICH_SET  = { 0x71,   0,        1       };
@@ -80,7 +94,7 @@ static const PktInfo CMD_MOD_FREQ_HZ_GET      = { 0x84,   4,        0       };
 // 0xD*
 // 0xE*
 
-void _insertTxBufUnsigned( unsigned char * txDataBuffer, unsigned char data ) {
+void _insertTxBufUnsigned( uint8_t * txDataBuffer, uint8_t data ) {
   
   // place data in byte chunks
   txDataBuffer[txIdx++] = data;
@@ -88,7 +102,7 @@ void _insertTxBufUnsigned( unsigned char * txDataBuffer, unsigned char data ) {
   return;
 }
 
-void insertTxBufUnsignedChar( unsigned char * txDataBuffer, unsigned char data ) {
+void insertTxBufUnsignedChar( uint8_t * txDataBuffer, uint8_t data ) {
   
   // place data in byte chunks
   _insertTxBufUnsigned( txDataBuffer, data );
@@ -96,38 +110,37 @@ void insertTxBufUnsignedChar( unsigned char * txDataBuffer, unsigned char data )
   return;
 }
 
-void insertTxBufUnsignedInt( unsigned char * txDataBuffer, unsigned int data ) {
+void insertTxBufUnsignedInt( uint8_t * txDataBuffer, uint16_t data ) {
   
   char idx;
   
   // place data in byte chunks
   for ( idx=8; idx>=0; idx-=8 )
-    _insertTxBufUnsigned( txDataBuffer, (unsigned char)(data>>idx) );
+    _insertTxBufUnsigned( txDataBuffer, (uint8_t)(data>>idx) );
   
   return;
 }
 
-void insertTxBufUnsignedLong( unsigned char * txDataBuffer, unsigned long data ) {
+void insertTxBufUnsignedLong( uint8_t * txDataBuffer, uint32_t data ) {
   
   char idx;
   
   // place data in byte chunks
   for ( idx=24; idx>=0; idx-=8 )
-    _insertTxBufUnsigned( txDataBuffer, (unsigned char)(data>>idx) );
+    _insertTxBufUnsigned( txDataBuffer, (uint8_t)(data>>idx) );
   
   return;
 }
 
-void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
-    unsigned int bufSize ) {
+void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
+    uint16_t bufSize ) {
   
-  unsigned char rxDataCmd;  
-  unsigned int idx;
+  uint8_t rxDataCmd;  
+  uint16_t idx;
   
-    
   // reset counter for building our tx buffer
   txIdx = 0;
-  memset( &txDataBuffer[0], 0, sizeof(txDataBuffer) );
+  memset( txDataBuffer, 0, sizeof(uint8_t)*64 );
     
   // we got a packet, check what the hosts wants us to do and do it,
   // the packet contains a command id at the beginning followed by one or
@@ -137,7 +150,7 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
   while ( idx<(bufSize) ) {
 
     // get next address to figure out what we should do
-    rxDataCmd = (unsigned char)(rxDataBuffer[idx++]);
+    rxDataCmd = (uint8_t)(rxDataBuffer[idx++]);
 
     // if we ran out of addresses, exit
     if ( rxDataCmd == 0 )
@@ -169,8 +182,68 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
       
       // echo back command id to host
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+
+    } else if ( rxDataCmd == CMD_GIMBAL_PAN_TOG.address ) {
+      // toggle pan servo on and off
       
-    /*} else if ( rxDataCmd == CMD_PAN_SET.address ) {
+      // set servo to opposite state
+      gimbalPanTog();
+      
+      // echo back command id to host along with laser state
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(gimbalPanState) );
+    
+    } else if ( rxDataCmd == CMD_GIMBAL_PAN_SET.address ) {
+      // set pan servo on or off
+      
+      // set servo to a certain state
+      if ( (rxDataBuffer[idx++]<<0) == 0 ) {
+        gimbalPanOff();
+      } else {
+        gimbalPanOn();
+      }
+      
+      // echo back command id to host
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+    
+    } else if ( rxDataCmd == CMD_GIMBAL_PAN_GET.address ) {
+      // get state of pan servo
+
+      // echo back command id to host along with state data
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(gimbalPanState) );
+      
+    } else if ( rxDataCmd == CMD_GIMBAL_TILT_TOG.address ) {
+      // toggle tilt servo on and off
+      
+      // set servo to opposite state
+      gimbalTiltTog();
+      
+      // echo back command id to host along with laser state
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(gimbalTiltState) );
+    
+    } else if ( rxDataCmd == CMD_GIMBAL_TILT_SET.address ) {
+      // set tilt servo on or off
+      
+      // set servo to a certain state
+      if ( (rxDataBuffer[idx++]<<0) == 0 ) {
+        gimbalTiltOff();
+      } else {
+        gimbalTiltOn();
+      }
+      
+      // echo back command id to host
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+    
+    } else if ( rxDataCmd == CMD_GIMBAL_TILT_GET.address ) {
+      // get state of tilt servo
+
+      // echo back command id to host along with state data
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(gimbalTiltState) );
+        
+    } else if ( rxDataCmd == CMD_GIMBAL_PAN_ANG_SET.address ) {
       // set gimbal pan angle
 
       // look at the data received to determine and the gimbal angle
@@ -179,39 +252,90 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
       // this will be sent as an whole number, this number has a theoretical
       // maximum value of (2^16-1), divide this number by 360 to the angle
       // angular resolution = 360 / 2^16 = 0.0054931640625deg
-      //!!setGimbalPan( ((float)(unsigned int)( (rxDataBuffer[idx++]<<8) | (rxDataBuffer[(idx++)+1]) )) * 360 / ((float)(unsigned int)((1<<16)-1)) );
+      gimbalSetPan( ((float)(uint16_t)( (rxDataBuffer[idx++]<<8) | (rxDataBuffer[idx++]) ) * 360.0 / ((float)(uint16_t)((1<<16)-1)) ) );
 
       // echo back command id to host
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-
-    } else if ( rxDataCmd == CMD_PAN_GET.address ) {
+    
+    } else if ( rxDataCmd == CMD_GIMBAL_PAN_ANG_GET.address ) {
       // get gimbal pan angle
 
       // echo back command id to host and gimbal information
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      //!!insertTxBufUnsignedInt( txDataBuffer, getGimbalPan() / 360 * ((float)(unsigned int)((1<<16)-1)) );
+      insertTxBufUnsignedInt( txDataBuffer, gimbalGetPan() / 360 * ((float)(uint16_t)((1<<16)-1)) );
 
-    } else if ( rxDataCmd == CMD_TILT_SET.address ) {
-      // set gimbal pan angle
-
+    } else if ( rxDataCmd == CMD_GIMBAL_TILT_ANG_SET.address ) {
+      // set gimbal tilt angle
+      
       // look at the data received to determine and the gimbal angle
       // to set, the first data byte is the msb of the angle and the 
       // second data byte is the lsb
       // this will be sent as an whole number, this number has a theoretical
       // maximum value of (2^16-1), divide this number by 360 to the angle
       // angular resolution = 360 / 2^16 = 0.0054931640625deg
-      //!!setGimbalTilt( ((float)(unsigned int)( (rxDataBuffer[idx++]<<8) | (rxDataBuffer[(idx++)+1]) )) * 360 / ((float)(unsigned int)((1<<16)-1)) );
+      gimbalSetTilt( ((float)(uint16_t)( (rxDataBuffer[idx++]<<8) | (rxDataBuffer[idx++]) ) * 360.0 / ((float)(uint16_t)((1<<16)-1)) ) );
 
       // echo back command id to host
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
       
-    } else if ( rxDataCmd == CMD_TILT_GET.address ) {
+     } else if ( rxDataCmd == CMD_GIMBAL_TILT_ANG_GET.address ) {
       // get gimbal tilt angle
 
       // echo back command id to host and gimbal information
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      //!!insertTxBufUnsignedInt( txDataBuffer, getGimbalTilt() / 360 * ((float)(unsigned int)((1<<16)-1)) );
-    */
+      insertTxBufUnsignedInt( txDataBuffer, gimbalGetTilt() / 360 * ((float)(uint16_t)((1<<16)-1)) );
+
+    
+    } else if ( rxDataCmd == CMD_QP_CH1_VSENSE_GET.address ) {
+      // get quadrant photodiode ADC node
+      
+      // echo back command id to host along with ADC data
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedInt( txDataBuffer, (uint16_t)(qpLastCh1VSenseReg) );
+      
+    } else if ( rxDataCmd == CMD_QP_CH2_VSENSE_GET.address ) {
+      // get quadrant photodiode ADC node
+      
+      // echo back command id to host along with ADC data
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedInt( txDataBuffer, (uint16_t)(qpLastCh2VSenseReg) );
+      
+    } else if ( rxDataCmd == CMD_QP_CH3_VSENSE_GET.address ) {
+      // get quadrant photodiode ADC node
+      
+      // echo back command id to host along with ADC data
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedInt( txDataBuffer, (uint16_t)(qpLastCh3VSenseReg) );
+      
+    } else if ( rxDataCmd == CMD_QP_CH4_VSENSE_GET.address ) {
+      // get quadrant photodiode ADC node
+      
+      // echo back command id to host along with ADC data
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedInt( txDataBuffer, (uint16_t)(qpLastCh4VSenseReg) );
+      
+    } else if ( rxDataCmd == CMD_QP_ALL_BULK_RUN.address ) {
+      // collect bulk quadrant photodiode ADC nodes
+      
+      // run bulk ADC collection function with desired pause between every cycle
+      qpReadAllBulk( (uint32_t)(
+              (rxDataBuffer[(idx++)]<<24) |
+              (rxDataBuffer[(idx++)]<<16) |
+              (rxDataBuffer[(idx++)]<<8) |
+              (rxDataBuffer[(idx++)]<<0) ) );
+      
+      // echo back command id to host
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+    
+    } else if ( rxDataCmd == CMD_QP_ALL_BULK_GET.address ) {
+      // send back bulk quadrant photodiode ADC nodes
+      
+      // echo back command id to host along with ADC node data
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      do {
+        insertTxBufUnsignedInt( txDataBuffer, (uint16_t)(qpBulkBuffer[qpBulkBufferIdx++]) );
+      } while ( ( qpBulkBufferIdx) % (CMD_QP_ALL_BULK_GET.txBytes/2) );
+      
     } else if ( rxDataCmd == CMD_LSR_LOAD_SWTICH_TOG.address ) {
       // toggle load switch on and off
       
@@ -220,7 +344,7 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
       
       // echo back command id to host along with load switch state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedChar( txDataBuffer, (unsigned char)(lsrLoadSwitchState) );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(lsrLoadSwitchState) );
     
     } else if ( rxDataCmd == CMD_LSR_LOAD_SWTICH_SET.address ) {
       // set load switch on or off
@@ -240,21 +364,21 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
       
       // echo back command id to host along with load switch state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedChar( txDataBuffer, (unsigned char)(lsrLoadSwitchState) );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(lsrLoadSwitchState) );
       
     } else if ( rxDataCmd == CMD_LSR_VREF_VSENSE_GET.address ) {
       // get current limit Vref ADC node
       
       // echo back command id to host along with vref data
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedInt( txDataBuffer, (unsigned int)(lsrLastVrefVSenseReg) );
+      insertTxBufUnsignedInt( txDataBuffer, (uint16_t)(lsrLastVrefVSenseReg) );
       
     } else if ( rxDataCmd == CMD_LSR_ISENSE_GET.address ) {
       // get current limit Vref ADC node
       
       // echo back command id to host along with vref data
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedInt( txDataBuffer, (unsigned int)(lsrLastISenseReg) );
+      insertTxBufUnsignedInt( txDataBuffer, (uint16_t)(lsrLastISenseReg) );
       
     } else if ( rxDataCmd == CMD_MOD_TOG.address ) {
       // toggle modulation on and off
@@ -264,7 +388,7 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
       
       // echo back command id to host along with load switch state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedChar( txDataBuffer, (unsigned char)(modState) );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(modState) );
     
     } else if ( rxDataCmd == CMD_MOD_SET.address ) {
       // set modulation on or off
@@ -284,13 +408,13 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
       
       // echo back command id to host along with modulation state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedChar( txDataBuffer, (unsigned char)(modState) );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(modState) );
     
     } else if ( rxDataCmd == CMD_MOD_FREQ_HZ_SET.address ) {
       // set rate of modulation
       
       // set received packets as new desired modulation rate (in Hz)
-      modSetFreqHz( (unsigned long)(
+      modSetFreqHz( (uint32_t)(
               (rxDataBuffer[(idx++)]<<24) |
               (rxDataBuffer[(idx++)]<<16) |
               (rxDataBuffer[(idx++)]<<8) |
@@ -304,7 +428,7 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
       
       // echo back command id to host along with modulation rate
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedLong( txDataBuffer, (unsigned long)(modFreqHz) );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modFreqHz) );
     
     /*} else if ( rxDataCmd == CMD_LSR_TOG.address ) {
       // set laser on/off
@@ -337,7 +461,7 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
       
       // echo back command id to host along with laser state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedChar( txDataBuffer, (unsigned char)(lsrEnCh1State) );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(lsrEnCh1State) );
     
     } else if ( rxDataCmd == CMD_LSR_SET.address ) {
       // set laser on or off
@@ -357,7 +481,7 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
 
       // echo back command id to host along with laser power data
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedChar( txDataBuffer, (unsigned char)(lsrEnCh1State) );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(lsrEnCh1State) );
     
     } else if ( rxDataCmd == CMD_LED1_TOG.address ) {
       // toggle debug led on and off
@@ -367,16 +491,16 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
 
       // echo back command id to host along with LED state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedChar( txDataBuffer, (unsigned char)((DEBUG_LED1_LAT&DEBUG_LED1_MASK)>0) );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)((DEBUG_LED1_LAT&DEBUG_LED1_MASK)>0) );
 
     } else if ( rxDataCmd == CMD_LED1_SET.address ) {
       // set debug led to specific value
 
       // set the debug led on or off depending on input
       if ( (rxDataBuffer[idx++]<<0) == 0 ) {
-        debugLed1On();
-      } else {
         debugLed1Off();
+      } else {
+        debugLed1On();
       }
 
       // echo back command id to host along with current led latch state
@@ -387,7 +511,7 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
 
       // echo back command id to host along with LED state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedChar( txDataBuffer, (unsigned char)((DEBUG_LED1_LAT&DEBUG_LED1_MASK)>0) );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)((DEBUG_LED1_LAT&DEBUG_LED1_MASK)>0) );
       
     } else if ( rxDataCmd == CMD_LED2_TOG.address ) {
       // toggle debug led on and off
@@ -397,16 +521,16 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
 
       // echo back command id to host along with LED state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedChar( txDataBuffer, (unsigned char)((DEBUG_LED2_LAT&DEBUG_LED2_MASK)>0) );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)((DEBUG_LED2_LAT&DEBUG_LED2_MASK)>0) );
 
     } else if ( rxDataCmd == CMD_LED2_SET.address ) {
       // set debug led to specific value
 
       // set the debug led on or off depending on input
       if ( (rxDataBuffer[idx++]<<0) == 0 ) {
-        debugLed2On();
-      } else {
         debugLed2Off();
+      } else {
+        debugLed2On();
       }
 
       // echo back command id to host along with current led latch state
@@ -417,30 +541,35 @@ void usbHandler( unsigned char * rxDataBuffer, unsigned char * txDataBuffer,
 
       // echo back command id to host along with LED state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedChar( txDataBuffer, (unsigned char)((DEBUG_LED2_LAT&DEBUG_LED2_MASK)>0) );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)((DEBUG_LED2_LAT&DEBUG_LED2_MASK)>0) );
       
     } else if ( rxDataCmd == CMD_BTN1_GET.address ) {
       // get state of debug button
 
       // echo back command id to host along with button state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedChar( txDataBuffer, (unsigned char)(debugBtn1State()>0) );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(debugBtn1State()>0) );
 
     } else if ( rxDataCmd == CMD_BTN2_GET.address ) {
       // get state of debug button
 
       // echo back command id to host along with button state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedChar( txDataBuffer, (unsigned char)(debugBtn2State()>0) );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(debugBtn2State()>0) );
       
     } else {
       // we can't match this to anything corresponding to our command addresses...
 
       // flash LED b/c we are confused
       debugLed1Tog();
-      //delayMs(500)!!
+      delayMs( 250 );
+      debugLed1Tog();
+      delayMs( 250 );
+      debugLed1Tog();
+      delayMs( 250 );
       debugLed1Tog();
 
+      
     }
 
   }

@@ -20,11 +20,11 @@ extern "C" {
 #endif
 
 // function prototypes
-void usbHandler( unsigned char *, unsigned char *, unsigned int );
-void _insertTxBufUnsigned( unsigned char *, unsigned char );
-void insertTxBufUnsignedChar( unsigned char *, unsigned char );
-void insertTxBufUnsignedInt( unsigned char *, unsigned int );
-void insertTxBufUnsignedLong( unsigned char *, unsigned long );
+void usbHandler( uint8_t *, uint8_t *, uint16_t );
+void _insertTxBufUnsigned( uint8_t *, uint8_t );
+void insertTxBufUnsignedChar( uint8_t *, uint8_t );
+void insertTxBufUnsignedInt( uint8_t *, uint16_t );
+void insertTxBufUnsignedLong( uint8_t *, uint32_t );
 
 #ifdef	__cplusplus
 }

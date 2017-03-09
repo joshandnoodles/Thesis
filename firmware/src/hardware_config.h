@@ -24,6 +24,36 @@ extern "C" {
 #define FCY             (FOSC/2)                // execution freq in Hz
 #define FPB             (FOSC/2)                // peripheral clock freq in Hz
 
+// qp.h configuration
+
+// hardware configuration for quadrant photodiode channel 1 VSense
+#define QP_CH1_VSENSE_TRIS      TRISB           // port TRIS I/O buffer register
+#define QP_CH1_VSENSE_MASK      (1<<11)         // RB11
+#define QP_CH1_VSENSE_AN_BUF    ADC1BUF0        // ADC result buffer register
+#define QP_CH1_VSENSE_AN_MASK   (1<<11)         // AN11
+#define QP_CH1_VSENSE_AN_CH     11              // channe1001l index of ADC port
+
+// hardware configuration for quadrant photodiode channel 2 VSense
+#define QP_CH2_VSENSE_TRIS      TRISB           // port TRIS I/O buffer register
+#define QP_CH2_VSENSE_MASK      (1<<13)         // RB13
+#define QP_CH2_VSENSE_AN_BUF    ADC1BUF0        // ADC result buffer register
+#define QP_CH2_VSENSE_AN_MASK   (1<<13)         // AN13
+#define QP_CH2_VSENSE_AN_CH     13              // channel index of ADC port
+
+// hardware configuration for quadrant photodiode channel 1 VSense
+#define QP_CH3_VSENSE_TRIS      TRISB           // port TRIS I/O buffer register
+#define QP_CH3_VSENSE_MASK      (1<<14)         // RB14
+#define QP_CH3_VSENSE_AN_BUF    ADC1BUF0        // ADC result buffer register
+#define QP_CH3_VSENSE_AN_MASK   (1<<14)         // AN14
+#define QP_CH3_VSENSE_AN_CH     14              // channel index of ADC port
+
+// hardware configuration for quadrant photodiode channel 1 VSense
+#define QP_CH4_VSENSE_TRIS      TRISB           // port TRIS I/O buffer register
+#define QP_CH4_VSENSE_MASK      (1<<15)         // RB15
+#define QP_CH4_VSENSE_AN_BUF    ADC1BUF0        // ADC result buffer register
+#define QP_CH4_VSENSE_AN_MASK   (1<<15)         // AN15
+#define QP_CH4_VSENSE_AN_CH     15              // channel index of ADC port
+
 // lsr.h configuration
 
 // hardware configuration for laser load switch
@@ -41,7 +71,7 @@ extern "C" {
 #define LSR_EN_CH2_TRIS         TRISD           // port TRIS I/O buffer register
 #define LSR_EN_CH2_MASK         (1<<13)         // RD13
 
-// hardware configuration for laser current limit Vref VSENSE
+// hardware configuration for laser current limit Vref VSense
 #define LSR_VREF_VSENSE_TRIS    TRISB           // port TRIS I/O buffer register
 #define LSR_VREF_VSENSE_MASK    (1<<8)          // RB8
 #define LSR_VREF_VSENSE_AN_BUF  ADC1BUF0        // ADC result buffer register
@@ -65,15 +95,45 @@ extern "C" {
 // mod.h configuration
 
 // hardware configuration for modulation timer entity and interrupts
-#define MOD_TIMER_CON            T2CON           // type B timer control register
-#define MOD_TIMER_PERIOD         PR2             // type B timer period register
-#define MOD_TIMER_REG            TMR2            // type B timer count register
-#define MOD_TIMER_INT_ENB        IEC0            // type B timer interrupt enable
-#define MOD_TIMER_INT_PRIO       IPC2            // type B timer intterupt priority
-#define MOD_TIMER_INT_FLAG       IFS0            // type B timer interrupt flag
-#define MOD_TIMER_PRIO_OFFSET    2               // interrupt priority level bit offset
-#define MOD_TIMER_SUBPRIO_OFFSET 0               // interrupt subpriority level bit offset
-#define MOD_TIMER_INT_MASK       (1<<8)          // type B timer interrupt mask
+#define MOD_TIMER_CON            T4CON          // type B timer control register
+#define MOD_TIMER_PERIOD         PR4            // type B timer period register
+#define MOD_TIMER_REG            TMR4           // type B timer count register
+#define MOD_TIMER_INT_ENB        IEC0           // type B timer interrupt enable
+#define MOD_TIMER_INT_PRIO       IPC4           // type B timer intterupt priority
+#define MOD_TIMER_INT_FLAG       IFS0           // type B timer interrupt flag
+#define MOD_TIMER_PRIO_OFFSET    2              // interrupt priority level bit offset
+#define MOD_TIMER_SUBPRIO_OFFSET 0              // interrupt subpriority level bit offset
+#define MOD_TIMER_INT_MASK       (1<<16)        // type B timer interrupt mask
+
+// gimbal.h configuration
+
+// hardware configuration for pan servo
+#define SERVO_PAN_ANGLE_RNG     180             // assuming a 180 degree servo
+#define SERVO_PAN_OCCON         OC1CON          // output compare control register
+#define SERVO_PAN_OCR           OC1R            // oputput compare 'x' control register
+#define SERVO_PAN_OCRS          OC1RS           // output compare 'x' 2nd control register
+#define SERVO_PAN_PERIOD_NS     (20000000ul)    // period of PWM pulse cycle (in nsec)
+#define SERVO_PAN_PULSE_MIN_NS  (553000ul)      // minimum range pulse width (in nsec)
+#define SERVO_PAN_PULSE_MAX_NS  (2520000ul)     // maximum range pulse width (in nsec)
+#define SERVO_PAN_PULSE_RNG_NS  SERVO_PAN_PULSE_MAX_NS-SERVO_PAN_PULSE_MIN_NS
+#define SERVO_PAN_TIMER_CON     T2CON           // type B timer control register
+#define SERVO_PAN_TIMER_PERIOD  PR2             // type B timer period register
+#define SERVO_PAN_TIMER_REG     TMR2            // type B timer count register
+#define SERVO_PAN_TIMER_IDX     2               // timer to use for PWM (2 or 3)
+
+// hardware configuration for tilt servo
+#define SERVO_TILT_ANGLE_RNG    180             // assuming a 180 degree servo
+#define SERVO_TILT_OCCON        OC4CON          // output compare control register
+#define SERVO_TILT_OCR          OC4R            // oputput compare 'x' control register
+#define SERVO_TILT_OCRS         OC4RS           // output compare 'x' 2nd control register
+#define SERVO_TILT_PERIOD_NS    (20000000ul)    // period of PWM pulse cycle (in nsec)
+#define SERVO_TILT_PULSE_MIN_NS (553000ul)      // minimum range pulse width (in nsec)
+#define SERVO_TILT_PULSE_MAX_NS (2520000ul)     // maximum range pulse width (in nsec)
+#define SERVO_TILT_PULSE_RNG_NS SERVO_TILT_PULSE_MAX_NS-SERVO_TILT_PULSE_MIN_NS
+#define SERVO_TILT_TIMER_CON    T2CON           // type B timer control register
+#define SERVO_TILT_TIMER_PERIOD PR2             // type B timer period register
+#define SERVO_TILT_TIMER_REG    TMR2            // type B timer count register
+#define SERVO_TILT_TIMER_IDX    2               // timer to use for PWM (2 or 3)
 
 // debug.h configuration
 

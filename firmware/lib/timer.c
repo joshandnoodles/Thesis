@@ -137,6 +137,42 @@ unsigned char timerBSetPrescaler( volatile unsigned int * con, unsigned int pres
   return 0x1;
 }
 
+
+unsigned int timerBGetPrescaler( volatile unsigned int * con ) {
+  
+  // TCKPS<2:0>: Timer Input Clock Prescale Select bits
+  switch ( *con & (0b111<<4) ) {
+    case 0b111<<4:                      // 1:256 prescale value
+      return 256;
+      break;
+    case 0b110<<4:                      // 1:64 prescale value
+      return 64;
+      break;
+    case 0b101<<4:                      // 1:32 prescale value
+      return 32;
+      break;
+    case 0b100<<4:                      // 1:16 prescale value
+      return 16;
+      break;
+    case 0b011<<4:                      // 1:8 prescale value
+      return 8;
+      break;
+    case 0b010<<4:                      // 1:4 prescale value
+      return 4;
+      break;
+    case 0b001<<4:                      // 1:2 prescale value
+      return 2;
+      break;
+    case 0b000<<4:                      // 1:1 prescale value
+      return 1;
+      break;
+    default:
+      return 0x0;
+  }
+  
+  return 0x0;
+}
+
 void timerBOn( volatile unsigned int * con ) {
   
   // start timer

@@ -51,6 +51,7 @@ void initLsr( void ) {
   
   // it is smart to start off with no power to the driver/diode
   lsrLoadSwitchOff();
+  lsrSetLow();
   
   // configure ADC channel for Vref measurement
   adcInitCh( &LSR_VREF_VSENSE_AN_BUF,

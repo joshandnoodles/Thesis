@@ -23,17 +23,18 @@
 #include <p32mx460f512l.h>
 #include "hardware_config.h"
 
-#include "lsr.h"
 #include "timer.h"
-#include "mod.h"
 #include "adc.h"
+#include "qp.h"
+#include "lsr.h"
+#include "mod.h"
+#include "gimbal.h"
 #include "debug.h"
 
 #include <stddef.h>                     // Defines NULL
 #include <stdbool.h>                    // Defines true
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "system/common/sys_module.h"   // SYS function prototypes
-
 
 /*
 // pin definitions
@@ -137,45 +138,26 @@ void Timer2_3Interrupt() iv IVT_TIMER_3 ilevel 7 ics ICS_SRS {
 // main function
 void main() {
   
-
-
-
   // before we begin anything, initialize the following:
   SYS_Initialize( NULL );   // all MPLAB Harmony modules, including app(s)
-  initAdc();                // ADC configuration
   initCoreTimer();          // core timer
+  initAdc();                // ADC configuration
   initDelay();              // blocking delays
-  initDebug();              // debug hardware on the Clicker 2
+  initQp();                 // quadrant photodiode circuitry
   initLsr();                // laser driver and diode circuitry
   initMod();                // modulation processes/hardware
+  initGimbal();             // gimbal controlling pan/tilt mechanisms
+  initDebug();              // debug hardware on the Clicker 2
   
-  lsrLoadSwitchOn();
-  //modSetFreqHz( 5000000 );
+  //lsrLoadSwitchOn();
+  //modSetFreqHz( 10 );
   //modOn();
   
-  lsrSetLow();
+  gimbalOn();
+  //gimbalSetTilt( 180 );
   
-  // set the following pins as analog: 
-  // AN8, AN9, AN10, AN11, AN13, AN14, AN15
-  //AD1PCFG &= ~0b1111111100000000;
-  /*
-  AD1PCFG = 0xFFFF;
-  JTAGEN_bit = 0;
-  
-  T1_Direction = 1;         // Set direction for buttons
-  T2_Direction = 1;
-  
-  LD1_Direction = 0;        // Set direction for LEDS
-  LD2_Direction = 0;
-  LD1 = 0;                  // turn off leds
-  LD2 = 0;
-  Example_State = 0;        // set default Example state
-
-  InitTimer2_3();           // initialize Timer
-  
-  EnableInterrupts();       // Enable all interrupts
-  
-  */
+  //lsrLoadSwitchOn();
+  //lsrSetHigh();
   
   while (1) {     // loop forever
     
@@ -191,19 +173,42 @@ void main() {
     //  lsrLoadSwitchTog();
     //  lsrTog();
     //}
-    
-    if ( debugBtn2State() ) {             // wait for button to be depressed
-      while( debugBtn2State() );          // hold here until button is released
+    if ( debugBtn1State() ) {             // wait for button to be depressed
+      while( debugBtn1State() ) {         // hold here until button is released
+        SERVO_PAN_OCRS = SERVO_PAN_OCR - 1; 
+        SERVO_TILT_OCRS = SERVO_TILT_OCR - 1;
+      }
       delayUs( BTN_DEBOUNCE_US );    // pause to avoid de-bounce issues
-      debugLed1Tog();
-      lsrLoadSwitchTog();
-      lsrTog();
+      //delayS(2);
+    }
+    if ( debugBtn2State() ) {             // wait for button to be depressed
+      while( debugBtn2State() ) {         // hold here until button is released
+        SERVO_PAN_OCRS = SERVO_PAN_OCR + 1; 
+        SERVO_TILT_OCRS = SERVO_TILT_OCR + 1;
+      }
+      //gimbalSetPan( 90 );
+      delayUs( BTN_DEBOUNCE_US );    // pause to avoid de-bounce issues
+      debugLed2Tog();
+      //lsrLoadSwitchTog();
+      //lsrTog();
+      //gimbalSetPan(45);
+      
+      //delayS(2);
     }    
     //delayMs(1000);
     //debugLed2Tog();
+    //gimbalSetTilt(90);
+    
+    qpReadCh1VSense();
+    qpReadCh2VSense();
+    qpReadCh3VSense();
+    qpReadCh4VSense();
+    qpAlign();
+    
     lsrReadVrefVSenseReg();
     lsrReadISenseReg();
     lsrCheckAlarms();
+    
       
     
 

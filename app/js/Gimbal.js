@@ -2,12 +2,12 @@ function Gimbal() {
   // constructor for gimbal class
   
   // initialize any variables
-  this.panRngLim = Gimbal.DEFAULT_PAN_RNG    // strict limits imposed on movement
-  this.tiltRngLim = Gimbal.DEFAULT_TILT_RNG  // strict limits imposed on movement
-  this.panRng = Gimbal.DEFAULT_PAN_RNG    // loose limits imposed on movement
-  this.tiltRng = Gimbal.DEFAULT_TILT_RNG  // loose limits imposed on movement
-  this.pan = (this.panRng[1]-this.panRng[0])/2  // assume middle
-  this.tilt = this.tiltRng[0]                   // assume lowest (flat)
+  this.panRngLim = Gimbal.DEFAULT_PAN_RNG     // strict limits imposed on movement
+  this.tiltRngLim = Gimbal.DEFAULT_TILT_RNG   // strict limits imposed on movement
+  this.panRng = Gimbal.DEFAULT_PAN_RNG        // loose limits imposed on movement
+  this.tiltRng = Gimbal.DEFAULT_TILT_RNG      // loose limits imposed on movement
+  this.pan = (this.panRng[1]-this.panRng[0])/2      // assume middle
+  this.tilt = (this.tiltRng[1]-this.tiltRng[0])/2   // assume middle
   this.panMcu = null            // contain actual gimbal values as told by MCU
   this.tiltMcu = null           // contain actual gimbal values as told by MCU
   this.panBytes = null          // byte representation of pan value
@@ -25,7 +25,7 @@ function Gimbal() {
 
 // loose limits imposed on movement
 Gimbal.DEFAULT_PAN_RNG = [ 0, 180 ]
-Gimbal.DEFAULT_TILT_RNG = [ 0, 90 ]
+Gimbal.DEFAULT_TILT_RNG = [ 0, 180 ]
 
 // default variables/functions
 Gimbal.DEFAULT_SCAN_STEP_FUNC = 'scanStepSprinkler'
@@ -41,11 +41,11 @@ Gimbal.prototype.set = function( panTilt ) {
   else
     this.pan = panTilt[0]
   if ( panTilt[1] < this.tiltRng[0] )
-    gimbal.tilt = this.tiltRngLim[0]
+    this.tilt = this.tiltRngLim[0]
   else if ( panTilt[1] > this.tiltRngLim[1] )
-    gimbal.tilt = this.tiltRngLim[1]
+    this.tilt = this.tiltRngLim[1]
   else
-    gimbal.tilt = panTilt[1]
+    this.tilt = panTilt[1]
   
   // byte values that are needed when sending to device
   this._calcBytes()

@@ -144,7 +144,7 @@ Very short meeting discussing arising issues such as power shortage and servo cu
     - look at waveforms directly at QP channel output and after amplifier using oscilloscope to see where this behavior is occuring (if not seen in HW could be in FW)
   - theoretical discussion on serial communication techniques, specifically with independent clocks
    
-# Week 9
+# Week Nine
 
   - collected measurements from QP channel before and after amplifier with modulating laser i
     - signal looks great so this verifies entire optical setup (i.e. transmitter and receiver)

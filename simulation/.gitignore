@@ -1,0 +1,5 @@
+# Any backup files for Blender
+*.blend*
+
+# Any backup files for Sketchup
+*.skb

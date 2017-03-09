@@ -7,4 +7,8 @@
 private/
 
 # Temporary Microsoft files
-~$*
+~$*.doc*
+~$*.xls*
+*.xlk
+~$*.ppt*
+*.~vsdx

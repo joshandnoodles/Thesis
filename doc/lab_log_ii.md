@@ -144,4 +144,18 @@ Very short meeting discussing arising issues such as power shortage and servo cu
     - look at waveforms directly at QP channel output and after amplifier using oscilloscope to see where this behavior is occuring (if not seen in HW could be in FW)
   - theoretical discussion on serial communication techniques, specifically with independent clocks
    
-   
+# Week 9
+
+  - collected measurements from QP channel before and after amplifier with modulating laser i
+    - signal looks great so this verifies entire optical setup (i.e. transmitter and receiver)
+    - this must be a FW issue, potentially reading the ADC too fast
+  - create plan to electrically isolate QP from servo power rails
+    - use external coin cell batteries to bias QP only
+    - parts ordered and rework instructions written
+
+# Weekly One-One - March 9, 2017
+
+  - discussed Thesis timeline better, not sure about date to get everything in by summer semester but probably ~1 month prior
+  - showed results of pre- and post-amp modulation waveform collected from QP CH1
+  - plan to work on modulation coding and actual data sending next week (spring break), hope is to have architecture for sending data by after spring break (limiting number of promises here though...)
+

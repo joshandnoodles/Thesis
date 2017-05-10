@@ -16,7 +16,7 @@ extern "C" {
 #endif
 
 // function prototypes
-void initInterrupt( volatile unsigned int *,
+void initInterrupt(
         volatile unsigned int *,
         volatile unsigned int *,
         unsigned int,
@@ -24,6 +24,8 @@ void initInterrupt( volatile unsigned int *,
         unsigned int,
         unsigned char,
         unsigned );
+void interruptOn( volatile unsigned int *, unsigned int );
+void interruptOff( volatile unsigned int *, unsigned int );
 
 #ifdef	__cplusplus
 }

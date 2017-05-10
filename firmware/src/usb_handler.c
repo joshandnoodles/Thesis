@@ -18,6 +18,7 @@
 #include <stdint.h>
 #include <string.h>   // memset
 
+#include "timer.h"
 #include "qp.h"
 #include "lsr.h"
 #include "mod.h"
@@ -26,7 +27,10 @@
 
 #include "usb_handler.h"
 
-uint16_t txIdx;
+volatile uint16_t usbTxIdx;
+uint16_t usbModBufferCopy[MOD_FRAME_DATA_SIZE_BYTES];
+volatile uint8_t usbModBufferIdx;
+volatile uint8_t usbModBufferInitialIdx;
 
 // packet information for different tx/rx items
 // "address" part of packet stores information about what is being sent,
@@ -48,6 +52,8 @@ static const PktInfo CMD_LED2_SET             = { 0x14,   0,        1       };
 static const PktInfo CMD_LED2_GET             = { 0x15,   1,        0       };
 static const PktInfo CMD_BTN1_GET             = { 0x16,   1,        0       };
 static const PktInfo CMD_BTN2_GET             = { 0x17,   1,        0       };
+static const PktInfo CMD_DBG_VAL1_GET         = { 0x18,   4,        0       };
+static const PktInfo CMD_DBG_VAL2_GET         = { 0x19,   4,        0       };
 // 0x2* 
 // 0x3* Ethernet commands 
 // 0x4* delay commands
@@ -87,6 +93,11 @@ static const PktInfo CMD_MOD_SET              = { 0x81,   0,        1       };
 static const PktInfo CMD_MOD_GET              = { 0x82,   1,        0       };
 static const PktInfo CMD_MOD_FREQ_HZ_SET      = { 0x83,   0,        4       };
 static const PktInfo CMD_MOD_FREQ_HZ_GET      = { 0x84,   4,        0       };
+static const PktInfo CMD_MOD_HICCUP_GET       = { 0x85,   1,        0,      };
+static const PktInfo CMD_MOD_DATA_BULK_RUN    = { 0x86,   0,        0,      };
+static const PktInfo CMD_MOD_DATA_BULK_GET    = { 0x87,   62,       0,      };
+static const PktInfo CMD_MOD_SIG_LOCK_GET     = { 0x88,   1,        0,      };
+
 // 0x9* 
 // 0xA*
 // 0xB*
@@ -97,7 +108,7 @@ static const PktInfo CMD_MOD_FREQ_HZ_GET      = { 0x84,   4,        0       };
 void _insertTxBufUnsigned( uint8_t * txDataBuffer, uint8_t data ) {
   
   // place data in byte chunks
-  txDataBuffer[txIdx++] = data;
+  txDataBuffer[usbTxIdx++] = data;
   
   return;
 }
@@ -136,10 +147,10 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
     uint16_t bufSize ) {
   
   uint8_t rxDataCmd;  
-  uint16_t idx;
+  volatile uint16_t idx;
   
   // reset counter for building our tx buffer
-  txIdx = 0;
+  usbTxIdx = 0;
   memset( txDataBuffer, 0, sizeof(uint8_t)*64 );
     
   // we got a packet, check what the hosts wants us to do and do it,
@@ -284,10 +295,12 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
       // echo back command id to host and gimbal information
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
       insertTxBufUnsignedInt( txDataBuffer, gimbalGetTilt() / 360 * ((float)(uint16_t)((1<<16)-1)) );
-
-    
+      
     } else if ( rxDataCmd == CMD_QP_CH1_VSENSE_GET.address ) {
       // get quadrant photodiode ADC node
+      
+      // read ADC channel
+      //qpReadCh1VSense();
       
       // echo back command id to host along with ADC data
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
@@ -296,12 +309,18 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
     } else if ( rxDataCmd == CMD_QP_CH2_VSENSE_GET.address ) {
       // get quadrant photodiode ADC node
       
+      // read ADC channel
+      //qpReadCh2VSense();
+      
       // echo back command id to host along with ADC data
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
       insertTxBufUnsignedInt( txDataBuffer, (uint16_t)(qpLastCh2VSenseReg) );
       
     } else if ( rxDataCmd == CMD_QP_CH3_VSENSE_GET.address ) {
       // get quadrant photodiode ADC node
+      
+      // read ADC channel
+      //qpReadCh3VSense();
       
       // echo back command id to host along with ADC data
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
@@ -310,6 +329,9 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
     } else if ( rxDataCmd == CMD_QP_CH4_VSENSE_GET.address ) {
       // get quadrant photodiode ADC node
       
+      // read ADC channel
+      //qpReadCh4VSense();
+    
       // echo back command id to host along with ADC data
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
       insertTxBufUnsignedInt( txDataBuffer, (uint16_t)(qpLastCh4VSenseReg) );
@@ -334,8 +356,8 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
       do {
         insertTxBufUnsignedInt( txDataBuffer, (uint16_t)(qpBulkBuffer[qpBulkBufferIdx++]) );
-      } while ( ( qpBulkBufferIdx) % (CMD_QP_ALL_BULK_GET.txBytes/2) );
-      
+      } while ( (qpBulkBufferIdx) % (CMD_QP_ALL_BULK_GET.txBytes/2) );
+    
     } else if ( rxDataCmd == CMD_LSR_LOAD_SWTICH_TOG.address ) {
       // toggle load switch on and off
       
@@ -369,12 +391,18 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
     } else if ( rxDataCmd == CMD_LSR_VREF_VSENSE_GET.address ) {
       // get current limit Vref ADC node
       
+      // read ADC channel
+      //lsrReadVrefVSenseReg();
+      
       // echo back command id to host along with vref data
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
       insertTxBufUnsignedInt( txDataBuffer, (uint16_t)(lsrLastVrefVSenseReg) );
       
     } else if ( rxDataCmd == CMD_LSR_ISENSE_GET.address ) {
       // get current limit Vref ADC node
+      
+      // read ADC channel
+      //lsrReadISenseReg();
       
       // echo back command id to host along with vref data
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
@@ -428,31 +456,44 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
       
       // echo back command id to host along with modulation rate
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modFreqHz) );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modTxFreqHz) );
     
-    /*} else if ( rxDataCmd == CMD_LSR_TOG.address ) {
-      // set laser on/off
-
-      // set laser to a certain power level
-      //!!if ( getLaserPower() )
-      //!!  setLaserPower( 0 );
-      //!!else
-      //!!  setLaserPower( 30 );
-
-      // echo back command id to host along with laser power data
-      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      //!!insertTxBufUnsignedChar( txDataBuffer, getLaserPower() );
+    } else if ( rxDataCmd == CMD_MOD_HICCUP_GET.address ) {
+      // get hiccup clock recovery state
       
-    } else if ( rxDataCmd == CMD_LSR_SET.address ) {
-      // set laser to specific value
-
-      // set laser to a certain power level
-      //!!setLaserPower( rxDataBuffer[idx++]<<0 );
-
+      // echo back command id to host along with hiccup state
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(modRxHiccupState) );
+      
+    } else if ( rxDataCmd == CMD_MOD_DATA_BULK_RUN.address ) {
+      // collect bulk modulation data from photodiode ADC nodes
+      
+      // save pointer to current index so we know where to start
+      usbModBufferIdx = 0;
+      usbModBufferInitialIdx = (uint8_t)(modRxADCBufferIdx);
+      
+      // make deep copy of buffer so we have static copy
+      memcpy( usbModBufferCopy, (uint16_t *)(modRxADCBuffer), sizeof( modRxADCBuffer ) );
+      
       // echo back command id to host
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-    */
     
+    } else if ( rxDataCmd == CMD_MOD_DATA_BULK_GET.address ) {
+      // send back bulk modulation data from photodiode ADC node
+      
+      // echo back command id to host along with ADC node data
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      do {
+        insertTxBufUnsignedInt( txDataBuffer, (uint16_t)(usbModBufferCopy[(uint8_t)(usbModBufferInitialIdx + (usbModBufferIdx++))]) );
+      } while ( (usbModBufferIdx) % (CMD_MOD_DATA_BULK_GET.txBytes/2) );
+    
+    } else if ( rxDataCmd == CMD_MOD_SIG_LOCK_GET.address ) {
+      // get state of signal lock
+      
+      // echo back command id to host along with signal lock state
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(modSigLockState) );
+      
     } else if ( rxDataCmd == CMD_LSR_TOG.address ) {
       // toggle load switch on and off
       
@@ -485,7 +526,7 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
     
     } else if ( rxDataCmd == CMD_LED1_TOG.address ) {
       // toggle debug led on and off
-
+      modSigLockState = 0x01;//!!
       // toggle output latch of debug led
       debugLed1Tog();
 
@@ -508,17 +549,17 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
 
     } else if ( rxDataCmd == CMD_LED1_GET.address ) {
       // get state of debug led
-
+      
       // echo back command id to host along with LED state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
       insertTxBufUnsignedChar( txDataBuffer, (uint8_t)((DEBUG_LED1_LAT&DEBUG_LED1_MASK)>0) );
       
     } else if ( rxDataCmd == CMD_LED2_TOG.address ) {
       // toggle debug led on and off
-
+      modSigLockState = 0x00;//!!
       // toggle output latch of debug led
       debugLed2Tog();
-
+      
       // echo back command id to host along with LED state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
       insertTxBufUnsignedChar( txDataBuffer, (uint8_t)((DEBUG_LED2_LAT&DEBUG_LED2_MASK)>0) );
@@ -556,6 +597,20 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
       // echo back command id to host along with button state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
       insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(debugBtn2State()>0) );
+    
+    } else if ( rxDataCmd == CMD_DBG_VAL1_GET.address ) {
+      // send value back for troubleshooting
+
+      // echo back command id to host along with value
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxBitErrors) );
+    
+    } else if ( rxDataCmd == CMD_DBG_VAL2_GET.address ) {
+      // send value back for troubleshooting
+      
+      // echo back command id to host along with value
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxHiccupThres) );
       
     } else {
       // we can't match this to anything corresponding to our command addresses...
@@ -568,10 +623,7 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
       debugLed1Tog();
       delayMs( 250 );
       debugLed1Tog();
-
-      
     }
-
   }
 
   return;

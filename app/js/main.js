@@ -40,6 +40,16 @@ var CMDS = {
     rxBytes:  1,
     txBytes:  0,
     },
+  'CMD_DBG_VAL1_GET': {
+    address:  0x18,
+    rxBytes:  4,
+    txBytes:  0,
+    },
+  'CMD_DBG_VAL2_GET': {
+    address:  0x19,
+    rxBytes:  4,
+    txBytes:  0,
+    },
   // 0x2* 
   // 0x3* Ethernet commands 
   // 0x4* delay commands
@@ -206,7 +216,27 @@ var CMDS = {
     address:  0x84,
     rxBytes:  4,
     txBytes:  0,
-  },  
+  },
+  'CMD_MOD_HICCUP_GET': {
+    address:  0x85,
+    rxBytes:  1,
+    txBytes:  0,
+  },
+  'CMD_MOD_DATA_BULK_RUN': {
+    address:  0x86,
+    rxBytes:  0,
+    txBytes:  0,
+  },
+  'CMD_MOD_DATA_BULK_GET': {
+    address:  0x87,
+    rxBytes:  62,
+    txBytes:  0,
+  },
+  'CMD_MOD_SIG_LOCK_GET': {
+    address:  0x88,
+    rxBytes:  1,
+    txBytes:  0,
+  },
   // 0x9* 
   // 0xA*
   // 0xB*
@@ -235,13 +265,15 @@ var CONTROLS = [
   [ 'Modulation', 'Set 10Hz', function() { sendHandler( MOD_CMD_PKT(10) ) } ],
   [ 'Modulation', 'Set 100kHz', function() { sendHandler( MOD_CMD_PKT(100e3) ) } ],
   [ 'Modulation', 'Set 500kHz', function() { sendHandler( MOD_CMD_PKT(500e3) ) } ],
-  [ 'Modulation', '-100kHz', function() { sendHandler( MOD_CMD_PKT(modFreqHz-100e3) ) } ],
+  [ 'Modulation', '-1kHz', function() { sendHandler( MOD_CMD_PKT(modFreqHz-1000) ) } ],
   [ 'Modulation', '-100Hz', function() { sendHandler( MOD_CMD_PKT(modFreqHz-100) ) } ],
   [ 'Modulation', '+100Hz', function() { sendHandler( MOD_CMD_PKT(modFreqHz+100) ) } ],
-  [ 'Modulation', '+100kHz', function() { sendHandler( MOD_CMD_PKT(modFreqHz+100e3) ) } ],
-  [ 'Modulation', '-1Hz', function() { sendHandler( MOD_CMD_PKT(modFreqHz-1) ) } ],
+  [ 'Modulation', '+1kHz', function() { sendHandler( MOD_CMD_PKT(modFreqHz+1000) ) } ],
+  [ 'Modulation', '-10Hz', function() { sendHandler( MOD_CMD_PKT(modFreqHz-10) ) } ],
   [ 'Modulation', 'Current Rate', function() { sendHandler( [ CMDS['CMD_MOD_FREQ_HZ_GET'].address ] ) } ],
-  [ 'Modulation', '+1Hz', function() { sendHandler( MOD_CMD_PKT(modFreqHz+1) ) } ],
+  [ 'Modulation', 'Lock State', function() { sendHandler( [ CMDS['CMD_MOD_SIG_LOCK_GET'].address ] ) } ],
+  [ 'Modulation', '+10Hz', function() { sendHandler( MOD_CMD_PKT(modFreqHz+10) ) } ],
+  [ 'Modulation', 'Bulk Read', function() { sendHandler( [ CMDS['CMD_MOD_DATA_BULK_RUN'].address ] ) } ],
   [ 'Gimbal', 'Toggle Pan Power', function() { sendHandler( [ CMDS['CMD_GIMBAL_PAN_TOG'].address ] ) } ],
   [ 'Gimbal', 'Set Pan 0°', function() { sendHandler( SCAN_CMD_PKT( [ 0, gimbal.tilt ] ) ) } ],
   [ 'Gimbal', 'Set Pan 90°', function() { sendHandler( SCAN_CMD_PKT( [ 90, gimbal.tilt ] ) ) } ],
@@ -267,6 +299,8 @@ var CONTROLS = [
   [ 'Debug', 'LED2', function() { sendHandler( [ CMDS['CMD_LED2_TOG'].address ] ) } ],
   [ 'Debug', 'BTN1', function() { sendHandler( [ CMDS['CMD_BTN1_GET'].address ] ) } ],
   [ 'Debug', 'BTN2', function() { sendHandler( [ CMDS['CMD_BTN2_GET'].address ] ) } ],
+  [ 'Debug', 'Value1', function() { sendHandler( [ CMDS['CMD_DBG_VAL1_GET'].address ] ) } ],
+  [ 'Debug', 'Value2', function() { sendHandler( [ CMDS['CMD_DBG_VAL2_GET'].address ] ) } ],
 ]
 
 // initalize underlying magic  ...
@@ -286,6 +320,7 @@ var gimbal = new Gimbal()
 
 // variable to keep track of ongoing operations
 var modFreqHz = null
+var modBulkBuffer = null
 var qpBulkBuffer = null
 var qpBulkBufferCh1 = null
 var qpBulkBufferCh2 = null
@@ -337,6 +372,8 @@ var DEFAULT_MCU_PKT = ( function() { return [
   CMDS['CMD_LSR_GET'].address,
   CMDS['CMD_MOD_GET'].address,
   CMDS['CMD_MOD_FREQ_HZ_GET'].address,
+  CMDS['CMD_MOD_FREQ_HZ_GET'].address,
+  CMDS['CMD_MOD_SIG_LOCK_GET'].address,
   CMDS['CMD_GIMBAL_PAN_GET'].address,
   CMDS['CMD_GIMBAL_TILT_GET'].address,
   CMDS['CMD_GIMBAL_PAN_ANG_GET'].address,
@@ -345,6 +382,8 @@ var DEFAULT_MCU_PKT = ( function() { return [
   CMDS['CMD_LED2_GET'].address,
   CMDS['CMD_BTN1_GET'].address,
   CMDS['CMD_BTN2_GET'].address,
+  CMDS['CMD_DBG_VAL1_GET'].address,
+  CMDS['CMD_DBG_VAL2_GET'].address,
 ] } )
 
 // ... helper functions (most of which would have issues with scope)
@@ -480,13 +519,13 @@ var graphLaserState = newGraph( ( {
   fitYRngEvent: null,
   yRng: [ -0.1, 1.1 ],
 } ) )
-var graphModRate = newGraph( ( {
-  yLabelText: 'Mod Rate (Hz)',
+var graphDebugValue1 = newGraph( ( {
+  yLabelText: 'Debug Value1',
+  yRng: [ 0, 1 ],
 } ) )
-var graphModState = newGraph( ( {
-  yLabelText: 'Mod State',
-  fitYRngEvent: null,
-  yRng: [ -0.1, 1.1 ],
+var graphDebugValue2 = newGraph( ( {
+  yLabelText: 'Debug Value2',
+  yRng: [ 0, 1 ],
 } ) )
 var graphPan = newGraph( ( {
   yLabelText: 'Pan Servo (°)',
@@ -749,8 +788,8 @@ function receiveHandler( dataBuf ) {
         // if we have one set up for this variable)
         if ( typeof graphCh1VSense !== 'undefined' )
           graphCh1VSense.addPoint( (adc*1000) )
-        else
-          controls.controlsByGroup["Quadrant Photodiode"]["Channel 1"].querySelector( '#value' ).innerHTML = " (" + (adc*1000).toFixed(3) + ")"
+        //else
+          controls.controlsByGroup["Quadrant Photodiode"]["Channel 1"].querySelector( '#value' ).innerHTML = " (" + (reg) + ")"
         
         break
       
@@ -769,8 +808,8 @@ function receiveHandler( dataBuf ) {
         // if we have one set up for this variable)
         if ( typeof graphCh2VSense !== 'undefined' )
           graphCh2VSense.addPoint( (adc*1000) )
-        else
-          controls.controlsByGroup["Quadrant Photodiode"]["Channel 2"].querySelector( '#value' ).innerHTML = " (" + (adc*1000).toFixed(3) + ")"
+        //else
+          controls.controlsByGroup["Quadrant Photodiode"]["Channel 2"].querySelector( '#value' ).innerHTML = " (" + (reg) + ")"
         
         break
       
@@ -789,8 +828,8 @@ function receiveHandler( dataBuf ) {
         // if we have one set up for this variable)
         if (graphCh3VSense)
           graphCh3VSense.addPoint( (adc*1000) )
-        else
-          controls.controlsByGroup["Quadrant Photodiode"]["Channel 3"].querySelector( '#value' ).innerHTML = " (" + (adc*1000).toFixed(3) + ")"
+        //else
+          controls.controlsByGroup["Quadrant Photodiode"]["Channel 3"].querySelector( '#value' ).innerHTML = " (" + (reg) + ")"
         
         break
       
@@ -809,8 +848,8 @@ function receiveHandler( dataBuf ) {
         // if we have one set up for this variable)
         if ( typeof graphCh4VSense !== 'undefined' )
           graphCh4VSense.addPoint( (adc*1000) )
-        else
-          controls.controlsByGroup["Quadrant Photodiode"]["Channel 4"].querySelector( '#value' ).innerHTML = " (" + (adc*1000).toFixed(3) + ")"
+        //else
+          controls.controlsByGroup["Quadrant Photodiode"]["Channel 4"].querySelector( '#value' ).innerHTML = " (" + (reg) + ")"
         
         break
       
@@ -843,7 +882,7 @@ function receiveHandler( dataBuf ) {
         for ( var count=0; count<CMDS['CMD_QP_ALL_BULK_GET'].rxBytes; count+=2 )
           qpBulkBuffer.push( bytesToUnsignedInt( dataBytes.slice(count,count+2) ) )
         
-        // trim data array if too larger
+        // trim data array if too large
         if ( qpBulkBuffer.length > 4096 )
           qpBulkBuffer.splice( 4096, 4096 )
         
@@ -936,7 +975,7 @@ function receiveHandler( dataBuf ) {
         // if we have one set up for this variable)
         if ( typeof graphVrefVSense !== 'undefined' )
           graphVrefVSense.addPoint( vref )
-        else
+        //else
           controls.controlsByGroup["Laser"]["Vref Voltage Sense"].querySelector( '#value' ).innerHTML = " (" + vref.toFixed(3) + ")"
         
         break
@@ -957,7 +996,7 @@ function receiveHandler( dataBuf ) {
         // if we have one set up for this variable)
         if ( typeof graphISense !== 'undefined' )
           graphISense.addPoint( iSense )
-        else
+        //else
           controls.controlsByGroup["Laser"]["Current Sense"].querySelector( '#value' ).innerHTML = " (" + vref.toFixed(3) + ")"
         
         break
@@ -1008,7 +1047,90 @@ function receiveHandler( dataBuf ) {
           controls.controlsByGroup["Modulation"]["Current Rate"].querySelector( '#value' ).innerHTML = " (" + modFreqHz + ")"
         
         break
+      
+      case CMDS['CMD_MOD_SIG_LOCK_GET'].address:
         
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_MOD_SIG_LOCK_GET' )
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphModSigLockState !== 'undefined' )
+          graphModSigLockState.addPoint( dataBytes[0]  )
+        //else
+          controls.controlsByGroup["Modulation"]["Lock State"].querySelector( '#value' ).innerHTML = " (Lock=" + dataBytes[0] + ")"
+        
+        break
+      
+      case CMDS['CMD_MOD_DATA_BULK_RUN'].address:
+        
+        // stop default poller since this is a bulk activity
+        stopPoller()
+        
+        // graphically update value field in control
+        controls.controlsByGroup["Modulation"]["Bulk Read"].querySelector( '#value' ).innerHTML = ' - ' + 'Reading ADCs...'
+        
+        // clear buffer holding ADC information
+        modBulkBuffer = []
+        
+        // trigger request to retrieve data we just made
+        sendHandler( [ CMDS['CMD_MOD_DATA_BULK_GET'].address ] )
+        
+        break
+      
+      case CMDS['CMD_MOD_DATA_BULK_GET'].address:
+        
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_MOD_DATA_BULK_GET' )
+        
+        // add bytes to array buffer
+        for ( var count=0; count<CMDS['CMD_MOD_DATA_BULK_GET'].rxBytes; count+=2 )
+          modBulkBuffer.push( bytesToUnsignedInt( dataBytes.slice(count,count+2) ) )
+        
+        // trim data array if too larger
+        if ( modBulkBuffer.length > 256 )
+          modBulkBuffer.splice( 256, 256 )
+        
+        // graphically update value field in control
+        controls.controlsByGroup["Modulation"]["Bulk Read"].querySelector( '#value' ).innerHTML = ' - ' + 'Retrieving Data...' + modBulkBuffer.length + '/256'
+        
+        if ( modBulkBuffer.length < 256 ) {
+          // send another request for more data if we don't have it all yet
+          sendHandler( [ CMDS['CMD_MOD_DATA_BULK_GET'].address ] )
+        } else {
+          // format the data into seperate arrays while also forming csv
+          // formatted array
+          var csvArr = []
+          for ( var count=0; count<modBulkBuffer.length; count++ ) {
+            // calculate voltage value assuming 10-bit ADC with 3.3V reference
+            var value = modBulkBuffer[count]// * 3.3 / ((1<<10)-1)
+            
+            // place into correct array
+            csvArr.push( [value] )
+          }
+          
+          // create csv file with data
+          var lineArray = []
+          csvArr.forEach( function ( infoArray, index ) {
+              var line = infoArray.join( ',' )
+              lineArray.push( index == 0 ? "data:text/csv;charset=utf-8," + line : line )
+          } )
+          var csvContent = lineArray.join( '\n' )
+          var encodedUri = encodeURI( csvContent )
+          var link = document.createElement( 'a' )
+          link.setAttribute( 'href', encodedUri )
+          var newDate = new Date()
+          var timestamp = newDate.getFullYear()+'_'+parseInt(newDate.getMonth()+1)+'_'+newDate.getDate()+'-'+newDate.getHours()+'_'+newDate.getMinutes()+'_'+newDate.getSeconds()
+          link.setAttribute( 'download', timestamp + '.csv' )
+          document.body.appendChild( link )
+          link.click()
+          
+          // restart default activity now that bulk action is done
+          startPoller()
+        }
+        
+        break
+      
       case CMDS['CMD_LED1_GET'].address:
       case CMDS['CMD_LED1_TOG'].address:
         
@@ -1050,7 +1172,42 @@ function receiveHandler( dataBuf ) {
         controls.controlsByGroup["Debug"]["BTN2"].querySelector( '#value' ).innerHTML = " (" + dataBytes[0] + ")"
         
         break
+      
+      case CMDS['CMD_DBG_VAL1_GET'].address:
         
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_DBG_VAL1_GET' )
+        
+        // convert to meaningful value 
+        var value = bytesToUnsignedLong( dataBytes )
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphDebugValue1 !== 'undefined' )
+          graphDebugValue1.addPoint( value )
+        //else
+          controls.controlsByGroup["Debug"]["Value1"].querySelector( '#value' ).innerHTML = " (" + value + ")"
+        
+        break
+      
+      case CMDS['CMD_DBG_VAL2_GET'].address:
+        
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_DBG_VAL2_GET' )
+        
+        // convert to meaningful value 
+        var value = bytesToUnsignedLong( dataBytes )
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphDebugValue2 !== 'undefined' )
+          graphDebugValue2.addPoint( value )
+        //else
+          controls.controlsByGroup["Debug"]["Value2"].querySelector( '#value' ).innerHTML = " (" + value + ")"
+        
+        
+        break
+      
       default:
         
         // don't recognize this header identifier, assume that we simply
@@ -1075,10 +1232,10 @@ function bytesToUnsignedInt( bytes ) {
            ((bytes[1]<<0)) )
 }
 function bytesToUnsignedLong( bytes ) {
-  return ( ((bytes[0]<<24)) + 
-           ((bytes[1]<<16)) + 
-           ((bytes[2]<<8)) + 
-           ((bytes[3]<<0)) )
+  return ( ((bytes[0]<<24)>>>0) + 
+           ((bytes[1]<<16)>>>0) + 
+           ((bytes[2]<<8)>>>0) + 
+           ((bytes[3]<<0)>>>0) )
 }
 
 // experimentk for fast data collectoin

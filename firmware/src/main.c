@@ -134,7 +134,6 @@ void Timer2_3Interrupt() iv IVT_TIMER_3 ilevel 7 ics ICS_SRS {
 }
 */
 
-
 // main function
 void main() {
   
@@ -149,12 +148,11 @@ void main() {
   initGimbal();             // gimbal controlling pan/tilt mechanisms
   initDebug();              // debug hardware on the Clicker 2
   
-  //lsrLoadSwitchOn();
-  //modSetFreqHz( 10 );
-  //modOn();
+  lsrLoadSwitchOn();
+  modOn();
   
-  gimbalOn();
-  //gimbalSetTilt( 180 );
+  //gimbalOn();
+  //gimbalSetTilt( 90 );
   
   //lsrLoadSwitchOn();
   //lsrSetHigh();
@@ -179,40 +177,27 @@ void main() {
         SERVO_TILT_OCRS = SERVO_TILT_OCR - 1;
       }
       delayUs( BTN_DEBOUNCE_US );    // pause to avoid de-bounce issues
+      debugLed1Tog();
       //delayS(2);
+      //AD1CHS = 0x1111<<24;
     }
-    if ( debugBtn2State() ) {             // wait for button to be depressed
-      while( debugBtn2State() ) {         // hold here until button is released
-        SERVO_PAN_OCRS = SERVO_PAN_OCR + 1; 
-        SERVO_TILT_OCRS = SERVO_TILT_OCR + 1;
-      }
-      //gimbalSetPan( 90 );
-      delayUs( BTN_DEBOUNCE_US );    // pause to avoid de-bounce issues
-      debugLed2Tog();
-      //lsrLoadSwitchTog();
-      //lsrTog();
-      //gimbalSetPan(45);
-      
-      //delayS(2);
-    }    
+    
+    //modOff();
     //delayMs(1000);
-    //debugLed2Tog();
+    //debugLed2On();
     //gimbalSetTilt(90);
     
-    qpReadCh1VSense();
-    qpReadCh2VSense();
-    qpReadCh3VSense();
-    qpReadCh4VSense();
-    qpAlign();
+    //qpReadCh1VSense();
+    //qpReadCh2VSense();
+    //qpReadCh3VSense();
+    //qpReadCh4VSense();
+    //qpAlign();
     
-    lsrReadVrefVSenseReg();
-    lsrReadISenseReg();
-    lsrCheckAlarms();
+    //lsrReadVrefVSenseReg();
+    //lsrReadISenseReg();
+    //lsrCheckAlarms();
     
-      
     
-
-      
     // check T1 button
     /*
     if (Button(&PORTE, 4, 2, 0)) {                // Detect logical zero

@@ -15,13 +15,15 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 // define core timer configuration
 #define CORE_TIMER_PERIOD       (FCY/1)
 
 // function prototypes
 void initCoreTimer( void );
 void resetCoreTimer( void );
-unsigned int getCoreTimer( void );
+uint32_t getCoreTimer( void );
 void initTimerB(
         volatile unsigned int *,
         volatile unsigned int *,

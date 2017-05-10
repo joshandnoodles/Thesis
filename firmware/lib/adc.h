@@ -16,6 +16,8 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 // number of ADC channels on board
 #define ADC_CHANNELS    16
 
@@ -33,6 +35,8 @@ void adcInitCh(
         volatile unsigned int *,
         unsigned int );
 volatile unsigned int * adcRead( unsigned char );
+void adcAutoOn( uint16_t, uint16_t, uint8_t, uint8_t );
+void adcAutoOff( void );
 float adcRegToFloat( unsigned int );
 
 // static function prototypes

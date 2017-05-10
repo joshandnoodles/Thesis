@@ -11,6 +11,8 @@
 #include <p32mx460f512l.h>
 #include "hardware_config.h"
 
+#include <stdint.h>
+
 #include "timer.h"
 
 void initCoreTimer( void ) {
@@ -34,14 +36,14 @@ void resetCoreTimer( void ) {
   return;
 }
 
-unsigned int getCoreTimer( void ) {
+uint32_t getCoreTimer( void ) {
     
-    unsigned int timer;
-
-    // get the current count from the register
-    asm volatile( "mfc0   %0, $9" : "=r"(timer) );
-
-    return timer;
+  uint32_t timer;
+  
+  // get the current count from the register
+  asm volatile( "mfc0   %0, $9" : "=r"(timer) );
+  
+  return timer;
 }
 
 void initTimerB(

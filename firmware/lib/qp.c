@@ -174,14 +174,17 @@ uint16_t * qpReadAllBulk( uint32_t pauseUs ) {
   qpBulkBufferIdx = 0;
   
   while ( idx<(QP_BULK_BUFFER_SIZE) ) {
+    
     // get ADC reading for each channel and add to buffer
+    // each takes ~2.5usec at speed since we are not auto sampling
     qpBulkBuffer[idx++] = qpReadCh1VSenseReg();
     qpBulkBuffer[idx++] = qpReadCh2VSenseReg();
     qpBulkBuffer[idx++] = qpReadCh3VSenseReg();
     qpBulkBuffer[idx++] = qpReadCh4VSenseReg();
     
     // pause a number of microseconds before reading again
-    delayUs( pauseUs );
+    if ( pauseUs )
+      delayUs( pauseUs );
   }
   
   return qpBulkBuffer;

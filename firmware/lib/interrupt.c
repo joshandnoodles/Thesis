@@ -10,7 +10,7 @@
 
 #include "interrupt.h"
 
-void initInterrupt( volatile unsigned int * intEnb,
+void initInterrupt(
         volatile unsigned int * intPrio,
         volatile unsigned int * intFlag,
         unsigned int intPrioOffset,
@@ -26,8 +26,21 @@ void initInterrupt( volatile unsigned int * intEnb,
   // clear the TxIF interrupt flag bit
   *intFlag &= ~intMask;
   
+  return;
+}
+
+void interruptOn( volatile unsigned int * intEnb, unsigned int intMask ) {
+  
   // set the TxIE interrupt enable bit
   *intEnb |= intMask;
+  
+  return;
+}
+
+void interruptOff( volatile unsigned int * intEnb, unsigned int intMask ) {
+  
+  // clear the TxIE interrupt enable bit
+  *intEnb &= ~intMask;
   
   return;
 }

@@ -94,16 +94,35 @@ extern "C" {
 
 // mod.h configuration
 
-// hardware configuration for modulation timer entity and interrupts
-#define MOD_TIMER_CON            T4CON          // type B timer control register
-#define MOD_TIMER_PERIOD         PR4            // type B timer period register
-#define MOD_TIMER_REG            TMR4           // type B timer count register
-#define MOD_TIMER_INT_ENB        IEC0           // type B timer interrupt enable
-#define MOD_TIMER_INT_PRIO       IPC4           // type B timer intterupt priority
-#define MOD_TIMER_INT_FLAG       IFS0           // type B timer interrupt flag
-#define MOD_TIMER_PRIO_OFFSET    2              // interrupt priority level bit offset
-#define MOD_TIMER_SUBPRIO_OFFSET 0              // interrupt subpriority level bit offset
-#define MOD_TIMER_INT_MASK       (1<<16)        // type B timer interrupt mask
+// hardware configuration for tx timer entity and interrupts
+#define MOD_TIMER_TX_CON            T4CON       // type B timer control register
+#define MOD_TIMER_TX_PERIOD         PR4         // type B timer period register
+#define MOD_TIMER_TX_REG            TMR4        // type B timer count register
+#define MOD_TIMER_TX_INT_ENB        IEC0        // type B timer interrupt enable
+#define MOD_TIMER_TX_INT_PRIO       IPC4        // type B timer intterupt priority
+#define MOD_TIMER_TX_INT_FLAG       IFS0        // type B timer interrupt flag
+#define MOD_TIMER_TX_PRIO_OFFSET    2           // interrupt priority level bit offset
+#define MOD_TIMER_TX_SUBPRIO_OFFSET 0           // interrupt subpriority level bit offset
+#define MOD_TIMER_TX_INT_MASK       (1<<16)     // type B timer interrupt mask
+
+// hardware configuration for rx timer entity and interrupts
+#define MOD_TIMER_RX_CON            T5CON       // type B timer control register
+#define MOD_TIMER_RX_PERIOD         PR5         // type B timer period register
+#define MOD_TIMER_RX_REG            TMR5        // type B timer count register
+#define MOD_TIMER_RX_INT_ENB        IEC0        // type B timer interrupt enable
+#define MOD_TIMER_RX_INT_PRIO       IPC5        // type B timer intterupt priority
+#define MOD_TIMER_RX_INT_FLAG       IFS0        // type B timer interrupt flag
+#define MOD_TIMER_RX_PRIO_OFFSET    2           // interrupt priority level bit offset
+#define MOD_TIMER_RX_SUBPRIO_OFFSET 0           // interrupt subpriority level bit offset
+#define MOD_TIMER_RX_INT_MASK       (1<<20)     // type B timer interrupt mask
+
+// hardware configuration for rx ADC interrupts
+#define MOD_ADC_INT_ENB         IEC1            // adc interrupt enable
+#define MOD_ADC_INT_PRIO        IPC6            // adc intterupt priority
+#define MOD_ADC_INT_FLAG        IFS1            // adc interrupt flag
+#define MOD_ADC_PRIO_OFFSET     26              // interrupt priority level bit offset
+#define MOD_ADC_SUBPRIO_OFFSET  24              // interrupt subpriority level bit offset
+#define MOD_ADC_INT_MASK        (1<<1)          // adc interrupt mask
 
 // gimbal.h configuration
 

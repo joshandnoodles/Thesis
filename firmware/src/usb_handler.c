@@ -610,7 +610,7 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
       
       // echo back command id to host along with value
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxHiccupThres) );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxByteBuffer[0]) );
       
     } else {
       // we can't match this to anything corresponding to our command addresses...

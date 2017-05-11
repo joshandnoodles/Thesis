@@ -28,19 +28,6 @@
 uint32_t modTxFreqHz;
 uint32_t modTxPeriodNs;
 
-// variables to keep track of ongoing rx acquisition strategies
-uint8_t modRxActiveQuadrant;
-uint16_t modRxHiccupThres;
-volatile uint8_t modRxByteBuffer[MOD_FRAME_DATA_SIZE_BYTES];
-volatile uint16_t modRxByteBufferIdx;
-volatile uint16_t modRxADCBuffer[MOD_FRAME_DATA_SIZE_BYTES];
-volatile uint8_t modRxADCBufferIdx;
-uint8_t modRxNibbleFlag;
-uint32_t modRxHiccupFlipMask;   // used to invert between ADC timing states
-//uint32_t modRxHiccupTicks;       // differential in sampling states (in FOSC/2's)
-uint32_t modRxBitErrors;
-uint8_t lastMsb;
-uint8_t lastLsb;
 
 // variables to keep track of ongoing tx communication strategies
 volatile uint8_t modTxHeaderBuffer[MOD_FRAME_HEADER_SIZE_BYTES];
@@ -49,6 +36,22 @@ uint8_t modTxBufferBitMask;
 volatile uint16_t modTxHeaderBufferIdx;
 volatile uint16_t modTxDataBufferIdx;
 uint8_t modTxBufferEighthOfNibbleFlag;
+
+// variables to keep track of ongoing rx acquisition strategies
+uint8_t modRxActiveQuadrant;
+uint16_t modRxHiccupThres;
+volatile uint8_t modRxHeaderBuffer[MOD_FRAME_HEADER_SIZE_BYTES];
+volatile uint8_t modRxDataBuffer[MOD_FRAME_DATA_SIZE_BYTES];
+volatile uint16_t modRxADCBuffer[MOD_FRAME_DATA_SIZE_BYTES];
+volatile uint16_t modRxHeaderBufferIdx;
+volatile uint16_t modRxDataBufferIdx;
+volatile uint8_t modRxADCBufferIdx;
+uint8_t modRxNibbleFlag;
+uint32_t modRxHiccupFlipMask;   // used to invert between ADC timing states
+//uint32_t modRxHiccupTicks;       // differential in sampling states (in FOSC/2's)
+uint32_t modRxBitErrors;
+uint8_t lastMsb;
+uint8_t lastLsb;
 
 // variables to keep track of state changes
 uint8_t modState;
@@ -155,9 +158,13 @@ uint8_t modOn( void ) {
   if ( !lsrLoadSwitchState )
     return 0x0;
   
-  // reset pointer for rx buffer(s)
-  modRxByteBufferIdx = 0x00;
+  // reset pointers for tx/rx buffer(s)
+  modTxDataBufferIdx = 0x00;
+  modTxHeaderBufferIdx = 0x00;
+  modRxDataBufferIdx = 0x00;
+  modRxHeaderBufferIdx = MOD_FRAME_HEADER_SIZE_BYTES;
   modRxADCBufferIdx = 0x00;
+
   
   // dynamically set active quadrant by checking each quadrant's value manually
   /* !! qpCh1Reg = qpReadCh1VSenseReg();
@@ -192,7 +199,7 @@ uint8_t modOn( void ) {
   //        QP_CH1_VSENSE_AN_MASK | QP_CH2_VSENSE_AN_MASK | 
   //        QP_CH3_VSENSE_AN_MASK | QP_CH4_VSENSE_AN_MASK, 
   //        QP_CH2_VSENSE_AN_MASK, 8, 0x01 );
-  adcAutoOn( QP_CH2_VSENSE_AN_MASK, 0x0000, 8, 0x01 );
+ adcAutoOn( QP_CH2_VSENSE_AN_MASK, 0x0000, 8, 0x01 );
   
   // set hiccup mask so it can be used to quickly toggle between two different
   // sampling timing values
@@ -272,9 +279,8 @@ void __ISR( _TIMER_4_VECTOR, IPL7AUTO ) _TIMER4_HANDLER( void ) {
   uint8_t txBit;
   volatile uint8_t * buffer;
   volatile uint16_t * bufferIdx;
-  uint16_t * otherBufferIdx;
+  volatile uint16_t * otherBufferIdx;
   uint16_t bufferSizeBytes;
-  uint16_t zeroIdx = 0;
   
   if ( modSigLockState ) {
     // determine whether we are sending the preamble or data chunk, when either
@@ -285,19 +291,21 @@ void __ISR( _TIMER_4_VECTOR, IPL7AUTO ) _TIMER4_HANDLER( void ) {
       buffer = modTxDataBuffer;
       bufferIdx = &modTxDataBufferIdx;
       bufferSizeBytes = MOD_FRAME_DATA_SIZE_BYTES;
+      otherBufferIdx = &modTxHeaderBufferIdx;
     } else {
       // data has been sent, we should be sending the preamble
       buffer = modTxHeaderBuffer;
       bufferIdx = &modTxHeaderBufferIdx;
       bufferSizeBytes = MOD_FRAME_HEADER_SIZE_BYTES;
+      otherBufferIdx = &modTxDataBufferIdx;
     }
     // determine bit value to send (1 or 0)
-    txBit = buffer[*bufferIdx] & modTxBufferBitMask;
+    txBit = buffer[(*bufferIdx)] & modTxBufferBitMask;
   } else {
     // null buffer address b/c we shouldn't be changing anything
     buffer = 0x00;
     // determine bit value to send (in this case should be the handshake)
-    txBit = MOD_FRAME_HANDSHAKE_BYTE & modTxBufferBitMask;
+    txBit = MOD_FRAME_NULL_HANDSHAKE_BYTE & modTxBufferBitMask;
   }
   
   if ( modTxBufferEighthOfNibbleFlag ){
@@ -319,7 +327,7 @@ void __ISR( _TIMER_4_VECTOR, IPL7AUTO ) _TIMER4_HANDLER( void ) {
     if ( (modSigLockState) && (modTxBufferBitMask & 0x80) && (buffer != 0x00) ) {
       //modTxDataBufferQueue[modTxDataBufferIdx-1] = 0x00;
       if ( ++(*bufferIdx) == bufferSizeBytes );
-        otherBufferIdx = &zeroIdx;
+        *otherBufferIdx = 0;
     }
     
   } else {
@@ -374,10 +382,17 @@ void __ISR( _ADC_VECTOR, IPL6AUTO ) __ADC_HANDLER( void ) {
   uint8_t lsb;
   uint8_t msbBitShift;
   uint8_t lsbBitShift;
+  
   uint16_t hiccupChannelValue;
   uint8_t hiccupCompareValue;
   uint8_t hiccupCompareMask;
+  
   uint8_t bitErrorTemp;
+  
+  volatile uint8_t * buffer;
+  volatile uint16_t * bufferIdx;
+  volatile uint16_t * otherBufferIdx;
+  uint16_t bufferSizeBytes;
   
   // BUFS: Buffer Fill Status bit
   // Only valid when BUFM = 1 (ADRES split into 2 x 8-word buffers).
@@ -459,6 +474,23 @@ void __ISR( _ADC_VECTOR, IPL6AUTO ) __ADC_HANDLER( void ) {
   
   }
   
+  // determine whether we are receiving the preamble or data chunk, when either
+  // index is at its max that is a sign the associated data has already been 
+  // received
+  //if ( modRxHeaderBufferIdx == MOD_FRAME_HEADER_SIZE_BYTES ) {
+    // preamble has been received, we should be receiving the data
+    buffer = modRxDataBuffer;
+    bufferIdx = &modRxDataBufferIdx;
+    bufferSizeBytes = MOD_FRAME_DATA_SIZE_BYTES;
+    otherBufferIdx = &modRxHeaderBufferIdx;
+  //} else {
+  //  // data has been received, we should be receiving the preamble
+  //  buffer = modRxHeaderBuffer;
+  //  bufferIdx = &modRxHeaderBufferIdx;
+  //  bufferSizeBytes = MOD_FRAME_HEADER_SIZE_BYTES;
+  //  otherBufferIdx = &modRxDataBufferIdx;
+  //}
+  
   if ( msbPartOneReg < msbPartTwoReg )
     msb = 0x01;
   else
@@ -469,43 +501,58 @@ void __ISR( _ADC_VECTOR, IPL6AUTO ) __ADC_HANDLER( void ) {
   else
     lsb = 0x00;
   
-  modRxByteBuffer[modRxByteBufferIdx] |= (
-              ((msb)<<msbBitShift) |
-              ((lsb)<<lsbBitShift) );
-  
-  if ( !(AD1CON2 & (1<<7)) && (modRxNibbleFlag) ) {
+  // placing newly received bit(s) in their correct places with regard to
+  // framing
+  buffer[(*bufferIdx)] |= (
+          ((msb)<<msbBitShift) |
+          ((lsb)<<lsbBitShift) );
     
-    if ( (!modSigLockState) ) {
-      // byte is finished, we should first check to if we have signal lock (if we don't already)
-      if ( (modRxByteBuffer[(uint8_t)(modRxByteBufferIdx)] == MOD_FRAME_HANDSHAKE_BYTE) &&
-              (modRxByteBuffer[(uint8_t)(modRxByteBufferIdx-1)] == MOD_FRAME_HANDSHAKE_BYTE) &&
-              (modRxByteBuffer[(uint8_t)(modRxByteBufferIdx-2)] == MOD_FRAME_HANDSHAKE_BYTE) &&
-              (modRxByteBuffer[(uint8_t)(modRxByteBufferIdx-3)] == MOD_FRAME_HANDSHAKE_BYTE) )
-        modSigLockState = 0x01;
+  if ( !(AD1CON2 & (1<<7)) && (modRxNibbleFlag) ) {
+    // do activities if we are at the very end of a byte
+    
+    
+    //if ( bufferSizeBytes == MOD_FRAME_HEADER_SIZE_BYTES ) {
+      // do activities only if we are receiving the header portion of the frame
       
-      // do error checking to see what our bit error rate is like
-      bitErrorTemp = (modRxByteBuffer[modRxByteBufferIdx] ^ MOD_FRAME_HANDSHAKE_BYTE);
-      while ( bitErrorTemp ) {
-        bitErrorTemp &= (bitErrorTemp - 1);
-        modRxBitErrors++;
+    //} else {
+      // do activities only if we are receiving the data portion of the frame
+      
+      if ( (!modSigLockState) ) {
+        // byte is finished and we are not locked yet, we should first check to
+        // if we have signal lock
+        if ( (buffer[(uint8_t)((*bufferIdx))] == MOD_FRAME_NULL_HANDSHAKE_BYTE) &&
+                (buffer[(uint8_t)((*bufferIdx)-1)] == MOD_FRAME_NULL_HANDSHAKE_BYTE) &&
+                (buffer[(uint8_t)((*bufferIdx)-2)] == MOD_FRAME_NULL_HANDSHAKE_BYTE) &&
+                (buffer[(uint8_t)((*bufferIdx)-3)] == MOD_FRAME_NULL_HANDSHAKE_BYTE) )
+          modSigLockState = 0x01;
+
+        // do error checking to see what our bit error rate is like
+        bitErrorTemp = (buffer[(*bufferIdx)] ^ MOD_FRAME_NULL_HANDSHAKE_BYTE);
+        while ( bitErrorTemp ) {
+          bitErrorTemp &= (bitErrorTemp - 1);
+          modRxBitErrors++;
+        }
+
+      } else {
+
+        // do error checking to see what our bit error rate is like
+        bitErrorTemp = (buffer[(*bufferIdx)] ^ MOD_FRAME_NULL_HANDSHAKE_BYTE);
+        while ( bitErrorTemp ) {
+          bitErrorTemp &= (bitErrorTemp - 1);
+          modRxBitErrors++;
+        }
       }
       
-    } else {
-      // do error checking to see what our bit error rate is like
-      bitErrorTemp = (modRxByteBuffer[modRxByteBufferIdx] ^ MOD_FRAME_HANDSHAKE_BYTE);
-      while ( bitErrorTemp ) {
-        bitErrorTemp &= (bitErrorTemp - 1);
-        modRxBitErrors++;
-      }
-    }
-    // now we need increment our index and clear next byte in buffer
-    if ( (modRxByteBufferIdx+1) == MOD_FRAME_DATA_SIZE_BYTES )
-      modRxByteBufferIdx = 0;
-    else
-      modRxByteBufferIdx++;
-   modRxByteBuffer[modRxByteBufferIdx] = 0x00;
-   
+    //}
+    //if ( modSigLockState )
+    //    *otherBufferIdx = 0;
+    //  else
+    // increment byte index
+    if ( ++(*bufferIdx) == bufferSizeBytes )
+      *bufferIdx = 0;
+    
   }
+  
   
   switch ( modRxActiveQuadrant ) {
     case 1:
@@ -513,10 +560,10 @@ void __ISR( _ADC_VECTOR, IPL6AUTO ) __ADC_HANDLER( void ) {
       break;
     case 2:
       hiccupChannelValue = qpLastCh2VSenseReg;
-      if ( modSigLockState )
-        hiccupCompareValue = msb;
-      else
-        hiccupCompareValue = (1<<msbBitShift) & MOD_FRAME_HANDSHAKE_BYTE;      
+      //if ( modSigLockState )
+      //  hiccupCompareValue = msb;
+      //else
+        hiccupCompareValue = (1<<msbBitShift) & MOD_FRAME_NULL_HANDSHAKE_BYTE;      
       break;
     case 3:
       hiccupChannelValue = qpLastCh3VSenseReg;
@@ -532,12 +579,12 @@ void __ISR( _ADC_VECTOR, IPL6AUTO ) __ADC_HANDLER( void ) {
   lastLsb = lsb;
   
   // re-determine hiccup threshold value based on last data bits
-  modRxHiccupThres = (
-          msbPartOneReg + msbPartTwoReg + 
-          lsbPartOneReg + lsbPartTwoReg ) / 4;
+  //modRxHiccupThres = (
+  //        msbPartOneReg + msbPartTwoReg + 
+  //        lsbPartOneReg + lsbPartTwoReg ) / 4;
   
   // we need to hiccup to keep clock in sync...do it
-  //if ( (modRxByteBuffer[modRxByteBufferIdx] & MOD_RX_HANDSHAKE_BYTE) && !modRxHiccupState ) {
+  //if ( (modRxDataBuffer[modRxDataBufferIdx] & MOD_RX_HANDSHAKE_BYTE) && !modRxHiccupState ) {
   if ( (!modRxHiccupState) && (modSigLockState) &&
           ( (!hiccupCompareValue && (hiccupChannelValue > modRxHiccupThres)) ||
             (hiccupCompareValue && (hiccupChannelValue < modRxHiccupThres)) ) ) {

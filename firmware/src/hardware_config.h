@@ -40,14 +40,14 @@ extern "C" {
 #define QP_CH2_VSENSE_AN_MASK   (1<<13)         // AN13
 #define QP_CH2_VSENSE_AN_CH     13              // channel index of ADC port
 
-// hardware configuration for quadrant photodiode channel 1 VSense
+// hardware configuration for quadrant photodiode channel 3 VSense
 #define QP_CH3_VSENSE_TRIS      TRISB           // port TRIS I/O buffer register
 #define QP_CH3_VSENSE_MASK      (1<<14)         // RB14
 #define QP_CH3_VSENSE_AN_BUF    ADC1BUF0        // ADC result buffer register
 #define QP_CH3_VSENSE_AN_MASK   (1<<14)         // AN14
 #define QP_CH3_VSENSE_AN_CH     14              // channel index of ADC port
 
-// hardware configuration for quadrant photodiode channel 1 VSense
+// hardware configuration for quadrant photodiode channel 4 VSense
 #define QP_CH4_VSENSE_TRIS      TRISB           // port TRIS I/O buffer register
 #define QP_CH4_VSENSE_MASK      (1<<15)         // RB15
 #define QP_CH4_VSENSE_AN_BUF    ADC1BUF0        // ADC result buffer register

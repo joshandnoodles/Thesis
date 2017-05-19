@@ -18,8 +18,10 @@ extern "C" {
 #include <stdint.h>
 
 // variables available to external modules
-extern const uint8_t testDataRand256BytesWithReplacement[];
-extern const uint8_t testDataRand256BytesNoReplacement[];
+extern uint8_t testDataRand256BytesNoReplacement[];
+extern uint8_t testDataSeq256BytesNoReplacement[];
+extern uint8_t testDataRand256BytesWithReplacement[];
+
 
 #ifdef	__cplusplus
 }

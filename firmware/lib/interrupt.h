@@ -25,7 +25,8 @@ void initInterrupt(
         unsigned char,
         unsigned );
 void interruptOn( volatile unsigned int *, unsigned int );
-void interruptOff( volatile unsigned int *, unsigned int );
+void interruptOff( volatile unsigned int *, volatile unsigned int *, 
+        unsigned int );
 
 #ifdef	__cplusplus
 }

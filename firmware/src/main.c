@@ -181,6 +181,13 @@ void main() {
       //delayS(2);
       //AD1CHS = 0x1111<<24;
     }
+    if ( debugBtn2State() ) {             // wait for button to be depressed
+      while( debugBtn2State() );          // hold here until button is released
+      delayUs( BTN_DEBOUNCE_US );    // pause to avoid de-bounce issues
+      debugLed2Tog();
+      //delayS(2);
+      //AD1CHS = 0x1111<<24;
+    }
     
     //modOff();
     //delayMs(1000);

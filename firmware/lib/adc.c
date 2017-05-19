@@ -207,7 +207,6 @@ void adcAutoOn( uint16_t muxAChMask, uint16_t muxBChMask,
   // registers while ADC module is on
   AD1CON1 &= ~(0b1<<15);
   
-  // count up 
   muxAChNum = __builtin_popcount( muxAChMask );
   muxBChNum = __builtin_popcount( muxBChMask );
   
@@ -288,7 +287,7 @@ void adcAutoOff( void ) {
   
   // CLRASAM: Stop Conversion Sequence bit (when the first ADC interrupt is generated)
   // stop conversions when the first ADC interrupt is generated and clear ASAM
-  AD1CON1 |= 0b1<<4;
+  //AD1CON1 |= 0b1<<4;
           
   // alternate method but unnecessary since ASAM is bit is cleared using above
   // ASAM: ADC Sample Auto-Start bit

@@ -43,6 +43,8 @@ typedef struct {
   const uint8_t rxBytes;
 } PktInfo;
 
+// 0x0* identification commands
+
 // 0x1* debugging commands
 static const PktInfo CMD_LED1_TOG             = { 0x10,   1,        0       };
 static const PktInfo CMD_LED1_SET             = { 0x11,   0,        1       };
@@ -54,6 +56,8 @@ static const PktInfo CMD_BTN1_GET             = { 0x16,   1,        0       };
 static const PktInfo CMD_BTN2_GET             = { 0x17,   1,        0       };
 static const PktInfo CMD_DBG_VAL1_GET         = { 0x18,   4,        0       };
 static const PktInfo CMD_DBG_VAL2_GET         = { 0x19,   4,        0       };
+static const PktInfo CMD_DBG_VAL3_GET         = { 0x1A,   4,        0       };
+static const PktInfo CMD_DBG_VAL4_GET         = { 0x1B,   4,        0       };
 // 0x2* 
 // 0x3* Ethernet commands 
 // 0x4* delay commands
@@ -97,7 +101,8 @@ static const PktInfo CMD_MOD_HICCUP_GET       = { 0x85,   1,        0,      };
 static const PktInfo CMD_MOD_DATA_BULK_RUN    = { 0x86,   0,        0,      };
 static const PktInfo CMD_MOD_DATA_BULK_GET    = { 0x87,   62,       0,      };
 static const PktInfo CMD_MOD_SIG_LOCK_GET     = { 0x88,   1,        0,      };
-
+static const PktInfo CMD_MOD_HICCUP_NS_GET    = { 0x89,   4,        0,      };
+static const PktInfo CMD_MOD_HICCUP_NS_SET    = { 0x8A,   0,        4,      };
 // 0x9* 
 // 0xA*
 // 0xB*
@@ -256,7 +261,7 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
         
     } else if ( rxDataCmd == CMD_GIMBAL_PAN_ANG_SET.address ) {
       // set gimbal pan angle
-
+      
       // look at the data received to determine and the gimbal angle
       // to set, the first data byte is the msb of the angle and the 
       // second data byte is the lsb
@@ -493,6 +498,32 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
       // echo back command id to host along with signal lock state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
       insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(modSigLockState) );
+    
+    } else if ( rxDataCmd == CMD_MOD_HICCUP_NS_SET.address ) {
+      // set timing of clock recovery hiccup
+      
+      // first turn off modulation (can't change settings while active)
+      modOff();
+      
+      // set received packets as new desired hiccup timing (in nanoseconds)
+      modRxHiccupNs = (uint32_t)(
+              (rxDataBuffer[(idx++)]<<24) |
+              (rxDataBuffer[(idx++)]<<16) |
+              (rxDataBuffer[(idx++)]<<8) |
+              (rxDataBuffer[(idx++)]<<0) );
+      
+      // turn modulation back on
+      modOn();
+      
+      // echo back command id to host
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+    
+    } else if ( rxDataCmd == CMD_MOD_HICCUP_NS_GET.address ) {
+      // get timing of clock recovery hiccup
+      
+      // echo back command id to host along with hiccup timing
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxHiccupNs) );
       
     } else if ( rxDataCmd == CMD_LSR_TOG.address ) {
       // toggle load switch on and off
@@ -526,7 +557,7 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
     
     } else if ( rxDataCmd == CMD_LED1_TOG.address ) {
       // toggle debug led on and off
-      modSigLockState = 0x01;//!!
+      modSigLockState--;//!!
       // toggle output latch of debug led
       debugLed1Tog();
 
@@ -536,7 +567,7 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
 
     } else if ( rxDataCmd == CMD_LED1_SET.address ) {
       // set debug led to specific value
-
+      modTxBufferData[1] = rxDataBuffer[idx];//!!
       // set the debug led on or off depending on input
       if ( (rxDataBuffer[idx++]<<0) == 0 ) {
         debugLed1Off();
@@ -552,11 +583,12 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
       
       // echo back command id to host along with LED state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)((DEBUG_LED1_LAT&DEBUG_LED1_MASK)>0) );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(MOD_FRAME_NULL_HANDSHAKE_BYTE) );
+      //insertTxBufUnsignedChar( txDataBuffer, (uint8_t)((DEBUG_LED1_LAT&DEBUG_LED1_MASK)>0) );
       
     } else if ( rxDataCmd == CMD_LED2_TOG.address ) {
       // toggle debug led on and off
-      modSigLockState = 0x00;//!!
+      modSigLockState++;//!!
       // toggle output latch of debug led
       debugLed2Tog();
       
@@ -610,7 +642,21 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
       
       // echo back command id to host along with value
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxByteBuffer[0]) );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxHiccupThresH) );
+      
+    } else if ( rxDataCmd == CMD_DBG_VAL3_GET.address ) {
+      // send value back for troubleshooting
+      
+      // echo back command id to host along with value
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(0) );
+      
+    } else if ( rxDataCmd == CMD_DBG_VAL4_GET.address ) {
+      // send value back for troubleshooting
+      
+      // echo back command id to host along with value
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxHiccupThresL) );
       
     } else {
       // we can't match this to anything corresponding to our command addresses...

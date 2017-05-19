@@ -24,6 +24,9 @@ extern "C" {
 #define FCY             (FOSC/2)                // execution freq in Hz
 #define FPB             (FOSC/2)                // peripheral clock freq in Hz
 
+// declare endpoint for which to compile code
+#define MASTER          // should be MASTER or SLAVE depending on endpoint type
+
 // qp.h configuration
 
 // hardware configuration for quadrant photodiode channel 1 VSense

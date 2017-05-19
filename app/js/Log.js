@@ -236,8 +236,10 @@ Log.prototype.prompt = function( recur=false, onEnter=null, initStr='' ) {
             dataArrBytes.push( (Math.round(dataArr[idx].replace('uint32_t=',''))>>8)%256 )
             dataArrBytes.push( (Math.round(dataArr[idx++].replace('uint32_t=',''))>>0)%256 )
           } else if ( dataArr[idx].startsWith( 'uint16_t=' ) ) {
-            dataArrBytes.push( (Math.round(dataArr[idx].replace('uint32_t=',''))>>8)%256 )
-            dataArrBytes.push( (Math.round(dataArr[idx++].replace('uint32_t=',''))>>0)%256 )
+            dataArrBytes.push( (Math.round(dataArr[idx].replace('uint16_t=',''))>>8)%256 )
+            dataArrBytes.push( (Math.round(dataArr[idx++].replace('uint16_t=',''))>>0)%256 )
+          } else if ( dataArr[idx].startsWith( 'uint8_t=' ) ) {
+            dataArrBytes.push( (Math.round(dataArr[idx++].replace('uint8_t=',''))>>0)%256 )
           } else {
             dataArrBytes.push( parseInt( dataArr[idx++], 16 ) )
           }

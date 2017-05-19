@@ -50,6 +50,16 @@ var CMDS = {
     rxBytes:  4,
     txBytes:  0,
     },
+  'CMD_DBG_VAL3_GET': {
+    address:  0x1A,
+    rxBytes:  4,
+    txBytes:  0,
+    },
+  'CMD_DBG_VAL4_GET': {
+    address:  0x1B,
+    rxBytes:  4,
+    txBytes:  0,
+    },
   // 0x2* 
   // 0x3* Ethernet commands 
   // 0x4* delay commands
@@ -237,6 +247,16 @@ var CMDS = {
     rxBytes:  1,
     txBytes:  0,
   },
+  'CMD_MOD_HICCUP_NS_GET': {
+    address:  0x89,
+    rxBytes:  4,
+    txBytes:  0,
+  },
+  'CMD_MOD_HICCUP_NS_SET': {
+    address:  0x8A,
+    rxBytes:  0,
+    txBytes:  4,
+  },
   // 0x9* 
   // 0xA*
   // 0xB*
@@ -262,17 +282,21 @@ var CONTROLS = [
   [ 'Laser', 'Current Sense', function() { sendHandler( [ CMDS['CMD_LSR_ISENSE_GET'].address ] ) } ],
   [ 'Laser', 'Vref Voltage Sense', function() { sendHandler( [ CMDS['CMD_LSR_VREF_VSENSE_GET'].address ] ) } ],
   [ 'Modulation', 'Modulate', function() { sendHandler( [ CMDS['CMD_MOD_TOG'].address ] ) } ],
-  [ 'Modulation', 'Set 10Hz', function() { sendHandler( MOD_CMD_PKT(10) ) } ],
-  [ 'Modulation', 'Set 100kHz', function() { sendHandler( MOD_CMD_PKT(100e3) ) } ],
-  [ 'Modulation', 'Set 500kHz', function() { sendHandler( MOD_CMD_PKT(500e3) ) } ],
-  [ 'Modulation', '-1kHz', function() { sendHandler( MOD_CMD_PKT(modFreqHz-1000) ) } ],
-  [ 'Modulation', '-100Hz', function() { sendHandler( MOD_CMD_PKT(modFreqHz-100) ) } ],
-  [ 'Modulation', '+100Hz', function() { sendHandler( MOD_CMD_PKT(modFreqHz+100) ) } ],
-  [ 'Modulation', '+1kHz', function() { sendHandler( MOD_CMD_PKT(modFreqHz+1000) ) } ],
-  [ 'Modulation', '-10Hz', function() { sendHandler( MOD_CMD_PKT(modFreqHz-10) ) } ],
-  [ 'Modulation', 'Current Rate', function() { sendHandler( [ CMDS['CMD_MOD_FREQ_HZ_GET'].address ] ) } ],
+  [ 'Modulation', '+10Hz', function() { sendHandler( MOD_FREQ_HZ_CMD_PKT(modFreqHz+10) ) } ],
+  [ 'Modulation', '+100Hz', function() { sendHandler( MOD_FREQ_HZ_CMD_PKT(modFreqHz+100) ) } ],
+  [ 'Modulation', '+1kHz', function() { sendHandler( MOD_FREQ_HZ_CMD_PKT(modFreqHz+1000) ) } ],
+  [ 'Modulation', 'Current Freq', function() { sendHandler( [ CMDS['CMD_MOD_FREQ_HZ_GET'].address ] ) } ],
+  [ 'Modulation', '-10Hz', function() { sendHandler( MOD_FREQ_HZ_CMD_PKT(modFreqHz-10) ) } ],
+  [ 'Modulation', '-100Hz', function() { sendHandler( MOD_FREQ_HZ_CMD_PKT(modFreqHz-100) ) } ],
+  [ 'Modulation', '-1kHz', function() { sendHandler( MOD_FREQ_HZ_CMD_PKT(modFreqHz-1000) ) } ],
   [ 'Modulation', 'Lock State', function() { sendHandler( [ CMDS['CMD_MOD_SIG_LOCK_GET'].address ] ) } ],
-  [ 'Modulation', '+10Hz', function() { sendHandler( MOD_CMD_PKT(modFreqHz+10) ) } ],
+  [ 'Modulation', '+10ns', function() { sendHandler( MOD_HICCUP_NS_CMD_PKT(modHiccupNs+10) ) } ],
+  [ 'Modulation', '+100ns', function() { sendHandler( MOD_HICCUP_NS_CMD_PKT(modHiccupNs+100) ) } ],
+  [ 'Modulation', '+1000ns', function() { sendHandler( MOD_HICCUP_NS_CMD_PKT(modHiccupNs+1000) ) } ],
+  [ 'Modulation', 'Current Hiccup', function() { sendHandler( [ CMDS['CMD_MOD_HICCUP_NS_GET'].address ] ) } ],
+  [ 'Modulation', '-10ns', function() { sendHandler( MOD_HICCUP_NS_CMD_PKT(modHiccupNs-10) ) } ],
+  [ 'Modulation', '-100ns', function() { sendHandler( MOD_HICCUP_NS_CMD_PKT(modHiccupNs-100) ) } ],
+  [ 'Modulation', '-1000ns', function() { sendHandler( MOD_HICCUP_NS_CMD_PKT(modHiccupNs-1000) ) } ],
   [ 'Modulation', 'Bulk Read', function() { sendHandler( [ CMDS['CMD_MOD_DATA_BULK_RUN'].address ] ) } ],
   [ 'Gimbal', 'Toggle Pan Power', function() { sendHandler( [ CMDS['CMD_GIMBAL_PAN_TOG'].address ] ) } ],
   [ 'Gimbal', 'Set Pan 0°', function() { sendHandler( SCAN_CMD_PKT( [ 0, gimbal.tilt ] ) ) } ],
@@ -301,6 +325,8 @@ var CONTROLS = [
   [ 'Debug', 'BTN2', function() { sendHandler( [ CMDS['CMD_BTN2_GET'].address ] ) } ],
   [ 'Debug', 'Value1', function() { sendHandler( [ CMDS['CMD_DBG_VAL1_GET'].address ] ) } ],
   [ 'Debug', 'Value2', function() { sendHandler( [ CMDS['CMD_DBG_VAL2_GET'].address ] ) } ],
+  [ 'Debug', 'Value3', function() { sendHandler( [ CMDS['CMD_DBG_VAL3_GET'].address ] ) } ],
+  [ 'Debug', 'Value4', function() { sendHandler( [ CMDS['CMD_DBG_VAL4_GET'].address ] ) } ],
 ]
 
 // initalize underlying magic  ...
@@ -320,6 +346,7 @@ var gimbal = new Gimbal()
 
 // variable to keep track of ongoing operations
 var modFreqHz = null
+var modHiccupNs = null
 var modBulkBuffer = null
 var qpBulkBuffer = null
 var qpBulkBufferCh1 = null
@@ -351,7 +378,7 @@ var SCAN_CMD_PKT = ( function( panTilt=null ) {
       (Math.round(gimbal.tiltBytes)>>0)%256,
     ]
 } )
-var MOD_CMD_PKT = ( function( rateHz ) { 
+var MOD_FREQ_HZ_CMD_PKT = ( function( rateHz ) { 
   modFreqHz = rateHz
   return [
     CMDS['CMD_MOD_FREQ_HZ_SET'].address,
@@ -359,6 +386,16 @@ var MOD_CMD_PKT = ( function( rateHz ) {
       (Math.round(rateHz)>>16)%256,
       (Math.round(rateHz)>>8)%256,
       (Math.round(rateHz)>>0)%256,
+    ] 
+} )
+var MOD_HICCUP_NS_CMD_PKT = ( function( ns ) { 
+  modHiccupNs = ns
+  return [
+    CMDS['CMD_MOD_HICCUP_NS_SET'].address,
+      (Math.round(ns)>>24)%256,
+      (Math.round(ns)>>16)%256,
+      (Math.round(ns)>>8)%256,
+      (Math.round(ns)>>0)%256,
     ] 
 } )
 var DEFAULT_MCU_PKT = ( function() { return [
@@ -374,6 +411,7 @@ var DEFAULT_MCU_PKT = ( function() { return [
   CMDS['CMD_MOD_FREQ_HZ_GET'].address,
   CMDS['CMD_MOD_FREQ_HZ_GET'].address,
   CMDS['CMD_MOD_SIG_LOCK_GET'].address,
+  CMDS['CMD_MOD_HICCUP_NS_GET'].address,
   CMDS['CMD_GIMBAL_PAN_GET'].address,
   CMDS['CMD_GIMBAL_TILT_GET'].address,
   CMDS['CMD_GIMBAL_PAN_ANG_GET'].address,
@@ -384,10 +422,14 @@ var DEFAULT_MCU_PKT = ( function() { return [
   CMDS['CMD_BTN2_GET'].address,
   CMDS['CMD_DBG_VAL1_GET'].address,
   CMDS['CMD_DBG_VAL2_GET'].address,
+  CMDS['CMD_DBG_VAL3_GET'].address,
+  CMDS['CMD_DBG_VAL4_GET'].address,
 ] } )
 
 // ... helper functions (most of which would have issues with scope)
 var mcuPollerH = null
+var packets = null
+var packetsSendIdx = 0
 function stopPoller() {
   
   // try to cancel any existing MCU poller
@@ -406,24 +448,42 @@ function startPoller() {
   // now that we are connected to our MCU, we should set up a poller to
   // get information every so often (only if it is a resonable size and
   // we see that response packet will also be reasonably sized
-  mcuPollerTxSize = 0
-  mcuPollerRxSize = 0
+  mcuPollerTxSize = [ 0 ]
+  mcuPollerRxSize = [ 0 ]
+  packets = [[]]
+  packetIdx = 0
   DEFAULT_MCU_PKT().forEach( function( address, idx1, arr ) {
     cmdKeys = Object.keys(CMDS)
     for ( var idx2=0; idx2<cmdKeys.length; idx2++ ) {
       if ( CMDS[cmdKeys[idx2]].address == address ) {
-        mcuPollerTxSize += ( CMDS[cmdKeys[idx2]].txBytes + 1 )
-        mcuPollerRxSize += ( CMDS[cmdKeys[idx2]].rxBytes + 1 )
+        if ( ( ( mcuPollerTxSize[packetIdx] + CMDS[cmdKeys[idx2]].txBytes + 1 ) > Hid.BUF_SIZE ) ||
+             ( ( mcuPollerRxSize[packetIdx] + CMDS[cmdKeys[idx2]].rxBytes + 1 ) > Hid.BUF_SIZE ) ) {
+          packets.push( [] )
+          mcuPollerTxSize.push( 0 )
+          mcuPollerRxSize.push( 0 )
+          packetIdx++
+        }
+        packets[packetIdx].push( CMDS[cmdKeys[idx2]].address )
+        mcuPollerTxSize[packetIdx] += ( CMDS[cmdKeys[idx2]].txBytes + 1 )
+        mcuPollerRxSize[packetIdx] += ( CMDS[cmdKeys[idx2]].rxBytes + 1 )
+        
         break
       }
     }
   } )
-  if ( mcuPollerTxSize <= Hid.BUF_SIZE ) {
+  if ( mcuPollerTxSize.every( function( val ) { return val <= Hid.BUF_SIZE } ) &&
+       mcuPollerRxSize.every( function( val ) { return val <= Hid.BUF_SIZE } ) ) {
     mcuPollerRate = 100
-    mcuPollerH = window.setInterval( function() { sendHandler( DEFAULT_MCU_PKT() ) }, mcuPollerRate )
-    console.log( 'Polling MCU with ' + mcuPollerTxSize + '-byte packet, expecting to receive ' + mcuPollerRxSize + '-byte packet every ' + mcuPollerRate + 'ms.' )
+    mcuPollerH = window.setInterval( function() { 
+      sendHandler( packets[packetsSendIdx] )
+      if ( (packetsSendIdx + 1) == packets.length )
+        packetsSendIdx = 0
+      else
+        packetsSendIdx++
+    }, mcuPollerRate )
+    console.log( 'Polling MCU with ' + (packets.length ) + ' ' + Hid.BUF_SIZE + '-byte packet every ' + mcuPollerRate + 'ms.' )
   } else {
-    console.log( 'Unable to start default MCU polling, projected TX packet size is ' + mcuPollerTxSize + ' bytes and projected RX packet size is ' + mcuPollerRxSize + ' bytes.' )
+    console.log( 'Unable to start default MCU polling, projected TX packet sizes are ' + mcuPollerTxSize + ' bytes and projected RX packet sizes are ' + mcuPollerRxSize + ' bytes.' )
   }
   
   return
@@ -436,9 +496,6 @@ function hidConnect() {
     
     // set our status bar to show that device is connected
     setStatusBar( 'active' )
-    
-    // send an initial MCU poll to get useful updates to our interface
-    sendHandler( DEFAULT_MCU_PKT() )
     
     // attempt to start default poller
     startPoller()
@@ -505,26 +562,24 @@ var graphVrefVSense = newGraph( ( {
   yLabelText: 'Laser Vref (V)',
   yRng: [ 0, 2 ],
 } ) )
-var graphLoadSwitchState = newGraph( ( {
-  yLabelText: 'Load Switch State',
-  fitYRngEvent: null,
-  yRng: [ -0.1, 1.1 ],
-} ) )
 var graphISense = newGraph( ( {
   yLabelText: 'Laser Current (mA)',
   yRng: [ 0, 40 ],
 } ) )
-var graphLaserState = newGraph( ( {
-  yLabelText: 'Laser State',
-  fitYRngEvent: null,
-  yRng: [ -0.1, 1.1 ],
-} ) )
 var graphDebugValue1 = newGraph( ( {
-  yLabelText: 'Debug Value1',
+  yLabelText: 'Debug Value 1',
   yRng: [ 0, 1 ],
 } ) )
 var graphDebugValue2 = newGraph( ( {
-  yLabelText: 'Debug Value2',
+  yLabelText: 'Debug Value 2',
+  yRng: [ 0, 1 ],
+} ) )
+var graphDebugValue3 = newGraph( ( {
+  yLabelText: 'Debug Value 3',
+  yRng: [ 0, 1 ],
+} ) )
+var graphDebugValue4 = newGraph( ( {
+  yLabelText: 'Debug Value 4',
   yRng: [ 0, 1 ],
 } ) )
 var graphPan = newGraph( ( {
@@ -1044,7 +1099,7 @@ function receiveHandler( dataBuf ) {
         if ( typeof graphModRate !== 'undefined' )
           graphModRate.addPoint( modFreqHz )
         //else
-          controls.controlsByGroup["Modulation"]["Current Rate"].querySelector( '#value' ).innerHTML = " (" + modFreqHz + ")"
+          controls.controlsByGroup["Modulation"]["Current Freq"].querySelector( '#value' ).innerHTML = " (" + modFreqHz + ")"
         
         break
       
@@ -1131,6 +1186,23 @@ function receiveHandler( dataBuf ) {
         
         break
       
+      case CMDS['CMD_MOD_HICCUP_NS_GET'].address:
+        
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_MOD_HICCUP_NS_GET' )
+        
+        // update modulation rate variable for tracking
+        modHiccupNs = bytesToUnsignedLong(dataBytes.slice(0,4))
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphModHiccupNs !== 'undefined' )
+          graphModHiccupNs.addPoint( modHiccupNs )
+        //else
+          controls.controlsByGroup["Modulation"]["Current Hiccup"].querySelector( '#value' ).innerHTML = " (" + modHiccupNs + ")"
+        
+        break
+        
       case CMDS['CMD_LED1_GET'].address:
       case CMDS['CMD_LED1_TOG'].address:
         
@@ -1204,6 +1276,42 @@ function receiveHandler( dataBuf ) {
           graphDebugValue2.addPoint( value )
         //else
           controls.controlsByGroup["Debug"]["Value2"].querySelector( '#value' ).innerHTML = " (" + value + ")"
+        
+        
+        break
+      
+      case CMDS['CMD_DBG_VAL3_GET'].address:
+        
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_DBG_VAL3_GET' )
+        
+        // convert to meaningful value 
+        var value = bytesToUnsignedLong( dataBytes )
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphDebugValue3 !== 'undefined' )
+          graphDebugValue3.addPoint( value )
+        //else
+          controls.controlsByGroup["Debug"]["Value3"].querySelector( '#value' ).innerHTML = " (" + value + ")"
+        
+        
+        break
+      
+      case CMDS['CMD_DBG_VAL4_GET'].address:
+        
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_DBG_VAL4_GET' )
+        
+        // convert to meaningful value 
+        var value = bytesToUnsignedLong( dataBytes )
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphDebugValue4 !== 'undefined' )
+          graphDebugValue4.addPoint( value )
+        //else
+          controls.controlsByGroup["Debug"]["Value4"].querySelector( '#value' ).innerHTML = " (" + value + ")"
         
         
         break

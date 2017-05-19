@@ -37,10 +37,16 @@ void interruptOn( volatile unsigned int * intEnb, unsigned int intMask ) {
   return;
 }
 
-void interruptOff( volatile unsigned int * intEnb, unsigned int intMask ) {
+void interruptOff(
+        volatile unsigned int * intEnb,
+        volatile unsigned int * intFlag,
+        unsigned int intMask ) {
   
   // clear the TxIE interrupt enable bit
   *intEnb &= ~intMask;
+  
+  // clear the TxIF interrupt flag bit
+  *intFlag &= ~intMask;
   
   return;
 }

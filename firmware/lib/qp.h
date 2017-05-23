@@ -21,10 +21,10 @@ extern "C" {
 #define QP_BULK_BUFFER_SIZE         4096
 
 // variables available to external modules
-uint16_t qpLastCh1VSenseReg;
-uint16_t qpLastCh2VSenseReg;
-uint16_t qpLastCh3VSenseReg;
-uint16_t qpLastCh4VSenseReg;
+volatile uint16_t qpLastCh1VSenseReg;
+volatile uint16_t qpLastCh2VSenseReg;
+volatile uint16_t qpLastCh3VSenseReg;
+volatile uint16_t qpLastCh4VSenseReg;
 uint16_t qpBulkBuffer[QP_BULK_BUFFER_SIZE];
 uint32_t qpBulkBufferIdx;
 int16_t qpAlignmentXAxis;

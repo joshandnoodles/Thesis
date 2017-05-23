@@ -35,7 +35,7 @@ void adcInitCh(
         volatile unsigned int *,
         unsigned int );
 volatile unsigned int * adcRead( unsigned char );
-void adcAutoOn( uint16_t, uint16_t, uint8_t, uint8_t );
+void adcAutoOn( uint16_t, uint16_t, uint8_t, uint8_t, uint8_t, uint8_t );
 void adcAutoOff( void );
 float adcRegToFloat( unsigned int );
 

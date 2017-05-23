@@ -21,15 +21,15 @@ extern "C" {
 #define MOD_FRAME_SIZE_BYTES            MOD_FRAME_HEADER_SIZE_BYTES + MOD_FRAME_DATA_SIZE_BYTES
 #define MOD_FRAME_HEADER_SIZE_BYTES     1
 #define MOD_FRAME_DATA_SIZE_BYTES       256
-#define MOD_FRAME_NULL_HANDSHAKE_BYTE   0b10100000
-#define MOD_FRAME_DATA_HANDSHAKE_BYTE   0b10100010
+#define MOD_FRAME_NULL_HANDSHAKE_BYTE   0b10100100
+#define MOD_FRAME_DATA_HANDSHAKE_BYTE   0b10100101
 
 // define default values for initial tx configuration
-#define MOD_DEFAULT_TX_FREQ_HZ          476190//476000//238000
+#define MOD_DEFAULT_TX_FREQ_HZ          243000//476190//476000//238000
 
 // define default values for initial rx configuration
 #define MOD_DEFAULT_RX_ACTIVE_QUAD      2
-#define MOD_DEFAULT_RX_HICCUP_NS        10000ul // differential in sampling (ns)
+#define MOD_DEFAULT_RX_HICCUP_NS        23000   // differential in sampling (ns)
 #define MOD_DEFAULT_RX_HICCUP_THRES     22
 
 // define constants/limits relating to tx acquisition strategies 
@@ -37,7 +37,9 @@ extern "C" {
 #define MOD_TX_FREQ_HZ_MAX              10000000
 
 // define constants/limits relating to rx acquisition strategies 
-#define MOD_RX_HICCUP_TADS              1   // differential in sampling (T_AD's)
+#define MOD_RX_ADC_SAMC_TAD             28  // auto-sample time (T_AD's)
+#define MOD_RX_ADC_ADCS                 0   // conversion clock bits (#*2*T_PB)
+#define MOD_RX_HICCUP_TAD               1   // differential in sampling (T_AD's)
 #define MOD_RX_HICCUP_DIRECTION         1   // 0=neg (slower), 1=pos (faster)
 #define MOD_RX_SIG_LOCK_CNT             4
 
@@ -53,6 +55,8 @@ extern volatile uint16_t modRxHiccupThresL;
 extern volatile uint16_t modRxADCBuffer[MOD_FRAME_DATA_SIZE_BYTES];
 extern volatile uint8_t modRxADCBufferIdx;
 
+extern uint32_t tickTock;//!!
+extern uint8_t modRxActiveQuadrant;
 extern volatile uint8_t modRxBuffer[MOD_FRAME_SIZE_BYTES];
 extern volatile uint8_t * modRxBufferCur;
 extern volatile uint8_t * modTxBufferData;

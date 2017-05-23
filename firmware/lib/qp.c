@@ -19,10 +19,10 @@
 #include "qp.h"
 
 // variables to keep track of last values retrieved
-uint16_t qpLastCh1VSenseReg;
-uint16_t qpLastCh2VSenseReg;
-uint16_t qpLastCh3VSenseReg;
-uint16_t qpLastCh4VSenseReg;
+volatile uint16_t qpLastCh1VSenseReg;
+volatile uint16_t qpLastCh2VSenseReg;
+volatile uint16_t qpLastCh3VSenseReg;
+volatile uint16_t qpLastCh4VSenseReg;
 uint16_t qpBulkBuffer[QP_BULK_BUFFER_SIZE];
 uint32_t qpBulkBufferIdx;
 

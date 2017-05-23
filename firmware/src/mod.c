@@ -21,6 +21,7 @@
 #include "interrupt.h"
 #include "lsr.h"
 #include "qp.h"
+#include "adc.h"
 #include "test_data.h"
 
 #include "mod.h"
@@ -54,8 +55,9 @@ volatile uint8_t modRxADCBufferIdx;
 volatile uint8_t modRxNibbleFlag;
 uint32_t modRxHiccupFlipMask;   // used to invert between ADC timing states
 uint32_t modRxBitErrors;
-volatile uint8_t lastMsb;
-volatile uint8_t lastLsb;
+uint8_t lastLsb;
+
+uint32_t tickTock;//!!
 
 // variable to keep track of dummy test data set
 volatile uint8_t * modBufferTestData;
@@ -111,17 +113,17 @@ void initMod( void ) {
           &MOD_TIMER_RX_INT_PRIO,
           &MOD_TIMER_RX_INT_FLAG,
           MOD_TIMER_RX_PRIO_OFFSET,
-          7,
+          6,
           MOD_TIMER_RX_SUBPRIO_OFFSET,
-          0,
+          1,
           MOD_TIMER_RX_INT_MASK );
   initInterrupt(
           &MOD_ADC_INT_PRIO,
           &MOD_ADC_INT_FLAG,
           MOD_ADC_PRIO_OFFSET,
-          6,
+          5,
           MOD_ADC_SUBPRIO_OFFSET,
-          0,
+          1,
           MOD_ADC_INT_MASK );
   
   // set default modulation rate
@@ -146,7 +148,7 @@ void initMod( void ) {
   modRxBufferHeader = modRxBuffer;
   modRxBufferData = modRxBufferHeader + MOD_FRAME_HEADER_SIZE_BYTES;
   modRxBufferEnd = modRxBufferData + MOD_FRAME_DATA_SIZE_BYTES;
-  modBufferTestData = modTxBufferData;//!!testDataSeq256BytesNoReplacement;
+  modBufferTestData = testDataSeq256BytesNoReplacement;
   modBufferTestDataEnd = modBufferTestData + MOD_FRAME_DATA_SIZE_BYTES;
   
   // reset any flags/variables that only need to be set once here at the start
@@ -157,12 +159,14 @@ void initMod( void ) {
   return;
 }
 
+
 uint8_t modOn( void ) {
   
   uint16_t qpCh1Reg,
            qpCh2Reg,
            qpCh3Reg,
            qpCh4Reg;
+  uint32_t initialActiveQuadrantMask;
   uint16_t idx;
   
   // check modulation power supply source before trying to begin modulation
@@ -216,20 +220,35 @@ uint8_t modOn( void ) {
   timerBReset( &MOD_TIMER_RX_REG );
   
   // start calling interrupts for rx operation (part 1)
-  //adcAutoOn(
-  //        QP_CH1_VSENSE_AN_MASK | QP_CH2_VSENSE_AN_MASK | 
-  //        QP_CH3_VSENSE_AN_MASK | QP_CH4_VSENSE_AN_MASK, 
-  //        QP_CH2_VSENSE_AN_MASK, 8, 0x01 );
-  adcAutoOn( QP_CH2_VSENSE_AN_MASK, 0x0000, 8, 0x01 );
+  switch ( modRxActiveQuadrant ) {
+    case 1:
+      initialActiveQuadrantMask = QP_CH1_VSENSE_AN_MASK;
+      break;
+    case 2:
+      initialActiveQuadrantMask = QP_CH2_VSENSE_AN_MASK;
+      break;
+    case 3:
+      initialActiveQuadrantMask = QP_CH3_VSENSE_AN_MASK;
+      break;
+    case 4:
+      initialActiveQuadrantMask = QP_CH4_VSENSE_AN_MASK;
+      break;   
+  }
+  adcAutoOn(
+          QP_CH1_VSENSE_AN_MASK | QP_CH2_VSENSE_AN_MASK | 
+          QP_CH3_VSENSE_AN_MASK | QP_CH4_VSENSE_AN_MASK, 
+          initialActiveQuadrantMask, 8, 0x01,
+          MOD_RX_ADC_SAMC_TAD, MOD_RX_ADC_ADCS );
+  //adcAutoOn( QP_CH2_VSENSE_AN_MASK, 0x0000, 8, 0x01 );
   
   // set hiccup mask so it can be used to quickly toggle between two different
   // sampling timing values
   modRxHiccupFlipMask = AD1CON3 & (0b11111<<8);
   if ( MOD_RX_HICCUP_DIRECTION )
-    modRxHiccupFlipMask = (modRxHiccupFlipMask + (MOD_RX_HICCUP_TADS<<8)) ^ 
+    modRxHiccupFlipMask = (modRxHiccupFlipMask + (MOD_RX_HICCUP_TAD<<8)) ^ 
             modRxHiccupFlipMask;
   else
-    modRxHiccupFlipMask = (modRxHiccupFlipMask - (MOD_RX_HICCUP_TADS<<8)) ^ 
+    modRxHiccupFlipMask = (modRxHiccupFlipMask - (MOD_RX_HICCUP_TAD<<8)) ^ 
             modRxHiccupFlipMask;
   
   // start calling interrupts for rx operation (part 2)
@@ -237,8 +256,8 @@ uint8_t modOn( void ) {
   interruptOn( &MOD_ADC_INT_ENB, MOD_ADC_INT_MASK );
   
   // start calling interrupts for tx operation
-  //timerBOn( &MOD_TIMER_TX_CON );
-  //interruptOn( &MOD_TIMER_TX_INT_ENB, MOD_TIMER_TX_INT_MASK );
+  timerBOn( &MOD_TIMER_TX_CON );
+  interruptOn( &MOD_TIMER_TX_INT_ENB, MOD_TIMER_TX_INT_MASK );
   
   // change flag(s) to keep track of state changes
   modState = 0x1;
@@ -299,7 +318,45 @@ uint8_t modSetFreqHz( uint32_t freqHz ) {
           modTxPeriodNs );
 }
 
-void __ISR( _TIMER_4_VECTOR, IPL7AUTO ) _TIMER4_HANDLER( void ) {
+void modSetActiveQuadrant( uint8_t newActiveQuadrant ) {
+  
+  uint32_t flipMask;
+  
+  // start with current CH0SB bit settings for flip mask, inverting this will
+  // zero out settings completely
+  flipMask = ((0b1111)<<24) & AD1CHS;
+  
+  // determine what CH0SB bit settings should be for new active quadrant and
+  // combine this in the flip mask
+  switch ( newActiveQuadrant ) {
+    case 1:
+      flipMask |= QP_CH1_VSENSE_AN_CH;
+      break;
+    case 2:
+      flipMask |= QP_CH2_VSENSE_AN_CH;
+      break;
+    case 3:
+      flipMask |= QP_CH3_VSENSE_AN_CH;
+      break;
+    case 4:
+      flipMask |= QP_CH4_VSENSE_AN_CH;
+      break;   
+  }
+  
+  // we should now wait until any rx ADC interrupts to change the current active
+  // quadrant value since the logic within these interrupts are dependent on
+  // this value (and changing it in the middle is a bad idea)
+  while ( MOD_ADC_INT_FLAG & MOD_ADC_INT_MASK );
+  
+  // now we should be safe to change the ADC sampler bits and the active
+  // quadrant variable
+  AD1CHSINV = flipMask;
+  modRxActiveQuadrant = newActiveQuadrant;
+  
+  return;
+}
+
+void __ISR( _TIMER_4_VECTOR, IPL7SOFT ) _TIMER4_HANDLER( void ) {
   
   uint8_t txBit;
   
@@ -330,10 +387,13 @@ void __ISR( _TIMER_4_VECTOR, IPL7AUTO ) _TIMER4_HANDLER( void ) {
   if ( modTxBufferEighthOfNibbleFlag ){
     
     // toggle the modulation source
-    if ( txBit )
-      LSR_EN_CH1_LAT |= LSR_EN_CH1_MASK;
-    else
-      LSR_EN_CH1_LAT &= ~LSR_EN_CH1_MASK;
+    if ( txBit ) {
+      //LSR_EN_CH1_LAT |= LSR_EN_CH1_MASK;
+      LATESET = LSR_EN_CH1_MASK;
+    } else {
+      //LSR_EN_CH1_LAT &= ~LSR_EN_CH1_MASK;
+      LATECLR = LSR_EN_CH1_MASK;
+    }
     
     // circular bit shift byte mask
     //modTxBufferBitMask = (modTxBufferBitMask << 1) | (modTxBufferBitMask >> 7);
@@ -351,10 +411,13 @@ void __ISR( _TIMER_4_VECTOR, IPL7AUTO ) _TIMER4_HANDLER( void ) {
   } else {
     
     // toggle the modulation source
-    if ( txBit )
-      LSR_EN_CH1_LAT &= ~LSR_EN_CH1_MASK;
-    else
-      LSR_EN_CH1_LAT |= LSR_EN_CH1_MASK;
+    if ( txBit ) {
+      //LSR_EN_CH1_LAT &= ~LSR_EN_CH1_MASK;
+      LATECLR = LSR_EN_CH1_MASK;
+    } else {
+      //LSR_EN_CH1_LAT |= LSR_EN_CH1_MASK;
+      LATESET = LSR_EN_CH1_MASK;
+    }
     
     // invert half bit flag which helps us implement Manchester encoding scheme
     modTxBufferEighthOfNibbleFlag = 0x01;
@@ -362,35 +425,40 @@ void __ISR( _TIMER_4_VECTOR, IPL7AUTO ) _TIMER4_HANDLER( void ) {
   }
   
   // clear the TxIF interrupt flag bit
-  MOD_TIMER_TX_INT_FLAG &= ~MOD_TIMER_TX_INT_MASK;
+  //MOD_TIMER_TX_INT_FLAG &= ~MOD_TIMER_TX_INT_MASK;
+  IFS0CLR = MOD_TIMER_TX_INT_MASK;
   
   return;
 }
 
-void __ISR( _TIMER_5_VECTOR, IPL7AUTO ) _TIMER5_HANDLER( void ) {
+void __ISR( _TIMER_5_VECTOR, IPL6SOFT ) _TIMER5_HANDLER( void ) {
+  
+  // timing:
+  //  c code = 20 core timer ticks = 500ns
+  //  optimized c code = 10 core timer ticks = 250ns
   
   // turn off timer since this is a single call operation
-  timerBOff( &MOD_TIMER_RX_CON );
+  //timerBOff( &MOD_TIMER_RX_CON );
+  T5CONCLR = 0x8000;
   
   // flip necessary ADC configuration bits to switch sampling timing state
-  AD1CON3 ^= modRxHiccupFlipMask;
-  
-  // clear the timer register TMRx
-  timerBReset( &MOD_TIMER_RX_REG );
+  //AD1CON3 ^= modRxHiccupFlipMask;
+  AD1CON3INV = modRxHiccupFlipMask;
   
   //!! debugging
-  LATE &= ~(1<<6);
+  //LATE &= ~(1<<6);
   
   // clear hiccup state flag so we know we are done hiccuping (for now)
   modRxHiccupState = 0x00;
   
   // clear the TxIF interrupt flag bit
-  MOD_TIMER_RX_INT_FLAG &= ~MOD_TIMER_RX_INT_MASK;
+  //MOD_TIMER_RX_INT_FLAG &= ~MOD_TIMER_RX_INT_MASK;
+  IFS0CLR = 0x100000;  
   
   return;
 }
-  
-void __ISR( _ADC_VECTOR, IPL6AUTO ) __ADC_HANDLER( void ) {
+
+void __ISR( _ADC_VECTOR, IPL5SOFT ) __ADC_HANDLER( void ) {
   
   uint8_t msbPartOneReg;
   uint8_t msbPartTwoReg;
@@ -401,19 +469,24 @@ void __ISR( _ADC_VECTOR, IPL6AUTO ) __ADC_HANDLER( void ) {
   uint8_t msbBitShift;
   uint8_t lsbBitShift;
   
+  uint16_t qpCh1VSenseRegTemp;
+  uint16_t qpCh2VSenseRegTemp;
+  uint16_t qpCh3VSenseRegTemp;
+  uint16_t qpCh4VSenseRegTemp;
+  
   uint16_t hiccupChannelValue;
   uint8_t hiccupCompareValue;
   uint8_t hiccupCompareMask;
   
   uint8_t bitErrorTemp;
-
+  
   // BUFS: Buffer Fill Status bit
   // Only valid when BUFM = 1 (ADRES split into 2 x 8-word buffers).
   if (AD1CON2 & (1<<7)) {
     // 1 = ADC is currently filling buffer 0x8-0xF, user should access 0x0-0x7
     
     //!! debugging
-    LATA |= (1<<0);
+    //LATA |= (1<<0);
   
     //modRxADCBuffer[modRxADCBufferIdx++] = ADC1BUF0;
     //modRxADCBuffer[modRxADCBufferIdx++] = ADC1BUF1;;
@@ -428,27 +501,27 @@ void __ISR( _ADC_VECTOR, IPL6AUTO ) __ADC_HANDLER( void ) {
     msbPartTwoReg = (ADC1BUF3);
     lsbPartOneReg = (ADC1BUF5);
     lsbPartTwoReg = (ADC1BUF7);
+  
+    qpCh1VSenseRegTemp = (ADC1BUF0);
+    qpCh2VSenseRegTemp = (ADC1BUF2);
+    qpCh3VSenseRegTemp = (ADC1BUF4);
+    qpCh4VSenseRegTemp = (ADC1BUF6);
     
-    qpLastCh1VSenseReg = (ADC1BUF0);
-    qpLastCh2VSenseReg = (ADC1BUF2);
-    qpLastCh3VSenseReg = (ADC1BUF4);
-    qpLastCh4VSenseReg = (ADC1BUF6);
-    
-    if ( !modRxNibbleFlag ) {
-      // define location markers of where to put bits in byte
-      msbBitShift = 7;
-      lsbBitShift = 6;
-    } else {
+    if ( modRxNibbleFlag ) {
       // define location markers of where to put bits in byte
       msbBitShift = 3;
       lsbBitShift = 2;
+    } else {
+      // define location markers of where to put bits in byte
+      msbBitShift = 7;
+      lsbBitShift = 6;
     }
     
   } else {
     // 0 = ADC is currently filling buffer 0x0-0x7, user should access 0x8-0xF
     
     //!! debugging
-    LATA &= ~(1<<0);
+    //LATA &= ~(1<<0);
   
     //modRxADCBuffer[modRxADCBufferIdx++] = ADC1BUF8;
     //modRxADCBuffer[modRxADCBufferIdx++] = ADC1BUF9;
@@ -464,73 +537,133 @@ void __ISR( _ADC_VECTOR, IPL6AUTO ) __ADC_HANDLER( void ) {
     lsbPartOneReg = (ADC1BUFD);
     lsbPartTwoReg = (ADC1BUFF);
     
-    qpLastCh1VSenseReg = (ADC1BUF8);
-    qpLastCh2VSenseReg = (ADC1BUFA);
-    qpLastCh3VSenseReg = (ADC1BUFC);
-    qpLastCh4VSenseReg = (ADC1BUFE);
+    qpCh1VSenseRegTemp = (ADC1BUF8);
+    qpCh2VSenseRegTemp = (ADC1BUFA);
+    qpCh3VSenseRegTemp = (ADC1BUFC);
+    qpCh4VSenseRegTemp = (ADC1BUFE);
     
-    if ( !modRxNibbleFlag ) {
-      // define location markers of where to put bits in byte
-      msbBitShift = 5;
-      lsbBitShift = 4;
-      
-      // invert nibble flag to keep track of where we are at in this byte
-      modRxNibbleFlag = 0x01;
-    } else {
+    if ( modRxNibbleFlag ) {
       // define location markers of where to put bits in byte
       msbBitShift = 1;
       lsbBitShift = 0;
       
       // invert nibble flag to keep track of where we are at in this byte
       modRxNibbleFlag = 0x00;
+    } else {
+      // define location markers of where to put bits in byte
+      msbBitShift = 5;
+      lsbBitShift = 4;
+      
+      // invert nibble flag to keep track of where we are at in this byte
+      modRxNibbleFlag = 0x01;
     }
-  
   }
   
   if ( msbPartOneReg < msbPartTwoReg )
     msb = 0x01;
   else
     msb = 0x00;
-  
   if ( lsbPartOneReg < lsbPartTwoReg )
     lsb = 0x01;
   else
     lsb = 0x00;
   
-  // placing newly received bit(s) in their correct places with regard to
-  // framing
-  *modRxBufferCur |= (
-              ((msb)<<msbBitShift) |
-              ((lsb)<<lsbBitShift) );
-  
   switch ( modRxActiveQuadrant ) {
     case 1:
-      hiccupChannelValue = qpLastCh1VSenseReg;
+      hiccupChannelValue = qpCh1VSenseRegTemp;
       break;
     case 2:
-      hiccupChannelValue = qpLastCh2VSenseReg;
-      if ( modSigLockState ) {
-        hiccupCompareValue = msb;
-        // re-determine hiccup threshold value based on last data bits
-        if ( msb )
-          modRxHiccupThresH = (msbPartOneReg + msbPartTwoReg ) / 2;
-        else
-          modRxHiccupThresL = (msbPartOneReg + msbPartTwoReg ) / 2;
-      } else {
-        hiccupCompareValue = (1<<msbBitShift) & MOD_FRAME_NULL_HANDSHAKE_BYTE;
+      if ( 1 )
+        hiccupChannelValue = qpCh2VSenseRegTemp;
+      if ( hiccupChannelValue != 0 ) {
+        if ( modSigLockState ) {
+          // since we locked, assume received signal data is good enough to
+          // compare against
+          hiccupCompareValue = msb;
+
+          // re-determine hiccup threshold value based on data bits received
+          // and save alignment ADC channel nodes for symmetric channels
+          if ( hiccupCompareValue ) {
+            qpLastCh2VSenseReg = msbPartTwoReg;
+            modRxHiccupThresH = (msbPartOneReg + msbPartTwoReg ) >> 1;
+          } else {
+            qpLastCh2VSenseReg = msbPartOneReg;
+            modRxHiccupThresL = (msbPartOneReg + msbPartTwoReg ) >> 1;
+          }
+          qpLastCh4VSenseReg = qpCh4VSenseRegTemp;
+          
+          // decide whether we should save alignment ADC channel nodes for
+          // asymmetric channels
+          if ( msb ) {
+            if ( !lsb )
+              qpLastCh3VSenseReg = qpCh3VSenseRegTemp;
+          } else {
+            if ( lastLsb )
+              qpLastCh1VSenseReg = qpCh1VSenseRegTemp;
+          }
+        } else {
+          // since we are not locked, compare byte value to target handshake
+          hiccupCompareValue = (1<<msbBitShift) & MOD_FRAME_NULL_HANDSHAKE_BYTE;
+
+          // since we are not locked on to the signal yet, might as well not care
+          // about peculiarities of sampling alignment ADC node channels
+          qpLastCh1VSenseReg = qpCh1VSenseRegTemp;
+          qpLastCh2VSenseReg = qpCh2VSenseRegTemp;
+          qpLastCh3VSenseReg = qpCh3VSenseRegTemp;
+          qpLastCh4VSenseReg = qpCh4VSenseRegTemp;
+        }
       }
       break;
     case 3:
-      hiccupChannelValue = qpLastCh3VSenseReg;
+      hiccupChannelValue = qpCh3VSenseRegTemp;
       break;
     case 4:
-      hiccupChannelValue = qpLastCh4VSenseReg;
+      if ( 1 )
+        hiccupChannelValue = qpCh4VSenseRegTemp;
+      if ( hiccupChannelValue != 0 ) {
+        if ( modSigLockState ) {
+          // since we locked, assume received signal data is good enough to
+          // compare against
+          hiccupCompareValue = lsb;
+
+          // re-determine hiccup threshold value based on data bits received
+          // and save alignment ADC channel nodes for symmetric channels
+          if ( hiccupCompareValue ) {
+            qpLastCh4VSenseReg = lsbPartTwoReg;
+            modRxHiccupThresH = (lsbPartOneReg + lsbPartTwoReg ) >> 1;
+          } else {
+            qpLastCh4VSenseReg = lsbPartOneReg;
+            modRxHiccupThresL = (lsbPartOneReg + lsbPartTwoReg ) >> 1;
+          }
+          qpLastCh2VSenseReg = qpCh2VSenseRegTemp;
+          
+          // decide whether we should save alignment ADC channel nodes for
+          // asymmetric channels
+          if ( msb ) {
+            if ( !lsb )
+              qpLastCh3VSenseReg = qpCh3VSenseRegTemp;
+          } else {
+            if ( lastLsb )
+              qpLastCh1VSenseReg = qpCh1VSenseRegTemp;
+          }
+        } else {
+          // since we are not locked, compare byte value to target handshake
+          hiccupCompareValue = (1<<msbBitShift) & MOD_FRAME_NULL_HANDSHAKE_BYTE;
+
+          // since we are not locked on to the signal yet, might as well not care
+          // about peculiarities of sampling alignment ADC node channels
+          qpLastCh1VSenseReg = qpCh1VSenseRegTemp;
+          qpLastCh2VSenseReg = qpCh2VSenseRegTemp;
+          qpLastCh3VSenseReg = qpCh3VSenseRegTemp;
+          qpLastCh4VSenseReg = qpCh4VSenseRegTemp;
+        }
+      }
       break;
   }
   
   // we need to hiccup to keep clock in sync...do it
   //if ( (modRxDataBuffer[modRxDataBufferIdx] & MOD_RX_HANDSHAKE_BYTE) && !modRxHiccupState ) {
-  if ( (!modRxHiccupState) && (modSigLockState) &&
+  if ( (!modRxHiccupState) && (modSigLockState) && (hiccupChannelValue!=0) &&
           ( (!hiccupCompareValue && (hiccupChannelValue > modRxHiccupThresL)) ||
             (hiccupCompareValue && (hiccupChannelValue < modRxHiccupThresH)) ) ) {
   //if ( (!modRxHiccupState) &&
@@ -545,15 +678,21 @@ void __ISR( _ADC_VECTOR, IPL6AUTO ) __ADC_HANDLER( void ) {
     modRxHiccupState = 0x01;
 
     // flip necessary ADC configuration bits to switch sampling timing state
-    AD1CON3 ^= modRxHiccupFlipMask;
+    //AD1CON3 ^= modRxHiccupFlipMask;
+    AD1CON3INV = modRxHiccupFlipMask;
     
     //!! debugging
-    LATE |= (1<<6);
+    //LATE |= (1<<6);
     
+    // clear the timer register TMRx
+    //timerBReset( &MOD_TIMER_RX_REG );
+    TMR5CLR = 0xFFFF;
+  
     // start running timer to time when to re-flip sampling timing state (this 
     // assumes timer register is reset at the end of every interrupt and during 
     // initialization)
-    timerBOn( &MOD_TIMER_RX_CON );
+    //timerBOn( &MOD_TIMER_RX_CON );
+    T5CONSET = 0x8000;
   }
   
   // the following is less crucial for timing, here we take the received data 
@@ -561,6 +700,16 @@ void __ISR( _ADC_VECTOR, IPL6AUTO ) __ADC_HANDLER( void ) {
   // the frame, other housekeeping issues such as keeping out old bit values
   // in memory and averaging threshold values to account for changes in signal
   // strength  
+  
+  // placing newly received bit(s) in their correct places with regard to
+  // framing
+  *modRxBufferCur |= (
+              ((msb)<<msbBitShift) |
+              ((lsb)<<lsbBitShift) );
+  
+  // store last bits in case we need to reference them for clock recovery
+  // operations in the next cycle
+  lastLsb = lsb;
   
   if ( !(AD1CON2 & (1<<7)) && !(modRxNibbleFlag) ) {
     // do activities if we are at the very end of a byte
@@ -603,7 +752,6 @@ void __ISR( _ADC_VECTOR, IPL6AUTO ) __ADC_HANDLER( void ) {
           modTxBufferCur = modTxBuffer;
           modTxBufferBitMask = 0x80;
           modTxBufferEighthOfNibbleFlag = 0x00;
-          //*modRxBuffer = *modRxBufferCur;
           modRxBufferCur = modRxBuffer;
           modBufferTestDataCur = modBufferTestData;
           modSigLockState = 0x02;
@@ -653,13 +801,9 @@ void __ISR( _ADC_VECTOR, IPL6AUTO ) __ADC_HANDLER( void ) {
    
   }
   
-  // store last bits in case we need to reference them for clock recovery
-  // operations in the next cycle
-  lastMsb = msb;
-  lastLsb = lsb;
-  
   // clear the TxIF interrupt flag bit
-  MOD_ADC_INT_FLAG &= ~MOD_ADC_INT_MASK;
+  //MOD_ADC_INT_FLAG &= ~MOD_ADC_INT_MASK;
+  IFS1CLR = MOD_ADC_INT_MASK;
   
   return;
 }

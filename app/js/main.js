@@ -227,11 +227,6 @@ var CMDS = {
     rxBytes:  4,
     txBytes:  0,
   },
-  'CMD_MOD_HICCUP_GET': {
-    address:  0x85,
-    rxBytes:  1,
-    txBytes:  0,
-  },
   'CMD_MOD_DATA_BULK_RUN': {
     address:  0x86,
     rxBytes:  0,

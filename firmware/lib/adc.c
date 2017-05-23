@@ -22,9 +22,6 @@ unsigned int adcMask;
 
 void initAdc( void ) {
   
-  //!! debugging
-  TRISA &= ~(1<<0);
-  
   // create a mask represents all AN ADC channels This may be useful for 
   // several occasions but mainly to use in the ADC configuration registers
   adcMask = 0x0000;
@@ -196,7 +193,8 @@ volatile unsigned int * adcRead( unsigned char ch ) {
 }
 
 void adcAutoOn( uint16_t muxAChMask, uint16_t muxBChMask,
-        uint8_t intEvery, uint8_t bufSwitch ) {
+        uint8_t intEvery, uint8_t bufSwitch,
+        uint8_t samc, uint8_t adcs ) {
   
   uint8_t idx;
   uint8_t muxAChNum,
@@ -218,8 +216,6 @@ void adcAutoOn( uint16_t muxAChMask, uint16_t muxBChMask,
     AD1CON2 |= 0b1<<10;
     
     // set the following pins for input scan:
-    // AN11, AN13, AN14, AN15
-    // !! move to QP file (not generic enough to be here)
     AD1CSSL = muxAChMask;
     
   } else if ( muxAChNum == 1 ) {
@@ -271,6 +267,29 @@ void adcAutoOn( uint16_t muxAChMask, uint16_t muxBChMask,
   // configure buffer as one 16-word buffer ADC1BUF(15...0.)
   AD1CON2 & ~(0b1)<<1;
   AD1CON2 |= (bufSwitch)<<1;
+  
+  // the SAMC and ADCS registers are key to achieving a certain timing
+  // configuration, the below is the settings needed to achieve 1Msps ADC
+  // operation for reference
+  //  1/1Msps = 1us + (convert time)
+  //  Minimum Sample time >= 1 T_AD
+  //  Minimum convert time = 12 T_AD
+  // the implementation and verification of timing is below
+  //  T_PB = (1/80MHz)*2 = 25ns
+  //  T_AD = 2 * T_PB = 50ns
+  //  Sample time = 8 T_AD
+  //  Convert time = 12 T_AD
+  //  ADC clock divisor = 1
+  //  Sample rate = 1/(2*(12+8)*25ns) = 1Msps 
+  
+  // SAMC<4:0>: Auto-sample Time bits
+  AD1CON3 &= ~(0b11111);
+  AD1CON3 |= samc<<8;
+  
+  // ADCS<7:0>: ADC Conversion Clock Select bits(1)
+  // T_AD = T_PB * 2 * (ADCS<7:0>+1) = 2 * T_PB
+  AD1CON3 &= ~(0b11111111);
+  AD1CON3 |= adcs<<0;
   
   // ON: ADC Operating Mode bit(1)
   // turn ADC module back on

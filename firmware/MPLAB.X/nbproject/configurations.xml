@@ -227,7 +227,7 @@
         </archiverTool>
         <loading>
           <useAlternateLoadableFile>false</useAlternateLoadableFile>
-          <parseOnProdLoad>false</parseOnProdLoad>
+          <parseOnProdLoad>true</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
         <subordinates>
@@ -251,7 +251,7 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories"
-                  value="../lib;../src;../src/system_config/default;../src/default;../src/system_config/default/framework;C:/microchip/harmony/v1_10/framework;C:/Program Files (x86)/Microchip/xc32/v1.42/pic32-libs/include;C:/Program Files (x86)/Microchip/xc32/v1.42/pic32-libs/include/lega-c"/>
+                  value="../lib;C:/microchip/harmony/v1_10/framework;C:/Program Files (x86)/Microchip/xc32/v1.42/pic32-libs/include;C:/Program Files (x86)/Microchip/xc32/v1.42/pic32-libs/include/lega-c;../../../MS/firmware/src;../../../MS/firmware/src/system_config/default;../../../MS/firmware/src/default;../../../MS/firmware/src/system_config/default/framework;../src;../src/system_config/default;../src/default;../../../../../../../microchip/harmony/v1_10/framework;../src/system_config/default/framework"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>

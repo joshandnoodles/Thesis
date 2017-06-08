@@ -36,104 +36,6 @@
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "system/common/sys_module.h"   // SYS function prototypes
 
-/*
-// pin definitions
-sbit LD1 at LATE3_bit;
-sbit LD2 at LATA10_bit;
-sbit LD1_Direction at  TRISE3_bit;
-sbit LD2_Direction at TRISA10_bit;
-
-sbit T1 at RE4_bit;
-sbit T2 at RG9_bit;
-sbit T1_Direction at TRISE4_bit;
-sbit T2_Direction at TRISG9_bit;
-
-// globals
-char oldstate1 = 0, oldstate2 = 0;
-char Example_State = 0;
-char count;
-
-//Timer2/3
-//Prescaler 1:1; PR3 Preload = 610; PR2 Preload = 23650; Actual Interrupt Time = 500 ms
-void InitTimer2_3() {
-  T2CON         = 0x0;
-  T3CON         = 0x0;
-  TMR2          = 0;
-  TMR3          = 0;
-  T3IE_bit      = 1;
-  T3IF_bit      = 0;
-  T3IP0_bit     = 1;
-  T3IP1_bit     = 1;
-  T3IP2_bit     = 1;
-  PR3           = 610;
-  PR2           = 23650;
-  T2CON         = 0x8008;
-}
-
-void Timer2_3Interrupt() iv IVT_TIMER_3 ilevel 7 ics ICS_SRS {
-  char temp;
-
-  // clear Timer Interrupt flag
-  T3IF_bit = 0;
-  T2CON = 0x0;
-  T3CON = 0x0;
-
-  // check T1 button state
-  switch (Example_State & 0x0F){
-    case 0 : LD1 = 0;                   // Both LEDs are OF
-             LD2 = 0;
-             break;
-    
-    case 1 : LD1 ^= 1;                  // Only LD1 blinks
-             LD2 = 0;
-             break;
-    
-    case 2 : LD1 = 0;                   // Only LD2 blinks
-             LD2 ^= 1;
-             break;
-    
-    case 3 : LD1 ^= 1;                  // Both LEDs blinks alternately
-             LD2  = !LD1;
-             break;
-    
-    case 4 : LD1 ^= 1;                  // Both LEDs blink simultaneously
-             LD2  = LD1;             
-             break;
-    
-    default : Example_State &= 0xF0;    // reset T1 state to zero
-              break;
-  }
-  // check T2 button state
-  switch (Example_State & 0xF0){
-    case 0x00 : PR3 = 610;              // Set Timer Interrupt time to 500ms
-                PR2 = 23650;
-                break;
-    
-    case 0x10 : PR3 = 488;              // Set Timer Interrupt time to 400ms
-                PR2 = 18920;
-                break;
-    
-    case 0x20 : PR3 = 366;              // Set Timer Interrupt time to 300ms
-                PR2 = 14190;
-                break;
-    
-    case 0x30 : PR3 = 244;              // Set Timer Interrupt time to 200ms
-                PR2 = 9460;
-                break;
-    
-    case 0x40 : PR3 = 122;              // Set Timer Interrupt time to 100ms
-                PR2 = 4730;
-                break;
-    
-    default :   PR3 = 610;              // Set Timer Interrupt time to 500ms
-                PR2 = 23650;
-                Example_State &= 0x0F;  // reset T1 state to zero
-                break;
-  }
-  T2CON = 0x8008;
-}
-*/
-
 // main function
 void main() {
   
@@ -150,27 +52,20 @@ void main() {
   
   lsrLoadSwitchOn();
   modOn();
-  
-  //gimbalOn();
-  //gimbalSetTilt( 90 );
-  
-  //lsrLoadSwitchOn();
-  //lsrSetHigh();
+  gimbalOn();
+  #ifdef MASTER
+    gimbalSetPan( 90 );
+    gimbalSetTilt( 6 );
+  #else
+    gimbalSetPan( 90 );
+    gimbalSetTilt( 7 );
+  #endif
   
   while (1) {     // loop forever
-    
     
     // run operations for MPLAB Harmony modules and application(s)
     SYS_Tasks();
     
-    // trigger action when button is pressed (action occurs on release)
-    //if ( debugBtn1State() ) {             // wait for button to be depressed
-    //  while( debugBtn1State() );          // hold here until button is released
-    //  delayUs( BTN_DEBOUNCE_US );    // pause to avoid de-bounce issues
-    //  debugLed1Tog();
-    //  lsrLoadSwitchTog();
-    //  lsrTog();
-    //}
     if ( debugBtn1State() ) {             // wait for button to be depressed
       while( debugBtn1State() ) {         // hold here until button is released
         SERVO_PAN_OCRS = SERVO_PAN_OCR - 1; 
@@ -178,56 +73,54 @@ void main() {
       }
       delayUs( BTN_DEBOUNCE_US );    // pause to avoid de-bounce issues
       debugLed1Tog();
-      //delayS(2);
-      //AD1CHS = 0x1111<<24;
     }
     if ( debugBtn2State() ) {             // wait for button to be depressed
       while( debugBtn2State() );          // hold here until button is released
       delayUs( BTN_DEBOUNCE_US );    // pause to avoid de-bounce issues
       debugLed2Tog();
-      //delayS(2);
-      //AD1CHS = 0x1111<<24;
     }
     
-    //modOff();
-    //delayMs(1000);
-    //debugLed2On();
-    //gimbalSetTilt(90);
+    // check to see if we should change our active data channel based on the 
+    // intensities of the the quadrants nominal values
+    switch (modRxActiveQuadrant) {
+      case 1:
+        if ( (MOD_DEFAULT_RX_THRES_SWAP_MULT * (*qpLastChVSenseRegPtrs[3])) > 
+                (*qpLastChVSenseRegPtrs[modRxActiveQuadrant]) ) {
+          modSetActiveQuadrant( 3 );
+          debugLed2On();
+        }
+        break;
+      case 3:
+        if ( (MOD_DEFAULT_RX_THRES_SWAP_MULT * (*qpLastChVSenseRegPtrs[1])) > 
+                (*qpLastChVSenseRegPtrs[modRxActiveQuadrant]) ) {
+          modSetActiveQuadrant( 1 );
+          debugLed2Off();
+        }
+        break;
+    }
     
-    //qpReadCh1VSense();
-    //qpReadCh2VSense();
-    //qpReadCh3VSense();
-    //qpReadCh4VSense();
-    //qpAlign();
+    // use the debug LEDs as an indicator of signal lock status
+    switch (modSigLockState) {
+      case 0:
+        debugLed1Off();
+        debugLed2Off();
+        break;
+      case 1:
+        debugLed1On();
+        debugLed2Off();
+        break;
+      case 2:
+        debugLed1On();
+        debugLed2On();
+        break;
+    }
     
     //lsrReadVrefVSenseReg();
     //lsrReadISenseReg();
     //lsrCheckAlarms();
-    
-    
-    // check T1 button
-    /*
-    if (Button(&PORTE, 4, 2, 0)) {                // Detect logical zero
-      oldstate1 = 1;                              // Update flag
-    }
-    if (oldstate1 && Button(&PORTE, 4, 2, 1)) {   // Detect zero-to-one transition
-      oldstate1 = 0;                              // Update flag
-      Example_State += 0x01;                      // set new Example state
-      if ((Example_State & 0x0F) > 4)
-        Example_State &= 0xF0;
-    }
-    // check T2 button
-    if (Button(&PORTG, 9, 2, 0)) {                // Detect logical zero
-      oldstate2 = 1;                              // Update flag
-    }
-    if (oldstate2 && Button(&PORTG, 9, 2, 1)) {   // Detect zero-to-one transition
-      oldstate2 = 0;                              // Update flag
-      Example_State += 0x10;                      // set new Example state
-      if ((Example_State & 0xF0) > 0x40)
-        Example_State &= 0x0F;
-    }
-    */
   }
+  
+  return;
 }
 
 

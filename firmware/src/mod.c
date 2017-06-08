@@ -23,6 +23,7 @@
 #include "qp.h"
 #include "adc.h"
 #include "test_data.h"
+#include "debug.h"
 
 #include "mod.h"
 
@@ -38,6 +39,7 @@ volatile uint8_t * modTxBufferEnd;
 volatile uint8_t * modTxBufferCur;
 volatile uint8_t modTxBufferBitMask;
 volatile uint8_t modTxBufferEighthOfNibbleFlag;
+volatile uint8_t modTxSigLockFlag;
 
 // variables to keep track of ongoing rx acquisition strategies
 uint8_t modRxActiveQuadrant;
@@ -57,7 +59,29 @@ uint32_t modRxHiccupFlipMask;   // used to invert between ADC timing states
 uint32_t modRxBitErrors;
 uint8_t lastLsb;
 
-uint32_t tickTock;//!!
+// constants defining framing chunk to help simplify/speed up ADC interrupt
+typedef struct { 
+  volatile unsigned int * msbPartOneReg;
+  volatile unsigned int * msbPartTwoReg;
+  volatile unsigned int * lsbPartOneReg;
+  volatile unsigned int * lsbPartTwoReg;
+  
+  volatile unsigned int * qpChVSenseRegTemps[4];
+  
+  uint8_t msbBitShiftArr[2];   // based on current nibble (index w/ nibble flag)
+  uint8_t lsbBitShiftArr[2];   // based on current nibble (index w/ nibble flag)
+} BufsNibbleStructure;
+static const BufsNibbleStructure MOD_RX_FIRST_BUFS_STRUCT = {
+    (&ADC1BUF1), (&ADC1BUF3), (&ADC1BUF5), (&ADC1BUF7),
+    {(&ADC1BUF0), (&ADC1BUF2), (&ADC1BUF4), (&ADC1BUF6)},
+    {7, 3}, {6, 2},
+  };
+static const BufsNibbleStructure MOD_RX_SECOND_BUFS_STRUCT = {
+    (&ADC1BUF9), (&ADC1BUFB), (&ADC1BUFD), (&ADC1BUFF),
+    {(&ADC1BUF8), (&ADC1BUFA), (&ADC1BUFC), (&ADC1BUFE)},
+    {5, 1}, {4, 0},
+  };
+volatile uint32_t tickTock;//!!
 
 // variable to keep track of dummy test data set
 volatile uint8_t * modBufferTestData;
@@ -70,6 +94,7 @@ volatile uint8_t modRxHiccupState;
 volatile uint8_t modSigLockState; // 0 = no known signal recognized
                                   // 1 = null handshake seen and locked onto
                                   // 2 = data handshake seen, start sending data
+volatile uint8_t modRxAlignEnb;
 
 void initMod( void ) {
   
@@ -77,6 +102,7 @@ void initMod( void ) {
   
   //!! debugging
   TRISE &= ~(1<<6);
+  TRISA &= ~(1<<0);
   
   // initialize the timing mechanism to be used for the tx interrupts
   initTimerB(
@@ -126,16 +152,13 @@ void initMod( void ) {
           1,
           MOD_ADC_INT_MASK );
   
-  // set default modulation rate
+  // set defaults for tx operations
   modSetFreqHz( MOD_DEFAULT_TX_FREQ_HZ );
   
-  // set default active quadrant
+  // set defaults for rx operations
   modRxActiveQuadrant = MOD_DEFAULT_RX_ACTIVE_QUAD;
-  
-  // set default hiccup timing
+  modRxAlignEnb = MOD_DEFAULT_RX_ALIGN_ENB;
   modRxHiccupNs = MOD_DEFAULT_RX_HICCUP_NS;
-          
-  // set default threshold values for both hiccup ADC nodes
   modRxHiccupThresH = MOD_DEFAULT_RX_HICCUP_THRES;
   modRxHiccupThresL = MOD_DEFAULT_RX_HICCUP_THRES;
   
@@ -153,6 +176,7 @@ void initMod( void ) {
   
   // reset any flags/variables that only need to be set once here at the start
   modSigLockState = 0x00;
+  modTxSigLockFlag = 0x00;
   modRxHiccupState = 0x00;
   modRxBitErrors = 0x00000000;
   
@@ -162,10 +186,7 @@ void initMod( void ) {
 
 uint8_t modOn( void ) {
   
-  uint16_t qpCh1Reg,
-           qpCh2Reg,
-           qpCh3Reg,
-           qpCh4Reg;
+  uint16_t intialActiveQuadrantVal;
   uint32_t initialActiveQuadrantMask;
   uint16_t idx;
   
@@ -184,7 +205,7 @@ uint8_t modOn( void ) {
   modRxSigLockIdx = 0;
   
   // ready tx buffer by initializing to default values
-  modTxBufferHeader[0] = MOD_FRAME_DATA_HANDSHAKE_BYTE;
+  modTxBufferHeader[0] = MOD_HANDSHAKE_DATA_BYTE;
   for ( idx=0; idx<MOD_FRAME_DATA_SIZE_BYTES; idx++ )
     modTxBufferData[idx] = modBufferTestData[idx];
   
@@ -196,22 +217,17 @@ uint8_t modOn( void ) {
   timerBSetPeriodNs( &MOD_TIMER_RX_CON, &MOD_TIMER_RX_PERIOD, modRxHiccupNs );
   
   // dynamically set active quadrant by checking each quadrant's value manually
-  /* !! qpCh1Reg = qpReadCh1VSenseReg();
-  qpCh2Reg = qpReadCh2VSenseReg();
-  qpCh3Reg = qpReadCh3VSenseReg();
-  qpCh4Reg = qpReadCh4VSenseReg();
-  if ( ( qpCh1Reg > qpCh2Reg ) && 
-          ( qpCh1Reg > qpCh3Reg ) && 
-          ( qpCh1Reg > qpCh4Reg )  ) {
-    modRxActiveQuadrant = 1;
-  } else if ( ( qpCh2Reg > qpCh3Reg ) && 
-          ( qpCh2Reg > qpCh4Reg ) ) {
-    modRxActiveQuadrant = 2;
-  } else if ( qpCh3Reg > qpCh4Reg ) {
-    modRxActiveQuadrant = 3;
-  } else {
-    modRxActiveQuadrant = 4;
-  }*/
+  qpReadCh1VSense();
+  qpReadCh2VSense();
+  qpReadCh3VSense();
+  qpReadCh4VSense();
+  intialActiveQuadrantVal = 0;
+  for ( idx=1; idx<4; idx+=2 ) {
+    if ( (intialActiveQuadrantVal) < (*qpLastChVSenseRegPtrs[idx]) ) {
+      modRxActiveQuadrant = idx;
+      intialActiveQuadrantVal = (*qpLastChVSenseRegPtrs[idx]);
+    }
+  }
   
   // clear the timer register TMRx
   timerBReset( &MOD_TIMER_TX_REG );
@@ -221,16 +237,16 @@ uint8_t modOn( void ) {
   
   // start calling interrupts for rx operation (part 1)
   switch ( modRxActiveQuadrant ) {
-    case 1:
+    case 0:
       initialActiveQuadrantMask = QP_CH1_VSENSE_AN_MASK;
       break;
-    case 2:
+    case 1:
       initialActiveQuadrantMask = QP_CH2_VSENSE_AN_MASK;
       break;
-    case 3:
+    case 2:
       initialActiveQuadrantMask = QP_CH3_VSENSE_AN_MASK;
       break;
-    case 4:
+    case 3:
       initialActiveQuadrantMask = QP_CH4_VSENSE_AN_MASK;
       break;   
   }
@@ -288,6 +304,7 @@ uint8_t modOff( void ) {
   // change flag(s) to keep track of state changes
   modState = 0x00;
   modSigLockState = 0x00;
+  modTxSigLockFlag = 0x00;
   modRxHiccupState = 0x00;
   
   return 0x1;
@@ -322,43 +339,127 @@ void modSetActiveQuadrant( uint8_t newActiveQuadrant ) {
   
   uint32_t flipMask;
   
-  // start with current CH0SB bit settings for flip mask, inverting this will
-  // zero out settings completely
-  flipMask = ((0b1111)<<24) & AD1CHS;
+  if ( newActiveQuadrant != modRxActiveQuadrant ) {
+    // start with current CH0SB bit settings for flip mask, inverting this will
+    // zero out settings completely
+    flipMask = ((0b1111)<<24) & AD1CHS;
+
+    // determine what CH0SB bit settings should be for new active quadrant and
+    // combine this in the flip mask
+    switch ( newActiveQuadrant ) {
+      case 0:
+        flipMask ^= (QP_CH1_VSENSE_AN_CH<<24);
+        break;
+      case 1:
+        flipMask ^= (QP_CH2_VSENSE_AN_CH<<24);
+        break;
+      case 2:
+        flipMask ^= (QP_CH3_VSENSE_AN_CH<<24);
+        break;
+      case 3:
+        flipMask ^= (QP_CH4_VSENSE_AN_CH<<24);
+        break;   
+    }
   
-  // determine what CH0SB bit settings should be for new active quadrant and
-  // combine this in the flip mask
-  switch ( newActiveQuadrant ) {
-    case 1:
-      flipMask |= QP_CH1_VSENSE_AN_CH;
-      break;
-    case 2:
-      flipMask |= QP_CH2_VSENSE_AN_CH;
-      break;
-    case 3:
-      flipMask |= QP_CH3_VSENSE_AN_CH;
-      break;
-    case 4:
-      flipMask |= QP_CH4_VSENSE_AN_CH;
-      break;   
+    // we should now wait until any rx ADC interrupts to change the current active
+    // quadrant value since the logic within these interrupts are dependent on
+    // this value (and changing it in the middle is a bad idea)
+    while ( MOD_ADC_INT_FLAG & MOD_ADC_INT_MASK );
+
+    // now we should be safe to change the ADC sampler bits and the active
+    // quadrant variable
+    AD1CHSINV = flipMask;
+    modRxActiveQuadrant = newActiveQuadrant;
   }
-  
-  // we should now wait until any rx ADC interrupts to change the current active
-  // quadrant value since the logic within these interrupts are dependent on
-  // this value (and changing it in the middle is a bad idea)
-  while ( MOD_ADC_INT_FLAG & MOD_ADC_INT_MASK );
-  
-  // now we should be safe to change the ADC sampler bits and the active
-  // quadrant variable
-  AD1CHSINV = flipMask;
-  modRxActiveQuadrant = newActiveQuadrant;
   
   return;
 }
 
-void __ISR( _TIMER_4_VECTOR, IPL7SOFT ) _TIMER4_HANDLER( void ) {
+uint8_t modUpdateAlignmentFrame( void ) {
+  // this assumes the QP is aligned in the following configuration:
+  //   ch3 ch2
+  //   ch4 ch1
+  
+  uint8_t tempAlignFrame;
+  
+  tempAlignFrame = 0x00;
+  
+  switch (modRxActiveQuadrant) {
+    case 1:
+      if ( (MOD_RX_ALIGN_THRES_MULT_THREE * (*qpLastChVSenseRegPtrs[2])) > 
+              (*qpLastChVSenseRegPtrs[3]) ) {
+        // laser is aligned way way too far up, need to move down
+        tempAlignFrame |= 0x05;
+      } else if ( (MOD_RX_ALIGN_THRES_MULT_THREE * (*qpLastChVSenseRegPtrs[0])) > 
+              (*qpLastChVSenseRegPtrs[3]) ) {
+        // laser is aligned way way too far right, need to move left
+        tempAlignFrame |= 0x50;
+      } else if ( (MOD_RX_ALIGN_THRES_MULT_TWO * (*qpLastChVSenseRegPtrs[2])) > 
+              (*qpLastChVSenseRegPtrs[3]) ) {
+        // laser is aligned way too far up, need to move down
+        tempAlignFrame |= 0x03;
+      } else if ( (MOD_RX_ALIGN_THRES_MULT_TWO * (*qpLastChVSenseRegPtrs[0])) > 
+              (*qpLastChVSenseRegPtrs[3]) ) {
+        // laser is aligned way too far right, need to move left
+        tempAlignFrame |= 0x30;
+      } else if ( (MOD_RX_ALIGN_THRES_MULT_ONE * (*qpLastChVSenseRegPtrs[2])) > 
+              (*qpLastChVSenseRegPtrs[3]) ) {
+        // laser is aligned too far up, need to move down
+        tempAlignFrame |= 0x01;
+      } else if ( (MOD_RX_ALIGN_THRES_MULT_ONE * (*qpLastChVSenseRegPtrs[0])) > 
+              (*qpLastChVSenseRegPtrs[3]) ) {
+        // laser is aligned too far right, need to move left
+        tempAlignFrame |= 0x10;
+      }
+      break;
+    case 3:
+      if ( (MOD_RX_ALIGN_THRES_MULT_THREE * (*qpLastChVSenseRegPtrs[0])) > 
+              (*qpLastChVSenseRegPtrs[1]) ) {
+        // laser is aligned way too far down, need to move up
+        tempAlignFrame |= 0x06;
+      } else if ( (MOD_RX_ALIGN_THRES_MULT_THREE * (*qpLastChVSenseRegPtrs[2])) > 
+              (*qpLastChVSenseRegPtrs[1]) ) {
+        // laser is aligned way too far left, need to move right
+        tempAlignFrame |= 0x60;
+      } else if ( (MOD_RX_ALIGN_THRES_MULT_TWO * (*qpLastChVSenseRegPtrs[0])) > 
+              (*qpLastChVSenseRegPtrs[1]) ) {
+        // laser is aligned way too far down, need to move up
+        tempAlignFrame |= 0x04;
+      } else if ( (MOD_RX_ALIGN_THRES_MULT_TWO * (*qpLastChVSenseRegPtrs[2])) > 
+              (*qpLastChVSenseRegPtrs[1]) ) {
+        // laser is aligned way too far left, need to move right
+        tempAlignFrame |= 0x40;
+      } else if ( (MOD_RX_ALIGN_THRES_MULT_ONE * (*qpLastChVSenseRegPtrs[0])) > 
+              (*qpLastChVSenseRegPtrs[1]) ) {
+        // laser is aligned too far down, need to move up
+        tempAlignFrame |= 0x02;
+      } else if ( (MOD_RX_ALIGN_THRES_MULT_ONE * (*qpLastChVSenseRegPtrs[2])) > 
+              (*qpLastChVSenseRegPtrs[1]) ) {
+        // laser is aligned too far left, need to move right
+        tempAlignFrame |= 0x20;
+      }
+      break;
+  }
+  
+  modTxBufferHeader[1] = tempAlignFrame;
+  
+  return tempAlignFrame;
+}
+
+void __ISR( _TIMER_4_VECTOR, IPL7SRS ) _TIMER4_HANDLER( void ) {
   
   uint8_t txBit;
+  
+  if ( (modTxSigLockFlag) && (modTxBufferBitMask == 0x80) && 
+          (!modTxBufferEighthOfNibbleFlag) ) {
+    modTxSigLockFlag = 0x00;
+    modTxBufferCur = modTxBuffer;
+    modSigLockState = 0x02;
+    #ifdef MASTER
+      modRxBufferCur = modRxBufferEnd - 2;
+      modBufferTestDataCur = modBufferTestDataEnd - 2;
+    #endif
+  }
   
   switch (modSigLockState) {
     case 2:      
@@ -370,16 +471,16 @@ void __ISR( _TIMER_4_VECTOR, IPL7SOFT ) _TIMER4_HANDLER( void ) {
       // determine bit value to send (in this case should be the null handshake)
       // every byte of the buffer length except one which will be the data
       // handshake byte
-      if ( modTxBufferCur == modTxBuffer )
-        txBit = MOD_FRAME_DATA_HANDSHAKE_BYTE & modTxBufferBitMask;
+      if ( (modTxBufferCur == modTxBuffer) )
+        txBit = MOD_HANDSHAKE_FRAME_ALIGN_BYTE & modTxBufferBitMask;
       else
-        txBit = MOD_FRAME_NULL_HANDSHAKE_BYTE & modTxBufferBitMask;
+        txBit = MOD_HANDSHAKE_NULL_BYTE & modTxBufferBitMask;
       
       break;
     case 0:
       // determine bit value to send (in this case should be the null handshake)
       // every byte of the entire buffer length
-      txBit = MOD_FRAME_NULL_HANDSHAKE_BYTE & modTxBufferBitMask;
+      txBit = MOD_HANDSHAKE_NULL_BYTE & modTxBufferBitMask;
       
       break;
   }
@@ -389,10 +490,10 @@ void __ISR( _TIMER_4_VECTOR, IPL7SOFT ) _TIMER4_HANDLER( void ) {
     // toggle the modulation source
     if ( txBit ) {
       //LSR_EN_CH1_LAT |= LSR_EN_CH1_MASK;
-      LATESET = LSR_EN_CH1_MASK;
+      LATDSET = LSR_EN_CH1_MASK;
     } else {
       //LSR_EN_CH1_LAT &= ~LSR_EN_CH1_MASK;
-      LATECLR = LSR_EN_CH1_MASK;
+      LATDCLR = LSR_EN_CH1_MASK;
     }
     
     // circular bit shift byte mask
@@ -413,10 +514,10 @@ void __ISR( _TIMER_4_VECTOR, IPL7SOFT ) _TIMER4_HANDLER( void ) {
     // toggle the modulation source
     if ( txBit ) {
       //LSR_EN_CH1_LAT &= ~LSR_EN_CH1_MASK;
-      LATECLR = LSR_EN_CH1_MASK;
+      LATDCLR = LSR_EN_CH1_MASK;
     } else {
       //LSR_EN_CH1_LAT |= LSR_EN_CH1_MASK;
-      LATESET = LSR_EN_CH1_MASK;
+      LATDSET = LSR_EN_CH1_MASK;
     }
     
     // invert half bit flag which helps us implement Manchester encoding scheme
@@ -460,25 +561,16 @@ void __ISR( _TIMER_5_VECTOR, IPL6SOFT ) _TIMER5_HANDLER( void ) {
 
 void __ISR( _ADC_VECTOR, IPL5SOFT ) __ADC_HANDLER( void ) {
   
-  uint8_t msbPartOneReg;
-  uint8_t msbPartTwoReg;
-  uint8_t lsbPartOneReg;
-  uint8_t lsbPartTwoReg;
   uint8_t msb;
   uint8_t lsb;
-  uint8_t msbBitShift;
-  uint8_t lsbBitShift;
-  
-  uint16_t qpCh1VSenseRegTemp;
-  uint16_t qpCh2VSenseRegTemp;
-  uint16_t qpCh3VSenseRegTemp;
-  uint16_t qpCh4VSenseRegTemp;
+  BufsNibbleStructure bufsNibbleStruct;
   
   uint16_t hiccupChannelValue;
   uint8_t hiccupCompareValue;
   uint8_t hiccupCompareMask;
   
   uint8_t bitErrorTemp;
+  uint16_t idx;
   
   // BUFS: Buffer Fill Status bit
   // Only valid when BUFM = 1 (ADRES split into 2 x 8-word buffers).
@@ -497,25 +589,11 @@ void __ISR( _ADC_VECTOR, IPL5SOFT ) __ADC_HANDLER( void ) {
     //modRxADCBuffer[modRxADCBufferIdx++] = ADC1BUF6;
     //modRxADCBuffer[modRxADCBufferIdx++] = ADC1BUF7;
     
-    msbPartOneReg = (ADC1BUF1);
-    msbPartTwoReg = (ADC1BUF3);
-    lsbPartOneReg = (ADC1BUF5);
-    lsbPartTwoReg = (ADC1BUF7);
-  
-    qpCh1VSenseRegTemp = (ADC1BUF0);
-    qpCh2VSenseRegTemp = (ADC1BUF2);
-    qpCh3VSenseRegTemp = (ADC1BUF4);
-    qpCh4VSenseRegTemp = (ADC1BUF6);
-    
-    if ( modRxNibbleFlag ) {
-      // define location markers of where to put bits in byte
-      msbBitShift = 3;
-      lsbBitShift = 2;
-    } else {
-      // define location markers of where to put bits in byte
-      msbBitShift = 7;
-      lsbBitShift = 6;
-    }
+    // get pointers to ADC registers relevant to this chunk in the frame,
+    // this struct also contains information about the location markers of where
+    // to put bits in the byte (these bit shift arrays should be indexed with 
+    // the nibble flag)
+    bufsNibbleStruct = MOD_RX_FIRST_BUFS_STRUCT;
     
   } else {
     // 0 = ADC is currently filling buffer 0x0-0x7, user should access 0x8-0xF
@@ -532,147 +610,75 @@ void __ISR( _ADC_VECTOR, IPL5SOFT ) __ADC_HANDLER( void ) {
     //modRxADCBuffer[modRxADCBufferIdx++] = ADC1BUFE;
     //modRxADCBuffer[modRxADCBufferIdx++] = ADC1BUFF;    
     
-    msbPartOneReg = (ADC1BUF9);
-    msbPartTwoReg = (ADC1BUFB);
-    lsbPartOneReg = (ADC1BUFD);
-    lsbPartTwoReg = (ADC1BUFF);
-    
-    qpCh1VSenseRegTemp = (ADC1BUF8);
-    qpCh2VSenseRegTemp = (ADC1BUFA);
-    qpCh3VSenseRegTemp = (ADC1BUFC);
-    qpCh4VSenseRegTemp = (ADC1BUFE);
-    
-    if ( modRxNibbleFlag ) {
-      // define location markers of where to put bits in byte
-      msbBitShift = 1;
-      lsbBitShift = 0;
-      
-      // invert nibble flag to keep track of where we are at in this byte
-      modRxNibbleFlag = 0x00;
-    } else {
-      // define location markers of where to put bits in byte
-      msbBitShift = 5;
-      lsbBitShift = 4;
-      
-      // invert nibble flag to keep track of where we are at in this byte
-      modRxNibbleFlag = 0x01;
-    }
+    // get pointers to ADC registers relevant to this chunk in the frame,
+    // this struct also contains information about the location markers of where
+    // to put bits in the byte (these bit shift arrays should be indexed with 
+    // the nibble flag)
+    bufsNibbleStruct = MOD_RX_SECOND_BUFS_STRUCT;
   }
   
-  if ( msbPartOneReg < msbPartTwoReg )
+  if ( (*bufsNibbleStruct.msbPartOneReg) < (*bufsNibbleStruct.msbPartTwoReg) )
     msb = 0x01;
   else
     msb = 0x00;
-  if ( lsbPartOneReg < lsbPartTwoReg )
+  if ( (*bufsNibbleStruct.lsbPartOneReg) < (*bufsNibbleStruct.lsbPartTwoReg) )
     lsb = 0x01;
   else
     lsb = 0x00;
   
+  hiccupChannelValue = (*bufsNibbleStruct.qpChVSenseRegTemps[modRxActiveQuadrant]);
   switch ( modRxActiveQuadrant ) {
     case 1:
-      hiccupChannelValue = qpCh1VSenseRegTemp;
-      break;
-    case 2:
-      if ( 1 )
-        hiccupChannelValue = qpCh2VSenseRegTemp;
-      if ( hiccupChannelValue != 0 ) {
-        if ( modSigLockState ) {
-          // since we locked, assume received signal data is good enough to
-          // compare against
-          hiccupCompareValue = msb;
-
-          // re-determine hiccup threshold value based on data bits received
-          // and save alignment ADC channel nodes for symmetric channels
-          if ( hiccupCompareValue ) {
-            qpLastCh2VSenseReg = msbPartTwoReg;
-            modRxHiccupThresH = (msbPartOneReg + msbPartTwoReg ) >> 1;
-          } else {
-            qpLastCh2VSenseReg = msbPartOneReg;
-            modRxHiccupThresL = (msbPartOneReg + msbPartTwoReg ) >> 1;
-          }
-          qpLastCh4VSenseReg = qpCh4VSenseRegTemp;
-          
-          // decide whether we should save alignment ADC channel nodes for
-          // asymmetric channels
-          if ( msb ) {
-            if ( !lsb )
-              qpLastCh3VSenseReg = qpCh3VSenseRegTemp;
-          } else {
-            if ( lastLsb )
-              qpLastCh1VSenseReg = qpCh1VSenseRegTemp;
-          }
-        } else {
-          // since we are not locked, compare byte value to target handshake
-          hiccupCompareValue = (1<<msbBitShift) & MOD_FRAME_NULL_HANDSHAKE_BYTE;
-
-          // since we are not locked on to the signal yet, might as well not care
-          // about peculiarities of sampling alignment ADC node channels
-          qpLastCh1VSenseReg = qpCh1VSenseRegTemp;
-          qpLastCh2VSenseReg = qpCh2VSenseRegTemp;
-          qpLastCh3VSenseReg = qpCh3VSenseRegTemp;
-          qpLastCh4VSenseReg = qpCh4VSenseRegTemp;
-        }
+      if ( modSigLockState ) {
+        // since we locked, assume received signal data is good enough to
+        // compare against
+        hiccupCompareValue = msb;
+      } else {
+        // since we are not locked, compare byte value to target handshake
+        hiccupCompareValue = (1<<(bufsNibbleStruct.msbBitShiftArr[modRxNibbleFlag])) & MOD_HANDSHAKE_NULL_BYTE;
       }
+      
+      // re-determine hiccup threshold value based on data bits received
+      // and save alignment ADC channel nodes for symmetric channels
+      if ( hiccupCompareValue ) {
+        modRxHiccupThresH = (((*bufsNibbleStruct.msbPartOneReg) + (*bufsNibbleStruct.msbPartTwoReg)) >> 1);
+        //modRxHiccupThresH = (modRxHiccupThresH >> 1) + (((*bufsNibbleStruct.msbPartOneReg) + (*bufsNibbleStruct.msbPartTwoReg)) >> 2) + 0;
+        //modRxHiccupThresH = (modRxHiccupThresH >> 1) + (modRxHiccupThresH >> 2) + (((*bufsNibbleStruct.msbPartOneReg) + (*bufsNibbleStruct.msbPartTwoReg)) >> 3) + 1;
+      } else {
+        modRxHiccupThresH = (((*bufsNibbleStruct.msbPartOneReg) + (*bufsNibbleStruct.msbPartTwoReg)) >> 1);
+        //modRxHiccupThresL = (modRxHiccupThresL >> 1) + (((*bufsNibbleStruct.msbPartOneReg) + (*bufsNibbleStruct.msbPartTwoReg)) >> 2) + 0;
+        //modRxHiccupThresL = (modRxHiccupThresL >> 1) + (modRxHiccupThresL >> 2) + (((*bufsNibbleStruct.msbPartOneReg) + (*bufsNibbleStruct.msbPartTwoReg)) >> 3) + 1;
+     }
       break;
     case 3:
-      hiccupChannelValue = qpCh3VSenseRegTemp;
-      break;
-    case 4:
-      if ( 1 )
-        hiccupChannelValue = qpCh4VSenseRegTemp;
-      if ( hiccupChannelValue != 0 ) {
-        if ( modSigLockState ) {
-          // since we locked, assume received signal data is good enough to
-          // compare against
-          hiccupCompareValue = lsb;
-
-          // re-determine hiccup threshold value based on data bits received
-          // and save alignment ADC channel nodes for symmetric channels
-          if ( hiccupCompareValue ) {
-            qpLastCh4VSenseReg = lsbPartTwoReg;
-            modRxHiccupThresH = (lsbPartOneReg + lsbPartTwoReg ) >> 1;
-          } else {
-            qpLastCh4VSenseReg = lsbPartOneReg;
-            modRxHiccupThresL = (lsbPartOneReg + lsbPartTwoReg ) >> 1;
-          }
-          qpLastCh2VSenseReg = qpCh2VSenseRegTemp;
-          
-          // decide whether we should save alignment ADC channel nodes for
-          // asymmetric channels
-          if ( msb ) {
-            if ( !lsb )
-              qpLastCh3VSenseReg = qpCh3VSenseRegTemp;
-          } else {
-            if ( lastLsb )
-              qpLastCh1VSenseReg = qpCh1VSenseRegTemp;
-          }
-        } else {
-          // since we are not locked, compare byte value to target handshake
-          hiccupCompareValue = (1<<msbBitShift) & MOD_FRAME_NULL_HANDSHAKE_BYTE;
-
-          // since we are not locked on to the signal yet, might as well not care
-          // about peculiarities of sampling alignment ADC node channels
-          qpLastCh1VSenseReg = qpCh1VSenseRegTemp;
-          qpLastCh2VSenseReg = qpCh2VSenseRegTemp;
-          qpLastCh3VSenseReg = qpCh3VSenseRegTemp;
-          qpLastCh4VSenseReg = qpCh4VSenseRegTemp;
-        }
+      if ( modSigLockState ) {
+        // since we locked, assume received signal data is good enough to
+        // compare against
+        hiccupCompareValue = lsb;
+      } else {
+        // since we are not locked, compare byte value to target handshake
+        hiccupCompareValue = (1<<(bufsNibbleStruct.lsbBitShiftArr[modRxNibbleFlag])) & MOD_HANDSHAKE_NULL_BYTE;
+      }
+      
+      // re-determine hiccup threshold value based on data bits received
+      // and save alignment ADC channel nodes for symmetric channels
+      if ( hiccupCompareValue ) {
+        modRxHiccupThresH = (((*bufsNibbleStruct.lsbPartOneReg) + (*bufsNibbleStruct.lsbPartTwoReg)) >> 1);
+        //modRxHiccupThresH = (modRxHiccupThresH >> 1) + (((*bufsNibbleStruct.lsbPartOneReg) + (*bufsNibbleStruct.lsbPartTwoReg)) >> 2) + 0;
+        //modRxHiccupThresH = (modRxHiccupThresH >> 1) + (modRxHiccupThresH >> 2) + (((*bufsNibbleStruct.lsbPartOneReg) + (*bufsNibbleStruct.lsbPartTwoReg)) >> 3) + 1;
+      } else {
+        modRxHiccupThresH = (((*bufsNibbleStruct.lsbPartOneReg) + (*bufsNibbleStruct.lsbPartTwoReg)) >> 1);
+        //modRxHiccupThresL = (modRxHiccupThresL >> 1) + (((*bufsNibbleStruct.lsbPartOneReg) + (*bufsNibbleStruct.lsbPartTwoReg)) >> 2) + 0;
+        //modRxHiccupThresL = (modRxHiccupThresL >> 1) + (modRxHiccupThresL >> 2) + (((*bufsNibbleStruct.lsbPartOneReg) + (*bufsNibbleStruct.lsbPartTwoReg)) >> 3) + 1;
       }
       break;
   }
   
   // we need to hiccup to keep clock in sync...do it
   //if ( (modRxDataBuffer[modRxDataBufferIdx] & MOD_RX_HANDSHAKE_BYTE) && !modRxHiccupState ) {
-  if ( (!modRxHiccupState) && (modSigLockState) && (hiccupChannelValue!=0) &&
+  if ( (!modRxHiccupState) && (modSigLockState) && (hiccupChannelValue) &&
           ( (!hiccupCompareValue && (hiccupChannelValue > modRxHiccupThresL)) ||
             (hiccupCompareValue && (hiccupChannelValue < modRxHiccupThresH)) ) ) {
-  //if ( (!modRxHiccupState) &&
-  //        ( (!modSigLockState) ||
-  //          (!hiccupCompareValue && (hiccupChannelValue > modRxHiccupThres)) ||
-  //          (hiccupCompareValue && (hiccupChannelValue < modRxHiccupThres)) ) ) {
-  //if ( (qpLastCh2VSenseReg > modRxHiccupThres) && (!modRxHiccupState) ) {
-  //if ( (qpLastCh2VSenseReg > modRxHiccupThres) && (!modRxHiccupState) ) {
-    
     
     // change flag so we don't undo what we already did if in hiccup state
     modRxHiccupState = 0x01;
@@ -704,102 +710,241 @@ void __ISR( _ADC_VECTOR, IPL5SOFT ) __ADC_HANDLER( void ) {
   // placing newly received bit(s) in their correct places with regard to
   // framing
   *modRxBufferCur |= (
-              ((msb)<<msbBitShift) |
-              ((lsb)<<lsbBitShift) );
+              ((msb)<<(bufsNibbleStruct.msbBitShiftArr[modRxNibbleFlag])) |
+              ((lsb)<<(bufsNibbleStruct.lsbBitShiftArr[modRxNibbleFlag])) );
+  
+  if ( !(AD1CON2 & (1<<7)) ) {
+    if ( modRxNibbleFlag ) {
+      // do activities if we are at the very end of a byte
+
+      switch (modSigLockState) {
+        case 2:
+          // byte is finished and we are locked and already sending data, proceed
+          // nominally
+          if ( modRxBufferCur < modRxBufferData ) {
+            // do activities only if we are receiving the header frame portion
+
+            if ( modRxBufferCur == (modRxBufferHeader+0) ) {
+              if ( ((*modRxBufferCur) != MOD_HANDSHAKE_DATA_BYTE) &&
+                      ((*modRxBufferCur) != MOD_HANDSHAKE_FRAME_ALIGN_BYTE) ) {
+                // if first byte of header is not handshake, something went wrong,
+                // assume signal lock has been lost
+                modSigLockState = 0x00;
+                modRxSigLockIdx = 0;
+              }
+            } else if ( modRxBufferCur == (modRxBufferHeader+1) ) {
+              // second byte should contain alignment information
+              
+              if ( modRxAlignEnb ) {
+                switch ( (*modRxBufferCur) & 0x0F ) {
+                  // least-significant nibble contains vertical alignment cues
+                  case 0x06:
+                    // laser is aligned way way too far down, need to move up
+                    SERVO_TILT_OCRS = SERVO_TILT_OCR + 3;
+                    break;
+                  case 0x05:
+                    // laser is aligned way way too far up, need to move down
+                    SERVO_TILT_OCRS = SERVO_TILT_OCR - 3;
+                    break;
+                  case 0x04:
+                    // laser is aligned way too far down, need to move up
+                    SERVO_TILT_OCRS = SERVO_TILT_OCR + 2;
+                    break;
+                  case 0x03:
+                    // laser is aligned way too far up, need to move down
+                    SERVO_TILT_OCRS = SERVO_TILT_OCR - 2;
+                    break;
+                  case 0x02:
+                    // laser is aligned too far down, need to move up
+                    SERVO_TILT_OCRS = SERVO_TILT_OCR + 1;
+                    break;
+                  case 0x01:
+                    // laser is aligned too far up, need to move down
+                    SERVO_TILT_OCRS = SERVO_TILT_OCR - 1;
+                    break;
+                  case 0x00:
+                    // laser is properly aligned vertically, do nothing for now
+                    break;
+                }
+                switch ( (*modRxBufferCur) & 0xF0 ) {
+                  // most-significant nibble contains horizontal alignment cues
+                  case 0x60:
+                    // laser is aligned way way too far left, need to move right
+                    SERVO_PAN_OCRS = SERVO_PAN_OCR + 3;
+                    debugVal4++;
+                    break;
+                  case 0x50:
+                    // laser is aligned way way too far right, need to move left
+                    SERVO_PAN_OCRS = SERVO_PAN_OCR - 3;
+                    debugVal4++;
+                    break;
+                  case 0x40:
+                    // laser is aligned way too far left, need to move right
+                    SERVO_PAN_OCRS = SERVO_PAN_OCR + 2;
+                    debugVal3++;
+                    break;
+                  case 0x30:
+                    // laser is aligned way too far right, need to move left
+                    SERVO_PAN_OCRS = SERVO_PAN_OCR - 2;
+                    debugVal3++;
+                    break;
+                  case 0x20:
+                    // laser is aligned too far left, need to move right
+                    SERVO_PAN_OCRS = SERVO_PAN_OCR + 1;
+                    debugVal2++;
+                    break;
+                  case 0x10:
+                    // laser is aligned too far right, need to move left
+                    SERVO_PAN_OCRS = SERVO_PAN_OCR - 1;
+                    debugVal2++;
+                    break;
+                  case 0x00:
+                    // laser is properly aligned vertically, do nothing for now
+                    break;
+                }
+                modUpdateAlignmentFrame();
+              }
+            }
+
+          } else {
+            // do activities only if we are receiving the data frame portion
+            
+            // do error checking to see what our bit error rate is like
+            bitErrorTemp = (*modRxBufferCur) ^ (*modBufferTestDataCur);
+            if ( (++modBufferTestDataCur) == modBufferTestDataEnd )
+              modBufferTestDataCur = modBufferTestData;
+            while ( bitErrorTemp ) {
+              bitErrorTemp &= (bitErrorTemp - 1);
+              modRxBitErrors++;
+            }
+          }
+
+          break;
+        case 1:
+          // byte is finished and we are locked on but not sending data yet,
+          // check to see if other endpoint has sent data handshake flag
+          if ( (*modRxBufferCur) == MOD_HANDSHAKE_FRAME_ALIGN_BYTE ) {
+            #ifdef MASTER
+              modTxSigLockFlag = 0x01;
+            #else
+              modRxBufferCur = modRxBuffer;
+            #endif
+          } else if ( (*modRxBufferCur) == MOD_HANDSHAKE_DATA_BYTE ) {
+            #ifdef SLAVE
+              modTxSigLockFlag = 0x01;
+              modRxBufferCur = modRxBuffer;
+              modBufferTestDataCur = modBufferTestData;
+              modRxSigLockIdx = 0;
+            #endif
+          } else if ( (*modRxBufferCur) == MOD_HANDSHAKE_NULL_BYTE ) {
+            // if byte is the null handshake, everything is probs okay, we just
+            // know we aren't at the frame portion containing alignment markers
+          } else {
+            // if byte of is not either null or data handshake, something went
+            // wrong, assume signal lock has been lost
+            modSigLockState = 0x00;
+            modRxSigLockIdx = 0;
+            
+            // do error checking to see what our bit error rate is like
+            bitErrorTemp = ((*modRxBufferCur) ^ MOD_HANDSHAKE_NULL_BYTE);
+            while ( bitErrorTemp ) {
+              bitErrorTemp &= (bitErrorTemp - 1);
+              modRxBitErrors++;
+            }
+          }
+
+          break;
+        case 0:
+          // byte is finished and we are not locked yet, check to see if we
+          // have signal lock
+          if ( ((*modRxBufferCur) == MOD_HANDSHAKE_NULL_BYTE) ) {
+            if ( (++modRxSigLockIdx) == MOD_RX_SIG_LOCK_CNT ) {
+              modRxSigLockIdx = 0;
+              modSigLockState = 0x01;
+            }
+          } else {
+            // reset counter since null handshakes must all be continuous
+            modRxSigLockIdx = 0;
+            
+            // do error checking to see what our bit error rate is like
+            bitErrorTemp = (*modRxBufferCur) ^ (MOD_HANDSHAKE_NULL_BYTE & 
+                    MOD_HANDSHAKE_FRAME_ALIGN_BYTE);
+            while ( bitErrorTemp ) {
+              bitErrorTemp &= (bitErrorTemp - 1);
+              modRxBitErrors++;
+            }
+          }
+
+          break;
+      }
+
+      // now we need increment our index clear the next byte in the buffer,
+      // do not, I repeat do not remove the clear byte command as it is stupid 
+      // important in retaining the integrity of our byte buffer filling process
+      if ( (++modRxBufferCur) == modRxBufferEnd ) {
+        modRxBufferCur = modRxBuffer;
+      }
+      *modRxBufferCur = 0x00;
+    }
+    
+    // invert nibble flag to keep track of where we are at in this byte
+    modRxNibbleFlag = !modRxNibbleFlag;
+  }
+  
+  if ( modSigLockState ) {
+    //*qpLastChVSenseRegPtrs[modRxActiveQuadrant] = (*bufsNibbleStruct.qpChVSenseRegTemps[modRxActiveQuadrant]);
+    switch ( modRxActiveQuadrant ) {
+      case 1:
+        // decide whether we should save alignment ADC channel nodes for
+        // even channels
+        if ( hiccupChannelValue ) {
+          if ( hiccupCompareValue )
+            *qpLastChVSenseRegPtrs[modRxActiveQuadrant] = (*bufsNibbleStruct.msbPartTwoReg);
+          else
+            *qpLastChVSenseRegPtrs[modRxActiveQuadrant] = (*bufsNibbleStruct.msbPartOneReg);
+        }
+        *qpLastChVSenseRegPtrs[3] = (*bufsNibbleStruct.qpChVSenseRegTemps[3]);
+        // decide whether we should save alignment ADC channel nodes for
+        // odd channels
+        if ( msb ) {
+          if ( !lsb )
+            *qpLastChVSenseRegPtrs[2] = (*bufsNibbleStruct.qpChVSenseRegTemps[2]);
+        } else {
+          if ( lastLsb )
+           *qpLastChVSenseRegPtrs[0] = (*bufsNibbleStruct.qpChVSenseRegTemps[0]);
+        }
+        break;
+      case 3:
+        // decide whether we should save alignment ADC channel nodes for
+        // even channels
+        if ( hiccupChannelValue ) {
+          if ( hiccupCompareValue )
+            *qpLastChVSenseRegPtrs[modRxActiveQuadrant] = (*bufsNibbleStruct.lsbPartTwoReg);
+          else
+            *qpLastChVSenseRegPtrs[modRxActiveQuadrant] = (*bufsNibbleStruct.lsbPartOneReg);
+        }
+        *qpLastChVSenseRegPtrs[1] = (*bufsNibbleStruct.qpChVSenseRegTemps[1]);
+        // decide whether we should save alignment ADC channel nodes for
+        // odd channels
+        if ( msb ) {
+          if ( !lsb )
+            *qpLastChVSenseRegPtrs[2] = (*bufsNibbleStruct.qpChVSenseRegTemps[2]);
+        } else {
+          if ( lastLsb )
+           *qpLastChVSenseRegPtrs[0] = (*bufsNibbleStruct.qpChVSenseRegTemps[0]);
+        }
+        break;
+    }
+  } else {
+    // since we are not locked on to the signal yet, might as well not care
+    // about peculiarities of sampling alignment ADC node channels
+    for ( idx=0; idx<4; idx++ )
+      *qpLastChVSenseRegPtrs[idx] = (*bufsNibbleStruct.qpChVSenseRegTemps[idx]);
+  }
   
   // store last bits in case we need to reference them for clock recovery
   // operations in the next cycle
   lastLsb = lsb;
-  
-  if ( !(AD1CON2 & (1<<7)) && !(modRxNibbleFlag) ) {
-    // do activities if we are at the very end of a byte
-    
-    switch (modSigLockState) {
-      case 2:
-        // byte is finished and we are locked and already sending data, proceed
-        // nominally
-        if ( modRxBufferCur < modRxBufferData ) {
-          // do activities only if we are receiving the header frame portion
-
-          if ( modRxBufferCur == (modRxBufferHeader+0) ) {
-            if ( ((*modRxBufferCur) != MOD_FRAME_DATA_HANDSHAKE_BYTE) ) {
-              // if first byte of header is not handshake, something went wrong,
-              // assume signal lock has been lost
-              modSigLockState = 0x00;
-              modRxSigLockIdx = 0;
-            }
-          } else if ( modRxBufferCur == (modRxBufferHeader+1) ) {
-          }
-
-        } else {
-          // do activities only if we are receiving the data frame portion
-      
-          // do error checking to see what our bit error rate is like
-          bitErrorTemp = (*modRxBufferCur) ^ (*modBufferTestDataCur);
-          if ( (++modBufferTestDataCur) == modBufferTestDataEnd )
-            modBufferTestDataCur = modBufferTestData;
-          while ( bitErrorTemp ) {
-            bitErrorTemp &= (bitErrorTemp - 1);
-            modRxBitErrors++;
-          }
-        }
-        
-        break;
-      case 1:
-        // byte is finished and we are locked on but not sending data yet,
-        // check to see if other endpoint has sent data handshake flag
-        if ( (*modRxBufferCur) == MOD_FRAME_DATA_HANDSHAKE_BYTE ) {
-          modTxBufferCur = modTxBuffer;
-          modTxBufferBitMask = 0x80;
-          modTxBufferEighthOfNibbleFlag = 0x00;
-          modRxBufferCur = modRxBuffer;
-          modBufferTestDataCur = modBufferTestData;
-          modSigLockState = 0x02;
-        } else if ( (*modRxBufferCur) != MOD_FRAME_NULL_HANDSHAKE_BYTE ) {
-          // if byte of is not either null or data handshake, something went
-          // wrong, assume signal lock has been lost
-          modSigLockState = 0x00;
-          modRxSigLockIdx = 0;
-        }
-        
-        // do error checking to see what our bit error rate is like
-        bitErrorTemp = ((*modRxBufferCur) ^ MOD_FRAME_NULL_HANDSHAKE_BYTE);
-                ((*modRxBufferCur) ^ MOD_FRAME_DATA_HANDSHAKE_BYTE);
-        while ( bitErrorTemp ) {
-          bitErrorTemp &= (bitErrorTemp - 1);
-          modRxBitErrors++;
-        }
-        
-        break;
-      case 0:
-        // byte is finished and we are not locked yet, check to see if we
-        // have signal lock
-        if ( (*modRxBufferCur) == MOD_FRAME_NULL_HANDSHAKE_BYTE ) {
-          if ( (++modRxSigLockIdx) == MOD_RX_SIG_LOCK_CNT )
-            modSigLockState = 0x01;
-        } else {
-          modRxSigLockIdx = 0;
-        }
-       
-        // do error checking to see what our bit error rate is like
-        bitErrorTemp = ((*modRxBufferCur) ^ MOD_FRAME_NULL_HANDSHAKE_BYTE);
-                ((*modRxBufferCur) ^ MOD_FRAME_DATA_HANDSHAKE_BYTE);
-        while ( bitErrorTemp ) {
-          bitErrorTemp &= (bitErrorTemp - 1);
-          modRxBitErrors++;
-        }
-        
-        break;
-    }
-    
-    // now we need increment our index clear the next byte in the buffer,
-    // do not, I repeat do not remove the clear byte command as it is stupid 
-    // important in retaining the integrity of our byte buffer filling process
-    if ( (++modRxBufferCur) == modRxBufferEnd )
-      modRxBufferCur = modRxBuffer;
-    *modRxBufferCur = 0x00;
-   
-  }
   
   // clear the TxIF interrupt flag bit
   //MOD_ADC_INT_FLAG &= ~MOD_ADC_INT_MASK;

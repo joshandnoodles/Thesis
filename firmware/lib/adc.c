@@ -172,10 +172,6 @@ volatile unsigned int * adcRead( unsigned char ch ) {
   AD1CHS &= ~(0b1111<<16);
   AD1CHS |= ch<<16;
   
-  // ASAM: ADC Sample Auto-Start bit
-  // ensure any auto sample nature from other functions is off
-  AD1CON1 &= ~(0b1<<2);
-  
   // ON: ADC Operating Mode bit(1)
   // turn ADC module back on
   AD1CON1 |= 0b1<<15;
@@ -246,7 +242,7 @@ void adcAutoOn( uint16_t muxAChMask, uint16_t muxBChMask,
     // set AN* channel mask as MUX A Channel positive input 
     AD1CHS &= ~(0b1111<<24);
     for ( idx=0; idx<=0b1111; idx++ ) {
-      if ( (muxAChMask>>idx) & 0x1 ) {
+      if ( (muxBChMask>>idx) & 0x1 ) {
         AD1CHS |= idx<<24;
         break;
       }
@@ -312,6 +308,22 @@ void adcAutoOff( void ) {
   // ASAM: ADC Sample Auto-Start bit
   // turn off auto sample to stop ADC sampling operations
   AD1CON1 &= ~(0b1<<2);
+  
+  // now we should put configuration registers back to normal state
+  
+  // CSCNA: Scan Input Selections for CH0+ SHA Input for MUX A Input
+  // Multiplexer Setting bit
+  // do not scan inputs
+  AD1CON2 &= ~(0b1<<10);
+  
+  // BUFM: ADC Result Buffer Mode Select bit
+  // configure buffer as two 8-word buffers, ADC1BUF(7...0), ADC1BUF(15...8)
+  // configure buffer as one 16-word buffer ADC1BUF(15...0.)
+  AD1CON2 &= ~(0b1<<1);
+  
+  // ALTS: Alternate Input Sample Mode Select bit
+  // do not alternate between MUX A and MUX B every sample
+  AD1CON2 &= ~(0b1<<0);
   
   return;
 }

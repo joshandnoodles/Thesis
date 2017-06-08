@@ -15,8 +15,16 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 // specify time to wait to after button switch off to avoid debounce issues
 #define BTN_DEBOUNCE_US     10000
+
+// variables available to external modules
+volatile uint32_t debugVal1;
+volatile uint32_t debugVal2;
+volatile uint32_t debugVal3;
+volatile uint32_t debugVal4;
 
 // function prototypes
 void initDebug( void );

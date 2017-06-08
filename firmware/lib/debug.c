@@ -11,9 +11,20 @@
 #include <p32mx460f512l.h>
 #include "hardware_config.h"
 
+#include <stdint.h>
+
 #include "debug.h"
 
+// variables to be used for misc debugging purposes
+volatile uint32_t * debugValPtrs[4];
+volatile uint32_t debugVal1;
+volatile uint32_t debugVal2;
+volatile uint32_t debugVal3;
+volatile uint32_t debugVal4;
+
 void initDebug( void ) {
+  
+  uint16_t idx;
   
   // initialize any LEDs we have
   initLed( &DEBUG_LED1_TRIS, &DEBUG_LED1_LAT, DEBUG_LED1_MASK );
@@ -22,6 +33,16 @@ void initDebug( void ) {
   // initialize any buttons we have
   initBtn( &DEBUG_BTN1_TRIS, DEBUG_BTN1_MASK );
   initBtn( &DEBUG_BTN2_TRIS, DEBUG_BTN2_MASK );
+  
+  // build up array of pointers containing debug values
+  debugValPtrs[0] = &debugVal1;
+  debugValPtrs[1] = &debugVal2;
+  debugValPtrs[2] = &debugVal3;
+  debugValPtrs[3] = &debugVal4;
+  
+  // zero out debug values for initialization
+  for ( idx=0; idx<4; idx++ )
+    *debugValPtrs[idx] = 0;
   
   return;
 }

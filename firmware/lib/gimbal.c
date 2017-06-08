@@ -50,7 +50,7 @@ void initGimbal( void ) {
           &SERVO_TILT_OCR,
           &SERVO_TILT_OCRS,
           SERVO_TILT_PERIOD_NS,
-          (SERVO_TILT_PULSE_MIN_NS+SERVO_TILT_PULSE_MAX_NS)/2,
+          SERVO_TILT_PULSE_MAX_NS,
           16,
           &SERVO_TILT_TIMER_CON,
           &SERVO_TILT_TIMER_PERIOD,

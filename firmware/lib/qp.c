@@ -19,6 +19,7 @@
 #include "qp.h"
 
 // variables to keep track of last values retrieved
+volatile uint16_t * qpLastChVSenseRegPtrs[4];
 volatile uint16_t qpLastCh1VSenseReg;
 volatile uint16_t qpLastCh2VSenseReg;
 volatile uint16_t qpLastCh3VSenseReg;
@@ -55,6 +56,12 @@ void initQp( void ) {
           QP_CH4_VSENSE_AN_MASK,
           &QP_CH4_VSENSE_TRIS,
           QP_CH4_VSENSE_MASK );
+  
+  // build of array of pointer to easily access last register values
+  qpLastChVSenseRegPtrs[0] = &qpLastCh1VSenseReg;
+  qpLastChVSenseRegPtrs[1] = &qpLastCh2VSenseReg;
+  qpLastChVSenseRegPtrs[2] = &qpLastCh3VSenseReg;
+  qpLastChVSenseRegPtrs[3] = &qpLastCh4VSenseReg;
   
   return;
 }

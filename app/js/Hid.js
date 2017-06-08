@@ -76,8 +76,7 @@ Hid.prototype.connect = function( targetDeviceInfo=null,
           appInstance = idx
       } )
     }
-    console.log(appInstance)
-    
+    //console.log(appInstance)
     
     // if we made it here, we are still okay, continue with trying to connect
     

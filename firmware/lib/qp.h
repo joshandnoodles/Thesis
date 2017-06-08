@@ -21,14 +21,15 @@ extern "C" {
 #define QP_BULK_BUFFER_SIZE         4096
 
 // variables available to external modules
-volatile uint16_t qpLastCh1VSenseReg;
-volatile uint16_t qpLastCh2VSenseReg;
-volatile uint16_t qpLastCh3VSenseReg;
-volatile uint16_t qpLastCh4VSenseReg;
-uint16_t qpBulkBuffer[QP_BULK_BUFFER_SIZE];
-uint32_t qpBulkBufferIdx;
-int16_t qpAlignmentXAxis;
-int16_t qpAlignmentYAxis;
+extern volatile uint16_t * qpLastChVSenseRegPtrs[4];
+extern volatile uint16_t qpLastCh1VSenseReg;
+extern volatile uint16_t qpLastCh2VSenseReg;
+extern volatile uint16_t qpLastCh3VSenseReg;
+extern volatile uint16_t qpLastCh4VSenseReg;
+extern uint16_t qpBulkBuffer[QP_BULK_BUFFER_SIZE];
+extern uint32_t qpBulkBufferIdx;
+extern int16_t qpAlignmentXAxis;
+extern int16_t qpAlignmentYAxis;
 
 void initQp( void );
 float qpReadCh1VSense( void );

@@ -16,6 +16,7 @@ function Graph( parentDiv, varargin={} ) {
   this.fitYRngEveryMs = Graph.DEFAULT_FIT_Y_EVERY_MS
   this.fitYRngEvent = Graph.DEFAULT_FIT_Y_EVENT
   this.fitYRngResetEvent = Graph.DEFAULT_FIT_Y_RESET_EVENT
+  this.copyDataToClipboardEvent = Graph.DEFAULT_COPY_DATA_TO_CLIPOBOARD_EVENT
   
   // set inital fit range to full data set
   this.fitYRngLastNSamples = Graph.MAX_DATA_SIZE
@@ -139,7 +140,6 @@ function Graph( parentDiv, varargin={} ) {
     this.div.addEventListener( this.fitYRngEvent, function() { 
       this.fitYRngLastNSamples = 1
       this.fitYRng()
-      console.log(4)
     }.bind(this) )
   
   // attach event listener to reset any changes of resizing the y-axis
@@ -149,6 +149,11 @@ function Graph( parentDiv, varargin={} ) {
       this.fitYRng()
     }.bind(this) )
   
+  if ( this.copyDataToClipboardEvent )
+    this.div.addEventListener( this.copyDataToClipboardEvent, function() { 
+      stringToClipboard( arrToTsv( formatArr( this.data, 1, 0 ) ) )
+    }.bind(this) )
+    
   return
 }
 
@@ -180,7 +185,8 @@ Graph.MARGINS = {
 // constants relating to dynamic events
 Graph.DEFAULT_FIT_Y_EVERY_MS = null
 Graph.DEFAULT_FIT_Y_EVENT = 'click'
-Graph.DEFAULT_FIT_Y_RESET_EVENT = 'dblclick'
+Graph.DEFAULT_FIT_Y_RESET_EVENT = null
+Graph.DEFAULT_COPY_DATA_TO_CLIPOBOARD_EVENT = 'dblclick'
 
 Graph.prototype.destroy = function() {
   

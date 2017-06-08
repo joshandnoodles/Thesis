@@ -201,7 +201,7 @@ var CMDS = {
     rxBytes:  1,
     txBytes:  0,
     },
-  // 0x8* modulation activities
+  // 0x8* and 0x9* modulation activities
   'CMD_MOD_TOG': {
     address:  0x80,
     rxBytes:  1,
@@ -252,12 +252,32 @@ var CMDS = {
     rxBytes:  0,
     txBytes:  4,
   },
-  // 0x9* 
+  'CMD_MOD_TOG_ALIGN_ENB': {
+    address:  0x8B,
+    rxBytes:  1,
+    txBytes:  0,
+  },
+  'CMD_MOD_SET_ALIGN_ENB': {
+    address:  0x8C,
+    rxBytes:  0,
+    txBytes:  1,
+  },
+  'CMD_MOD_GET_ALIGN_ENB': {
+    address:  0x8D,
+    rxBytes:  1,
+    txBytes:  0,
+  },
   // 0xA*
   // 0xB*
   // 0xC*
   // 0xD*
   // 0xE*
+  // 0xF* identification commands
+  'CMD_ID_MASTER_GET': {
+    address:  0xF0,
+    rxBytes:  1,
+    txBytes:  0,
+  },
 }
 
 var CONTROLS = [
@@ -312,6 +332,7 @@ var CONTROLS = [
   [ 'Gimbal', 'Get Pan', function() { sendHandler( [ CMDS['CMD_GIMBAL_PAN_ANG_GET'].address ] ) } ],
   [ 'Gimbal', 'Get Tilt', function() { sendHandler( [ CMDS['CMD_GIMBAL_TILT_ANG_GET'].address ] ) } ],
   [ 'Gimbal', 'Origin', function() { sendHandler( SCAN_CMD_PKT( [ 90, 90 ] ) ) } ],
+  [ 'Gimbal', 'Toggle Alignment', function() { sendHandler( [ CMDS['CMD_MOD_TOG_ALIGN_ENB'].address ] ) } ],
   [ 'HID USB', 'Connect', hidConnect ],
   [ 'HID USB', 'Disconnect', hidDisconnect ],
   [ 'Debug', 'LED1', function() { sendHandler( [ CMDS['CMD_LED1_TOG'].address ] ) } ],
@@ -331,10 +352,10 @@ initBase()
 
 // ... our DOM grid
 var graphContainerDiv = document.getElementById( 'graphs' )
-//var heatmapContainerDiv = document.getElementById( 'heatmaps' )
-var controlsContainerDiv = document.getElementById( 'rightSidebarToolbox1' )
-var terminalContainerDiv = document.getElementById( 'rightSidebarToolbox2' )
-var otherContainerDiv = document.getElementById( 'rightSidebarToolbox3' )
+var deviceContainerDiv = document.getElementById( 'rightSidebarToolbox1' )
+var controlsContainerDiv = document.getElementById( 'rightSidebarToolbox2' )
+var terminalContainerDiv = document.getElementById( 'rightSidebarToolbox3' )
+var otherContainerDiv = document.getElementById( 'rightSidebarToolbox4' )
 
 // ... gimbal helper class
 var gimbal = new Gimbal()
@@ -344,10 +365,6 @@ var modFreqHz = null
 var modHiccupNs = null
 var modBulkBuffer = null
 var qpBulkBuffer = null
-var qpBulkBufferCh1 = null
-var qpBulkBufferCh2 = null
-var qpBulkBufferCh3 = null
-var qpBulkBufferCh4 = null
 
 // inialize USB ...
 
@@ -407,6 +424,7 @@ var DEFAULT_MCU_PKT = ( function() { return [
   CMDS['CMD_MOD_FREQ_HZ_GET'].address,
   CMDS['CMD_MOD_SIG_LOCK_GET'].address,
   CMDS['CMD_MOD_HICCUP_NS_GET'].address,
+  CMDS['CMD_MOD_GET_ALIGN_ENB'].address,
   CMDS['CMD_GIMBAL_PAN_GET'].address,
   CMDS['CMD_GIMBAL_TILT_GET'].address,
   CMDS['CMD_GIMBAL_PAN_ANG_GET'].address,
@@ -419,6 +437,7 @@ var DEFAULT_MCU_PKT = ( function() { return [
   CMDS['CMD_DBG_VAL2_GET'].address,
   CMDS['CMD_DBG_VAL3_GET'].address,
   CMDS['CMD_DBG_VAL4_GET'].address,
+  CMDS['CMD_ID_MASTER_GET'].address,
 ] } )
 
 // ... helper functions (most of which would have issues with scope)
@@ -585,17 +604,17 @@ var graphTilt = newGraph( ( {
   yLabelText: 'Tilt Servo (°)',
   yRng: [ 0, 180 ],
 } ) )
-var graphCh1VSense = newGraph( ( {
-  yLabelText: 'Channel 1 (mV)',
-} ) )
-var graphCh4VSense = newGraph( ( {
-  yLabelText: 'Channel 4 (mV)',
+var graphCh3VSense = newGraph( ( {
+  yLabelText: 'Channel 3 (mV)',
 } ) )
 var graphCh2VSense = newGraph( ( {
   yLabelText: 'Channel 2 (mV)',
 } ) )
-var graphCh3VSense = newGraph( ( {
-  yLabelText: 'Channel 3 (mV)',
+var graphCh4VSense = newGraph( ( {
+  yLabelText: 'Channel 4 (mV)',
+} ) )
+var graphCh1VSense = newGraph( ( {
+  yLabelText: 'Channel 1 (mV)',
 } ) )
 
 
@@ -636,7 +655,8 @@ Heatmap.MOUSE_OVER_CB = function( data ) {
 hideCurtain()
 
 // and go ahead and open up our sidebar for quick access
-document.getElementById( 'rightSidebarMenuButton' ).click()
+//document.getElementById( 'rightSidebarMenuButton' ).click()
+controlsContainerDiv.children[0].click()
 // and set menu button to currect state
 window.setTimeout( function() { hamburger( 'un' ) }, 1000 )
 
@@ -913,10 +933,6 @@ function receiveHandler( dataBuf ) {
         
         // clear buffers holding ADC information
         qpBulkBuffer = []
-        qpBulkBufferCh1 = []
-        qpBulkBufferCh2 = []
-        qpBulkBufferCh3 = []
-        qpBulkBufferCh4 = []
         
         // trigger request to retrieve data we just made
         sendHandler( [ CMDS['CMD_QP_ALL_BULK_GET'].address ] )
@@ -945,49 +961,7 @@ function receiveHandler( dataBuf ) {
         } else {
           // format the data into seperate arrays while also forming csv
           // formatted array
-          var csvArr = []
-          for ( var count=0; count<qpBulkBuffer.length; count++ ) {
-            // calculate voltage value assuming 10-bit ADC with 3.3V reference
-            var value = qpBulkBuffer[count] * 3.3 / ((1<<10)-1)
-            
-            // place into correct array
-            switch ( (count+1) % 4 ) {
-              case 0:
-                qpBulkBufferCh4.push( value )
-                csvArr.push( [
-                  qpBulkBufferCh1[qpBulkBufferCh1.length-1],
-                  qpBulkBufferCh2[qpBulkBufferCh2.length-1],
-                  qpBulkBufferCh3[qpBulkBufferCh3.length-1],
-                  qpBulkBufferCh4[qpBulkBufferCh4.length-1],
-                ] )
-                break
-              case 1:
-                qpBulkBufferCh3.push( value )
-                break
-              case 2:
-                qpBulkBufferCh2.push( value )
-                break
-              case 3:
-                qpBulkBufferCh1.push( value )
-                break
-            }
-          }
-          
-          // create csv file with data
-          var lineArray = []
-          csvArr.forEach( function ( infoArray, index ) {
-              var line = infoArray.join( ',' )
-              lineArray.push( index == 0 ? "data:text/csv;charset=utf-8," + line : line )
-          } )
-          var csvContent = lineArray.join( '\n' )
-          var encodedUri = encodeURI( csvContent )
-          var link = document.createElement( 'a' )
-          link.setAttribute( 'href', encodedUri )
-          var newDate = new Date()
-          var timestamp = newDate.getFullYear()+'_'+parseInt(newDate.getMonth()+1)+'_'+newDate.getDate()+'-'+newDate.getHours()+'_'+newDate.getMinutes()+'_'+newDate.getSeconds()
-          link.setAttribute( 'download', timestamp + '.csv' )
-          document.body.appendChild( link )
-          link.click()
+          exportCsv( formatArr( qpBulkBuffer, 4, 1 ) )
           
           // restart default activity now that bulk action is done
           startPoller()
@@ -1047,7 +1021,7 @@ function receiveHandler( dataBuf ) {
         if ( typeof graphISense !== 'undefined' )
           graphISense.addPoint( iSense )
         //else
-          controls.controlsByGroup["Laser"]["Current Sense"].querySelector( '#value' ).innerHTML = " (" + vref.toFixed(3) + ")"
+          controls.controlsByGroup["Laser"]["Current Sense"].querySelector( '#value' ).innerHTML = " (" + iSense.toFixed(2) + ")"
         
         break
         
@@ -1149,31 +1123,9 @@ function receiveHandler( dataBuf ) {
           sendHandler( [ CMDS['CMD_MOD_DATA_BULK_GET'].address ] )
         } else {
           // format the data into seperate arrays while also forming csv
-          // formatted array
-          var csvArr = []
-          for ( var count=0; count<modBulkBuffer.length; count++ ) {
-            // calculate voltage value assuming 10-bit ADC with 3.3V reference
-            var value = modBulkBuffer[count]// * 3.3 / ((1<<10)-1)
-            
-            // place into correct array
-            csvArr.push( [value] )
-          }
+          // formatted array and export
+          exportCsv( formatArr( modBulkBuffer, 1, 1 ) )
           
-          // create csv file with data
-          var lineArray = []
-          csvArr.forEach( function ( infoArray, index ) {
-              var line = infoArray.join( ',' )
-              lineArray.push( index == 0 ? "data:text/csv;charset=utf-8," + line : line )
-          } )
-          var csvContent = lineArray.join( '\n' )
-          var encodedUri = encodeURI( csvContent )
-          var link = document.createElement( 'a' )
-          link.setAttribute( 'href', encodedUri )
-          var newDate = new Date()
-          var timestamp = newDate.getFullYear()+'_'+parseInt(newDate.getMonth()+1)+'_'+newDate.getDate()+'-'+newDate.getHours()+'_'+newDate.getMinutes()+'_'+newDate.getSeconds()
-          link.setAttribute( 'download', timestamp + '.csv' )
-          document.body.appendChild( link )
-          link.click()
           
           // restart default activity now that bulk action is done
           startPoller()
@@ -1195,6 +1147,20 @@ function receiveHandler( dataBuf ) {
           graphModHiccupNs.addPoint( modHiccupNs )
         //else
           controls.controlsByGroup["Modulation"]["Current Hiccup"].querySelector( '#value' ).innerHTML = " (" + modHiccupNs + ")"
+        
+        break
+      
+      case CMDS['CMD_MOD_GET_ALIGN_ENB'].address:
+        
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_MOD_GET_ALIGN_ENB' )
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphModAlignEnb !== 'undefined' )
+          graphModAlignEnb.addPoint( dataBytes[0] )
+        //else
+          controls.controlsByGroup["Gimbal"]["Toggle Alignment"].querySelector( '#value' ).innerHTML = " (" + dataBytes[0] + ")"
         
         break
         
@@ -1240,6 +1206,19 @@ function receiveHandler( dataBuf ) {
         
         break
       
+      case CMDS['CMD_ID_MASTER_GET'].address:
+      
+      // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_ID_MASTER_GET' )
+        
+        // graphically update value field in GUI
+        if ( dataBytes[0] )
+          deviceContainerDiv.children[0].innerHTML = 'Device ID: MASTER'
+        else
+          deviceContainerDiv.children[0].innerHTML = 'Device ID: SLAVE'
+        
+        break
+        
       case CMDS['CMD_DBG_VAL1_GET'].address:
         
         // extract data bytes from packet
@@ -1322,10 +1301,73 @@ function receiveHandler( dataBuf ) {
   
   }
   
-  //temps.push( ((data[0]<<8)+data[1])/50 - 273.15 )
-  //addPoint( graphObjTOBJ1, temps[temps.length-1] )
-  //addHeatmapHex( heatmapObjTOBJ1, temps[temps.length-1] )
-  // temps[temps.length-1]
+  return
+}
+
+function formatArr( arr, cols=1, conv=0 ) {
+  
+  newArr = []
+  if ( conv ) {
+    for ( var count=0; count<arr.length; count++ ) {
+      // calculate voltage value assuming 10-bit ADC with 3.3V reference
+      arr[count] = arr[count] * 3.3 / ((1<<10)-1)
+    }
+  }
+  
+  // build up array
+  for ( var count=0; count<arr.length; count+=cols )
+    newArr.push( [] )
+  col = 0
+  for ( var count=0; count<arr.length; count++ ) {
+    if ( (++col) == cols )
+      col = 0
+    newArr[Math.floor( count / cols )].push( arr[count] )
+  }
+  
+  return newArr
+}
+function arrToTsv( arr ) {
+  
+  // create tsv string with data
+  var lineArray = []
+  arr.forEach( function ( infoArray, index ) {
+      var line = infoArray.join( '\t' )
+      lineArray.push( line )
+  } )
+  var tsvContent = lineArray.join( '\n' )
+  
+  return tsvContent
+}
+function stringToClipboard( str ) {
+  
+  // create dummy input, add it to DOM, select and copy it to clipobaord
+  var dummyEle = document.createElement( 'textarea' )
+  document.body.appendChild( dummyEle )
+  dummyEle.setAttribute( 'id', 'dummyEle' )
+  document.getElementById( 'dummyEle' ).value = str  
+  dummyEle.select()
+  document.execCommand( 'copy' )
+  document.body.removeChild( dummyEle )
+  
+  return
+}
+function exportCsv( arr ) {
+  
+  // create csv file with data
+  var lineArray = []
+  arr.forEach( function ( infoArray, index ) {
+      var line = infoArray.join( ',' )
+      lineArray.push( index == 0 ? "data:text/csv;charset=utf-8," + line : line )
+  } )
+  var csvContent = lineArray.join( '\n' )
+  var encodedUri = encodeURI( csvContent )
+  var link = document.createElement( 'a' )
+  link.setAttribute( 'href', encodedUri )
+  var newDate = new Date()
+  var timestamp = newDate.getFullYear()+'_'+parseInt(newDate.getMonth()+1)+'_'+newDate.getDate()+'-'+newDate.getHours()+'_'+newDate.getMinutes()+'_'+newDate.getSeconds()
+  link.setAttribute( 'download', timestamp + '.csv' )
+  document.body.appendChild( link )
+  link.click()
   
   return
 }
@@ -1339,76 +1381,4 @@ function bytesToUnsignedLong( bytes ) {
            ((bytes[1]<<16)>>>0) + 
            ((bytes[2]<<8)>>>0) + 
            ((bytes[3]<<0)>>>0) )
-}
-
-// experimentk for fast data collectoin
-var timeTH
-function timeT() {
-  timeTH=window.setInterval( function() { sendHandler( [
-  CMDS['CMD_TOBJ1_GET'].address,
-  CMDS['CMD_TOBJ1_GET'].address,
-  CMDS['CMD_TOBJ1_GET'].address,
-  CMDS['CMD_TOBJ1_GET'].address,
-  CMDS['CMD_TOBJ1_GET'].address,
-  CMDS['CMD_TOBJ1_GET'].address,
-  CMDS['CMD_TOBJ1_GET'].address,
-  CMDS['CMD_TOBJ1_GET'].address,
-  ] ) }, 10 )
-  window.setTimeout( function() {
-    graphTObj1.tickTock()
-    window.clearInterval(timeTH)
-  }, 110 )
-  return
-}
-
-function tObjProcessFunc( dataBytes, graphs, heatmaps, coords=null ) {
-  
-  // build up 16-bit register contents
-  var tempReg = bytesToUnsignedInt( dataBytes.slice(0,2) )
-  
-  // convert register to degrees C
-  var temp = tempReg/50 - 273.15
-  
-  // get time information
-  var unixTimestamp = bytesToUnsignedLong( dataBytes.slice(6,10) )
-  var ms = bytesToUnsignedInt( dataBytes.slice(10,12) )
-  
-  // handle whether we think on board time information is good
-  if ( hid.onBoardClocking )
-    var timeWithMs = unixTimestamp + (ms/1000)
-  else
-    var timeWithMs = Date.now()// + (ms/1000)
-  
-  // add point to graph object(s)
-  graphs.forEach( function( graph) { graph.addPoint( temp ) } )
-  
-  heatmaps.forEach( function( heatmap ) { 
-    
-    // use either local pan/tilt values or ones sent by MCU
-    if ( coords ) {
-      panReg = bytesToUnsignedInt( dataBytes.slice(2,4) )
-      pan = panReg / ((1<<16)-1)* 360
-      tiltReg = bytesToUnsignedInt( dataBytes.slice(4,6 ) )
-      tilt = tiltReg / ((1<<16)-1)* 360
-    }
-    
-    // compute details needed for heatmap placement
-    if ( tilt == 0 )
-      locTilt = 0
-    else
-      locTilt = Math.round( (heatmap.dim[0]-1) * ( tilt - gimbal.tiltRngLim[0] ) / ( gimbal.tiltRngLim[1] - gimbal.tiltRngLim[0] ) )
-    if ( pan == 0 ) {
-      locPan = 0
-    } else {
-      if ( locTilt % 2 )
-        locPan = Math.round( (heatmap.dim[1]-0.5) * ( pan - gimbal.panRngLim[0] ) / ( gimbal.panRngLim[1] - gimbal.panRngLim[0] ) )
-      else
-        locPan = Math.round( (heatmap.dim[1]-0.5) * ( pan - gimbal.panRngLim[0] ) / ( gimbal.panRngLim[1] - gimbal.panRngLim[0] ) - 0.5 )
-    }
-    
-    // add point to heatmap object(s)
-    heatmap.colorize( [locTilt,locPan], temp )
-  } )
-  
-  return
 }

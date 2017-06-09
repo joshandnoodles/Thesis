@@ -151,7 +151,9 @@ function Graph( parentDiv, varargin={} ) {
   
   if ( this.copyDataToClipboardEvent )
     this.div.addEventListener( this.copyDataToClipboardEvent, function() { 
-      stringToClipboard( arrToTsv( formatArr( this.data, 1, 0 ) ) )
+      stringToClipboard( arrToTsv( formatArr( 
+      [].concat.apply( [], this.data.map( function(obj) { 
+        return [obj.time,obj.value] } ) ), 2, 0 ) ) )
     }.bind(this) )
     
   return
@@ -282,7 +284,7 @@ Graph.prototype.render = function() {
       return this.xScale( d.time )
     }.bind( this ) )
     .y( function(d,i) { 
-      return this.yScale( d.temp ) 
+      return this.yScale( d.value ) 
     }.bind( this ) )
     
   return
@@ -366,10 +368,10 @@ Graph.prototype.fitYRng = function( lastNSamples=null ) {
   // UPDATE: just kidding ECMAScript support is spotty...
   this._setYRng( [ 
      d3.min( dataSubset, function (d) { 
-      return (1-Graph.Y_RNG_BUF)*d.temp 
+      return (1-Graph.Y_RNG_BUF)*d.value 
     } ),
     d3.max( dataSubset, function (d) { 
-      return (1+Graph.Y_RNG_BUF)*d.temp 
+      return (1+Graph.Y_RNG_BUF)*d.value 
     } )
   ] )
   
@@ -384,7 +386,7 @@ Graph.prototype.addPoint = function( newTemp, newTime=null ) {
     newTime = Date.now()
   
   // add item to data container
-  this.data.push( { time: newTime, temp: newTemp } )
+  this.data.push( { time: newTime, value: newTemp } )
   
   // container is at its defined limit, or the oldest data point is off the graph, either way remove the oldest item
   if ( ( this.data.length > Graph.MAX_DATA_SIZE ) ||
@@ -393,8 +395,8 @@ Graph.prototype.addPoint = function( newTemp, newTime=null ) {
   
   // if we need to resize the y-axis, do it now
   this.fitYRngLastNSamples++
-  if ( ( this.data[this.data.length-1].temp < this.yRng[0] ) ||
-       ( this.data[this.data.length-1].temp > this.yRng[1] ) )
+  if ( ( this.data[this.data.length-1].value < this.yRng[0] ) ||
+       ( this.data[this.data.length-1].value > this.yRng[1] ) )
     this.fitYRng()
   
   return

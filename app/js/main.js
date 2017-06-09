@@ -1,5 +1,6 @@
 var CMDS = {
-  // 0x1* debugging commands
+  // 0x0*
+  // 0x1* and 0x2* debugging commands
   'CMD_LED1_TOG': {
     address:  0x10,
     rxBytes:  1,
@@ -60,7 +61,46 @@ var CMDS = {
     rxBytes:  4,
     txBytes:  0,
     },
-  // 0x2* 
+  'CMD_DBG_INC1': {
+     address:  0x1C,
+     rxBytes:  4,
+     txBytes:  0,
+     },
+  'CMD_DBG_DEC1': {
+     address:  0x1D,
+     rxBytes:  4,
+     txBytes:  0,
+     },
+  'CMD_DBG_INC2': {
+     address:  0x1E,
+     rxBytes:  4,
+     txBytes:  0,
+     },
+  'CMD_DBG_DEC2': {
+     address:  0x1F,
+     rxBytes:  4,
+     txBytes:  0,
+     },
+  'CMD_DBG_INC3': {
+     address:  0x20,
+     rxBytes:  4,
+     txBytes:  0,
+     },
+  'CMD_DBG_DEC3': {
+     address:  0x21,
+     rxBytes:  4,
+     txBytes:  0,
+     },
+  'CMD_DBG_INC4': {
+     address:  0x22,
+     rxBytes:  4,
+     txBytes:  0,
+     },
+  'CMD_DBG_DEC4': {
+     address:  0x23,
+     rxBytes:  4,
+     txBytes:  0,
+     },
   // 0x3* Ethernet commands 
   // 0x4* delay commands
   'CMD_DELAY_US': {
@@ -343,6 +383,14 @@ var CONTROLS = [
   [ 'Debug', 'Value2', function() { sendHandler( [ CMDS['CMD_DBG_VAL2_GET'].address ] ) } ],
   [ 'Debug', 'Value3', function() { sendHandler( [ CMDS['CMD_DBG_VAL3_GET'].address ] ) } ],
   [ 'Debug', 'Value4', function() { sendHandler( [ CMDS['CMD_DBG_VAL4_GET'].address ] ) } ],
+  [ 'Debug', 'Increment1', function() { sendHandler( [ CMDS['CMD_DBG_INC1'].address ] ) } ], 
+  [ 'Debug', 'Increment2', function() { sendHandler( [ CMDS['CMD_DBG_INC2'].address ] ) } ], 
+  [ 'Debug', 'Increment3', function() { sendHandler( [ CMDS['CMD_DBG_INC3'].address ] ) } ], 
+  [ 'Debug', 'Increment4', function() { sendHandler( [ CMDS['CMD_DBG_INC4'].address ] ) } ], 
+  [ 'Debug', 'Decrement1', function() { sendHandler( [ CMDS['CMD_DBG_DEC1'].address ] ) } ], 
+  [ 'Debug', 'Decrement2', function() { sendHandler( [ CMDS['CMD_DBG_DEC2'].address ] ) } ], 
+  [ 'Debug', 'Decrement3', function() { sendHandler( [ CMDS['CMD_DBG_DEC3'].address ] ) } ], 
+  [ 'Debug', 'Decrement4', function() { sendHandler( [ CMDS['CMD_DBG_DEC4'].address ] ) } ], 
 ]
 
 // initalize underlying magic  ...
@@ -1251,7 +1299,6 @@ function receiveHandler( dataBuf ) {
         //else
           controls.controlsByGroup["Debug"]["Value2"].querySelector( '#value' ).innerHTML = " (" + value + ")"
         
-        
         break
       
       case CMDS['CMD_DBG_VAL3_GET'].address:
@@ -1268,7 +1315,6 @@ function receiveHandler( dataBuf ) {
           graphDebugValue3.addPoint( value )
         //else
           controls.controlsByGroup["Debug"]["Value3"].querySelector( '#value' ).innerHTML = " (" + value + ")"
-        
         
         break
       
@@ -1287,9 +1333,78 @@ function receiveHandler( dataBuf ) {
         //else
           controls.controlsByGroup["Debug"]["Value4"].querySelector( '#value' ).innerHTML = " (" + value + ")"
         
-        
         break
       
+      case CMDS['CMD_DBG_INC1'].address:
+      case CMDS['CMD_DBG_DEC1'].address:
+        
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_DBG_INC1' )
+        
+        // convert to meaningful value 
+        var value = bytesToUnsignedLong( dataBytes )
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphDebugInc1 !== 'undefined' )
+          graphDebugInc1.addPoint( value )
+        //else
+          controls.controlsByGroup["Debug"]["Increment1"].querySelector( '#value' ).innerHTML = " (" + value + ")"
+        controls.controlsByGroup["Debug"]["Decrement1"].querySelector( '#value' ).innerHTML = " (" + value + ")"
+        
+        
+        break
+        
+      case CMDS['CMD_DBG_INC2'].address:
+      case CMDS['CMD_DBG_DEC2'].address:
+        
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_DBG_INC2' )
+        
+        // convert to meaningful value 
+        var value = bytesToUnsignedLong( dataBytes )
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        controls.controlsByGroup["Debug"]["Increment2"].querySelector( '#value' ).innerHTML = " (" + value + ")"
+        controls.controlsByGroup["Debug"]["Decrement2"].querySelector( '#value' ).innerHTML = " (" + value + ")"
+        
+        break
+        
+      case CMDS['CMD_DBG_INC3'].address:
+      case CMDS['CMD_DBG_DEC3'].address:
+        
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_DBG_INC3' )
+        
+        // convert to meaningful value 
+        var value = bytesToUnsignedLong( dataBytes )
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        controls.controlsByGroup["Debug"]["Increment3"].querySelector( '#value' ).innerHTML = " (" + value + ")"
+        controls.controlsByGroup["Debug"]["Decrement3"].querySelector( '#value' ).innerHTML = " (" + value + ")"
+        
+        break
+        
+      case CMDS['CMD_DBG_INC4'].address:
+      case CMDS['CMD_DBG_DEC4'].address:
+        
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_DBG_INC4' )
+        
+        // convert to meaningful value 
+        var value = bytesToUnsignedLong( dataBytes )
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphDebugInc4 !== 'undefined' )
+          graphDebugInc4.addPoint( value )
+        //else
+          controls.controlsByGroup["Debug"]["Increment4"].querySelector( '#value' ).innerHTML = " (" + value + ")"
+        controls.controlsByGroup["Debug"]["Decrement4"].querySelector( '#value' ).innerHTML = " (" + value + ")"
+        break
+        
       default:
         
         // don't recognize this header identifier, assume that we simply

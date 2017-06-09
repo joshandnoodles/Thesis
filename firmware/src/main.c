@@ -84,17 +84,15 @@ void main() {
     // intensities of the the quadrants nominal values
     switch (modRxActiveQuadrant) {
       case 1:
-        if ( (MOD_DEFAULT_RX_THRES_SWAP_MULT * (*qpLastChVSenseRegPtrs[3])) > 
+        if ( ((modRxAlignSwapMult/((float)(0xFF))) * (*qpLastChVSenseRegPtrs[3])) > 
                 (*qpLastChVSenseRegPtrs[modRxActiveQuadrant]) ) {
           modSetActiveQuadrant( 3 );
-          debugLed2On();
         }
         break;
       case 3:
-        if ( (MOD_DEFAULT_RX_THRES_SWAP_MULT * (*qpLastChVSenseRegPtrs[1])) > 
+        if ( ((modRxAlignSwapMult/((float)(0xFF))) * (*qpLastChVSenseRegPtrs[1])) > 
                 (*qpLastChVSenseRegPtrs[modRxActiveQuadrant]) ) {
           modSetActiveQuadrant( 1 );
-          debugLed2Off();
         }
         break;
     }

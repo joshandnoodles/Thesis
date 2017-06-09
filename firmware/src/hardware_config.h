@@ -25,8 +25,8 @@ extern "C" {
 #define FPB             (FOSC/2)                // peripheral clock freq in Hz
 
 // declare endpoint for which to compile code
-#define MASTER          1                       // should be MASTER or SLAVE
-//#define SLAVE           1                       // depending on endpoint type
+//#define MASTER          1                       // should be MASTER or SLAVE
+#define SLAVE           1                       // depending on endpoint type
 
 // qp.h configuration
 

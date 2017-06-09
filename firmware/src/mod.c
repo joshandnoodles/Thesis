@@ -55,8 +55,14 @@ volatile uint16_t modRxSigLockIdx;
 volatile uint16_t modRxADCBuffer[MOD_FRAME_DATA_SIZE_BYTES];
 volatile uint8_t modRxADCBufferIdx;
 volatile uint8_t modRxNibbleFlag;
+uint8_t modRxAlignSwapMult;
+uint8_t modRxAlignMultOne;
+uint8_t modRxAlignMultTwo;
+uint8_t modRxAlignMultThree;
 uint32_t modRxHiccupFlipMask;   // used to invert between ADC timing states
 uint32_t modRxBitErrors;
+uint32_t modRxFrameStreak;
+uint8_t modRxAlignRhoMult;
 uint8_t lastLsb;
 
 // constants defining framing chunk to help simplify/speed up ADC interrupt
@@ -158,6 +164,10 @@ void initMod( void ) {
   // set defaults for rx operations
   modRxActiveQuadrant = MOD_DEFAULT_RX_ACTIVE_QUAD;
   modRxAlignEnb = MOD_DEFAULT_RX_ALIGN_ENB;
+  modRxAlignSwapMult = MOD_DEFAULT_RX_SWAP_MULT;
+  modRxAlignMultOne = MOD_DEFAULT_RX_ALIGN_MULT_ONE;
+  modRxAlignMultTwo = MOD_DEFAULT_RX_ALIGN_MULT_TWO;
+  modRxAlignMultThree = MOD_DEFAULT_RX_ALIGN_MULT_THREE;
   modRxHiccupNs = MOD_DEFAULT_RX_HICCUP_NS;
   modRxHiccupThresH = MOD_DEFAULT_RX_HICCUP_THRES;
   modRxHiccupThresL = MOD_DEFAULT_RX_HICCUP_THRES;
@@ -202,6 +212,8 @@ uint8_t modOn( void ) {
   // reset pointers for rx buffer(s) and frame tracking
   modRxBufferCur = modRxBuffer;
   modRxNibbleFlag = 0x00;
+  modRxFrameStreak = 0;
+  modRxAlignRhoMult = MOD_RX_ALIGN_RHO_MULT_H;
   modRxSigLockIdx = 0;
   
   // ready tx buffer by initializing to default values
@@ -386,55 +398,67 @@ uint8_t modUpdateAlignmentFrame( void ) {
   
   switch (modRxActiveQuadrant) {
     case 1:
-      if ( (MOD_RX_ALIGN_THRES_MULT_THREE * (*qpLastChVSenseRegPtrs[2])) > 
-              (*qpLastChVSenseRegPtrs[3]) ) {
+      if ( (uint32_t)((modRxAlignMultThree) * (modRxAlignRhoMult) *
+              (*qpLastChVSenseRegPtrs[2])) > 
+              (uint32_t)((*qpLastChVSenseRegPtrs[3]) * 0xFE01) ) {
         // laser is aligned way way too far up, need to move down
         tempAlignFrame |= 0x05;
-      } else if ( (MOD_RX_ALIGN_THRES_MULT_THREE * (*qpLastChVSenseRegPtrs[0])) > 
-              (*qpLastChVSenseRegPtrs[3]) ) {
+      } else if ( (uint32_t)((modRxAlignMultThree) * (modRxAlignRhoMult) * 
+              (*qpLastChVSenseRegPtrs[0])) > 
+              (uint32_t)((*qpLastChVSenseRegPtrs[3]) * 0xFE01) ) {
         // laser is aligned way way too far right, need to move left
         tempAlignFrame |= 0x50;
-      } else if ( (MOD_RX_ALIGN_THRES_MULT_TWO * (*qpLastChVSenseRegPtrs[2])) > 
-              (*qpLastChVSenseRegPtrs[3]) ) {
+      } else if ( (uint32_t)((modRxAlignMultTwo) * (modRxAlignRhoMult) *
+              (*qpLastChVSenseRegPtrs[2])) > 
+              (uint32_t)((*qpLastChVSenseRegPtrs[3]) * 0xFE01) ) {
         // laser is aligned way too far up, need to move down
         tempAlignFrame |= 0x03;
-      } else if ( (MOD_RX_ALIGN_THRES_MULT_TWO * (*qpLastChVSenseRegPtrs[0])) > 
-              (*qpLastChVSenseRegPtrs[3]) ) {
+      } else if ( (uint32_t)((modRxAlignMultTwo) * (modRxAlignRhoMult) *
+              (*qpLastChVSenseRegPtrs[0])) > 
+              (uint32_t)((*qpLastChVSenseRegPtrs[3]) * 0xFE01) ) {
         // laser is aligned way too far right, need to move left
         tempAlignFrame |= 0x30;
-      } else if ( (MOD_RX_ALIGN_THRES_MULT_ONE * (*qpLastChVSenseRegPtrs[2])) > 
-              (*qpLastChVSenseRegPtrs[3]) ) {
+      } else if ( (uint32_t)((modRxAlignMultOne) * (modRxAlignRhoMult) *
+              (*qpLastChVSenseRegPtrs[2])) > 
+              (uint32_t)((*qpLastChVSenseRegPtrs[3]) * 0xFE01) ) {
         // laser is aligned too far up, need to move down
         tempAlignFrame |= 0x01;
-      } else if ( (MOD_RX_ALIGN_THRES_MULT_ONE * (*qpLastChVSenseRegPtrs[0])) > 
-              (*qpLastChVSenseRegPtrs[3]) ) {
+      } else if ( (uint32_t)((modRxAlignMultOne) * (modRxAlignRhoMult) *
+              (*qpLastChVSenseRegPtrs[0])) > 
+              (uint32_t)((*qpLastChVSenseRegPtrs[3]) * 0xFE01) ) {
         // laser is aligned too far right, need to move left
         tempAlignFrame |= 0x10;
       }
       break;
     case 3:
-      if ( (MOD_RX_ALIGN_THRES_MULT_THREE * (*qpLastChVSenseRegPtrs[0])) > 
-              (*qpLastChVSenseRegPtrs[1]) ) {
+      if ( (uint32_t)((modRxAlignMultThree) * (modRxAlignRhoMult) *
+              (*qpLastChVSenseRegPtrs[0])) > 
+              (uint32_t)((*qpLastChVSenseRegPtrs[1]) * 0xFE01) ) {
         // laser is aligned way too far down, need to move up
         tempAlignFrame |= 0x06;
-      } else if ( (MOD_RX_ALIGN_THRES_MULT_THREE * (*qpLastChVSenseRegPtrs[2])) > 
-              (*qpLastChVSenseRegPtrs[1]) ) {
+      } else if ( (uint32_t)((modRxAlignMultThree) * (modRxAlignRhoMult) *
+              (*qpLastChVSenseRegPtrs[2])) > 
+              (uint32_t)((*qpLastChVSenseRegPtrs[1]) * 0xFE01) ) {
         // laser is aligned way too far left, need to move right
         tempAlignFrame |= 0x60;
-      } else if ( (MOD_RX_ALIGN_THRES_MULT_TWO * (*qpLastChVSenseRegPtrs[0])) > 
-              (*qpLastChVSenseRegPtrs[1]) ) {
+      } else if ( (uint32_t)((modRxAlignMultTwo) * (modRxAlignRhoMult) *
+              (*qpLastChVSenseRegPtrs[0])) > 
+              (uint32_t)((*qpLastChVSenseRegPtrs[1]) * 0xFE01) ) {
         // laser is aligned way too far down, need to move up
         tempAlignFrame |= 0x04;
-      } else if ( (MOD_RX_ALIGN_THRES_MULT_TWO * (*qpLastChVSenseRegPtrs[2])) > 
-              (*qpLastChVSenseRegPtrs[1]) ) {
+      } else if ( (uint32_t)((modRxAlignMultTwo) * (modRxAlignRhoMult) *
+              (*qpLastChVSenseRegPtrs[2])) > 
+              (uint32_t)((*qpLastChVSenseRegPtrs[1]) * 0xFE01) ) {
         // laser is aligned way too far left, need to move right
         tempAlignFrame |= 0x40;
-      } else if ( (MOD_RX_ALIGN_THRES_MULT_ONE * (*qpLastChVSenseRegPtrs[0])) > 
-              (*qpLastChVSenseRegPtrs[1]) ) {
+      } else if ( (uint32_t)((modRxAlignMultOne) * (modRxAlignRhoMult) *
+              (*qpLastChVSenseRegPtrs[0])) > 
+              (uint32_t)((*qpLastChVSenseRegPtrs[1]) * 0xFE01) ) {
         // laser is aligned too far down, need to move up
         tempAlignFrame |= 0x02;
-      } else if ( (MOD_RX_ALIGN_THRES_MULT_ONE * (*qpLastChVSenseRegPtrs[2])) > 
-              (*qpLastChVSenseRegPtrs[1]) ) {
+      } else if ( (uint32_t)((modRxAlignMultOne) * (modRxAlignRhoMult) *
+              (*qpLastChVSenseRegPtrs[2])) > 
+              (uint32_t)((*qpLastChVSenseRegPtrs[1]) * 0xFE01) ) {
         // laser is aligned too far left, need to move right
         tempAlignFrame |= 0x20;
       }
@@ -723,7 +747,6 @@ void __ISR( _ADC_VECTOR, IPL5SOFT ) __ADC_HANDLER( void ) {
           // nominally
           if ( modRxBufferCur < modRxBufferData ) {
             // do activities only if we are receiving the header frame portion
-
             if ( modRxBufferCur == (modRxBufferHeader+0) ) {
               if ( ((*modRxBufferCur) != MOD_HANDSHAKE_DATA_BYTE) &&
                       ((*modRxBufferCur) != MOD_HANDSHAKE_FRAME_ALIGN_BYTE) ) {
@@ -731,78 +754,85 @@ void __ISR( _ADC_VECTOR, IPL5SOFT ) __ADC_HANDLER( void ) {
                 // assume signal lock has been lost
                 modSigLockState = 0x00;
                 modRxSigLockIdx = 0;
+                modRxFrameStreak = 0;
+                if ( modRxAlignRhoMult < MOD_RX_ALIGN_RHO_MULT_H)
+                  modRxAlignRhoMult += 32;
+              } else {
+                // keep a count of frames that *appear* to be received correctly
+                
+                if ((++modRxFrameStreak) > MOD_RX_ALIGN_FRAME_STREAK_H) {
+                  modRxAlignRhoMult = MOD_RX_ALIGN_RHO_MULT_L;
+                } else if (modRxFrameStreak > MOD_RX_ALIGN_FRAME_STREAK_M) {
+                  modRxAlignRhoMult -= 1;
+                } else if (modRxFrameStreak > MOD_RX_ALIGN_FRAME_STREAK_L) {
+                  modRxAlignRhoMult -= 32;
+                  debugVal4++;
+                }
               }
             } else if ( modRxBufferCur == (modRxBufferHeader+1) ) {
               // second byte should contain alignment information
               
-              if ( modRxAlignEnb ) {
+              modTxBufferHeader[1] = 0x00;
+              if ( (modRxAlignEnb) ) {
+                modUpdateAlignmentFrame();
                 switch ( (*modRxBufferCur) & 0x0F ) {
                   // least-significant nibble contains vertical alignment cues
-                  case 0x06:
-                    // laser is aligned way way too far down, need to move up
-                    SERVO_TILT_OCRS = SERVO_TILT_OCR + 3;
-                    break;
-                  case 0x05:
-                    // laser is aligned way way too far up, need to move down
-                    SERVO_TILT_OCRS = SERVO_TILT_OCR - 3;
-                    break;
-                  case 0x04:
-                    // laser is aligned way too far down, need to move up
-                    SERVO_TILT_OCRS = SERVO_TILT_OCR + 2;
-                    break;
-                  case 0x03:
-                    // laser is aligned way too far up, need to move down
-                    SERVO_TILT_OCRS = SERVO_TILT_OCR - 2;
+                  case 0x01:
+                    // laser is aligned too far up, need to move down
+                    SERVO_TILT_OCRS = SERVO_TILT_OCR - 1*MOD_RX_ALIGN_STEP;
                     break;
                   case 0x02:
                     // laser is aligned too far down, need to move up
-                    SERVO_TILT_OCRS = SERVO_TILT_OCR + 1;
+                    SERVO_TILT_OCRS = SERVO_TILT_OCR + 1*MOD_RX_ALIGN_STEP;
                     break;
-                  case 0x01:
-                    // laser is aligned too far up, need to move down
-                    SERVO_TILT_OCRS = SERVO_TILT_OCR - 1;
+                  case 0x03:
+                    // laser is aligned way too far up, need to move down
+                    SERVO_TILT_OCRS = SERVO_TILT_OCR - 2*MOD_RX_ALIGN_STEP;
                     break;
-                  case 0x00:
-                    // laser is properly aligned vertically, do nothing for now
+                  case 0x04:
+                    // laser is aligned way too far down, need to move up
+                    SERVO_TILT_OCRS = SERVO_TILT_OCR + 2*MOD_RX_ALIGN_STEP;
+                    break;
+                  case 0x05:
+                    // laser is aligned way way too far up, need to move down
+                    SERVO_TILT_OCRS = SERVO_TILT_OCR - 3*MOD_RX_ALIGN_STEP;
+                    break;
+                  case 0x06:
+                    // laser is aligned way way too far down, need to move up
+                    SERVO_TILT_OCRS = SERVO_TILT_OCR + 3*MOD_RX_ALIGN_STEP;
                     break;
                 }
                 switch ( (*modRxBufferCur) & 0xF0 ) {
                   // most-significant nibble contains horizontal alignment cues
-                  case 0x60:
-                    // laser is aligned way way too far left, need to move right
-                    SERVO_PAN_OCRS = SERVO_PAN_OCR + 3;
-                    debugVal4++;
-                    break;
-                  case 0x50:
-                    // laser is aligned way way too far right, need to move left
-                    SERVO_PAN_OCRS = SERVO_PAN_OCR - 3;
-                    debugVal4++;
-                    break;
-                  case 0x40:
-                    // laser is aligned way too far left, need to move right
-                    SERVO_PAN_OCRS = SERVO_PAN_OCR + 2;
-                    debugVal3++;
-                    break;
-                  case 0x30:
-                    // laser is aligned way too far right, need to move left
-                    SERVO_PAN_OCRS = SERVO_PAN_OCR - 2;
-                    debugVal3++;
+                  case 0x10:
+                    // laser is aligned too far right, need to move left
+                    SERVO_PAN_OCRS = SERVO_PAN_OCR - 1*MOD_RX_ALIGN_STEP;
+                    debugVal2++;
                     break;
                   case 0x20:
                     // laser is aligned too far left, need to move right
-                    SERVO_PAN_OCRS = SERVO_PAN_OCR + 1;
+                    SERVO_PAN_OCRS = SERVO_PAN_OCR + 1*MOD_RX_ALIGN_STEP;
                     debugVal2++;
                     break;
-                  case 0x10:
-                    // laser is aligned too far right, need to move left
-                    SERVO_PAN_OCRS = SERVO_PAN_OCR - 1;
-                    debugVal2++;
+                  case 0x30:
+                    // laser is aligned way too far right, need to move left
+                    SERVO_PAN_OCRS = SERVO_PAN_OCR - 2*MOD_RX_ALIGN_STEP;
+                    debugVal3++;
                     break;
-                  case 0x00:
-                    // laser is properly aligned vertically, do nothing for now
+                  case 0x40:
+                    // laser is aligned way too far left, need to move right
+                    SERVO_PAN_OCRS = SERVO_PAN_OCR + 2*MOD_RX_ALIGN_STEP;
+                    debugVal3++;
+                    break;
+                 case 0x50:
+                    // laser is aligned way way too far right, need to move left
+                    SERVO_PAN_OCRS = SERVO_PAN_OCR - 3*MOD_RX_ALIGN_STEP;
+                    break;
+                  case 0x60:
+                    // laser is aligned way way too far left, need to move right
+                    SERVO_PAN_OCRS = SERVO_PAN_OCR + 3*MOD_RX_ALIGN_STEP;
                     break;
                 }
-                modUpdateAlignmentFrame();
               }
             }
 
@@ -834,7 +864,6 @@ void __ISR( _ADC_VECTOR, IPL5SOFT ) __ADC_HANDLER( void ) {
               modTxSigLockFlag = 0x01;
               modRxBufferCur = modRxBuffer;
               modBufferTestDataCur = modBufferTestData;
-              modRxSigLockIdx = 0;
             #endif
           } else if ( (*modRxBufferCur) == MOD_HANDSHAKE_NULL_BYTE ) {
             // if byte is the null handshake, everything is probs okay, we just
@@ -844,6 +873,9 @@ void __ISR( _ADC_VECTOR, IPL5SOFT ) __ADC_HANDLER( void ) {
             // wrong, assume signal lock has been lost
             modSigLockState = 0x00;
             modRxSigLockIdx = 0;
+            modRxFrameStreak = 0;
+            if ( modRxAlignRhoMult < MOD_RX_ALIGN_RHO_MULT_H)
+              modRxAlignRhoMult++;
             
             // do error checking to see what our bit error rate is like
             bitErrorTemp = ((*modRxBufferCur) ^ MOD_HANDSHAKE_NULL_BYTE);
@@ -865,6 +897,9 @@ void __ISR( _ADC_VECTOR, IPL5SOFT ) __ADC_HANDLER( void ) {
           } else {
             // reset counter since null handshakes must all be continuous
             modRxSigLockIdx = 0;
+            modRxFrameStreak = 0;
+            if ( modRxAlignRhoMult < MOD_RX_ALIGN_RHO_MULT_H)
+              modRxAlignRhoMult++;
             
             // do error checking to see what our bit error rate is like
             bitErrorTemp = (*modRxBufferCur) ^ (MOD_HANDSHAKE_NULL_BYTE & 

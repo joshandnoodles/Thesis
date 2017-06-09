@@ -31,7 +31,16 @@ extern "C" {
 // define default values for initial rx configuration
 #define MOD_DEFAULT_RX_ACTIVE_QUAD      1
 #define MOD_DEFAULT_RX_ALIGN_ENB        1
-#define MOD_DEFAULT_RX_THRES_SWAP_MULT  0.7f    // multiplier when comparing ch
+#define MOD_DEFAULT_RX_SWAP_MULT        200    // multiplier when comparing ch
+#define MOD_DEFAULT_RX_ALIGN_MULT_ONE   255
+#define MOD_DEFAULT_RX_ALIGN_MULT_TWO   0
+#define MOD_DEFAULT_RX_ALIGN_MULT_THREE 0
+#define MOD_RX_ALIGN_RHO_MULT_L         64
+#define MOD_RX_ALIGN_RHO_MULT_M         96
+#define MOD_RX_ALIGN_RHO_MULT_H         255
+#define MOD_RX_ALIGN_FRAME_STREAK_L     0
+#define MOD_RX_ALIGN_FRAME_STREAK_M     4
+#define MOD_RX_ALIGN_FRAME_STREAK_H     32
 #define MOD_DEFAULT_RX_HICCUP_NS        20000   // differential in sampling (ns)
 #define MOD_DEFAULT_RX_HICCUP_THRES     22
 
@@ -44,9 +53,7 @@ extern "C" {
 #define MOD_RX_ADC_ADCS                 0   // conversion clock bits (#*2*T_PB)
 #define MOD_RX_HICCUP_TAD               1   // differential in sampling (T_AD's)
 #define MOD_RX_HICCUP_DIRECTION         1   // 0=neg (slower), 1=pos (faster)
-#define MOD_RX_ALIGN_THRES_MULT_ONE     0.8f
-#define MOD_RX_ALIGN_THRES_MULT_TWO     0.4f
-#define MOD_RX_ALIGN_THRES_MULT_THREE   0.0f
+#define MOD_RX_ALIGN_STEP               3
 #define MOD_RX_SIG_LOCK_CNT             4
     
 
@@ -67,6 +74,12 @@ extern volatile uint32_t tickTock;//!!
 extern volatile uint8_t modRxNibbleFlag;//!!
 extern volatile uint16_t modRxSigLockIdx;
 extern volatile uint8_t modTxSigLockFlag;//!!
+extern uint8_t modRxAlignMultOne;//!!
+extern uint8_t modRxAlignMultTwo;//!!
+extern uint8_t modRxAlignMultThree;//!!
+extern uint32_t modRxFrameStreak;
+extern uint8_t modRxAlignRhoMult;
+extern uint8_t modRxAlignSwapMult;
 extern uint8_t modRxActiveQuadrant;
 extern volatile uint8_t modRxBuffer[MOD_FRAME_SIZE_BYTES];
 extern volatile uint8_t * modRxBufferCur;

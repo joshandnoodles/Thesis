@@ -16,6 +16,7 @@
 #include "hardware_config.h"
 
 #include <stdint.h>
+#include <math.h>
 #include <string.h>   // memset
 
 #include "timer.h"
@@ -43,7 +44,8 @@ typedef struct {
   const uint8_t rxBytes;
 } PktInfo;
 
-// 0x1* debugging commands
+// 0x0*
+// 0x1* and 0x2* debugging commands
 static const PktInfo CMD_LED1_TOG             = { 0x10,   1,        0       };
 static const PktInfo CMD_LED1_SET             = { 0x11,   0,        1       };
 static const PktInfo CMD_LED1_GET             = { 0x12,   1,        0       };
@@ -56,7 +58,14 @@ static const PktInfo CMD_DBG_VAL1_GET         = { 0x18,   4,        0       };
 static const PktInfo CMD_DBG_VAL2_GET         = { 0x19,   4,        0       };
 static const PktInfo CMD_DBG_VAL3_GET         = { 0x1A,   4,        0       };
 static const PktInfo CMD_DBG_VAL4_GET         = { 0x1B,   4,        0       };
-// 0x2* 
+static const PktInfo CMD_DBG_INC1             = { 0x1C,   4,        0       };
+static const PktInfo CMD_DBG_DEC1             = { 0x1D,   4,        0       };
+static const PktInfo CMD_DBG_INC2             = { 0x1E,   4,        0       };
+static const PktInfo CMD_DBG_DEC2             = { 0x1F,   4,        0       };
+static const PktInfo CMD_DBG_INC3             = { 0x20,   4,        0       };
+static const PktInfo CMD_DBG_DEC3             = { 0x21,   4,        0       };
+static const PktInfo CMD_DBG_INC4             = { 0x22,   4,        0       };
+static const PktInfo CMD_DBG_DEC4             = { 0x23,   4,        0       };
 // 0x3* Ethernet commands 
 // 0x4* delay commands
 static const PktInfo CMD_DELAY_US             = { 0x40,   0,        2       };
@@ -149,6 +158,54 @@ void insertTxBufUnsignedLong( uint8_t * txDataBuffer, uint32_t data ) {
   return;
 }
 
+void insertTxBufFloat( uint8_t * txDataBuffer, float data ) {
+  // this function uses the following approach to represent a floating-point
+  // number in 4 consecutive byes of memory in c using a scientific notation
+  // approach (i.e. n * 10^[(+/-)x]:
+  //  <----byte one----><----byte two----><---byte three---><---byte four---->
+  //  <                 base number int24_t               ><+/-   exponent  >
+  //    (24 bits to represent base, n)--^                     ^         ^
+  //    (first bit is sign of exponent)-----------------------/         |
+  //    (next seven bits represent power of ten exponent i.e 10^x)------/
+  
+  uint32_t base;
+  uint8_t baseSign;
+  uint8_t exp;
+  uint8_t expSign;
+  uint32_t uintEntire;
+  
+  float temp;
+  float lastTemp;
+  
+  if ( data >= 0 )
+    baseSign = 0;
+  else
+    baseSign = 0;
+  data = fabs( data );
+  
+  if ( (data > -1) && (data < 1) ) {
+    expSign = 1;
+    
+  } else {
+    expSign = 0;
+    
+    lastTemp = 1;
+    for ( exp=0; exp<0x80; exp++ ) {
+      temp = lastTemp * 10;
+      if ( temp > data )
+        break;
+      lastTemp = temp;
+    }
+    
+    base = (uint32_t)(data / (temp));
+  }
+  
+  // place data in byte chunks
+  insertTxBufUnsignedLong( txDataBuffer, (base<<8) | (exp<<0) );
+  
+  return;
+}
+
 void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
     uint16_t bufSize ) {
   
@@ -158,7 +215,7 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
   // reset counter for building our tx buffer
   usbTxIdx = 0;
   memset( txDataBuffer, 0, sizeof(uint8_t)*64 );
-    
+  
   // we got a packet, check what the hosts wants us to do and do it,
   // the packet contains a command id at the beginning followed by one or
   // more data byte that is used for certain commands, so let's look at
@@ -590,7 +647,7 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
     
     } else if ( rxDataCmd == CMD_LED1_TOG.address ) {
       // toggle debug led on and off
-      modSetActiveQuadrant(1);//!!
+      SERVO_PAN_OCRS = SERVO_PAN_OCR + 1;//!!
       // toggle output latch of debug led
       debugLed1Tog();
 
@@ -620,7 +677,7 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
       
     } else if ( rxDataCmd == CMD_LED2_TOG.address ) {
       // toggle debug led on and off
-      modSetActiveQuadrant(3);//!!
+      SERVO_TILT_OCRS = SERVO_TILT_OCR + 1;//!!
       // toggle output latch of debug led
       debugLed2Tog();
       
@@ -685,14 +742,14 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
       
       // echo back command id to host along with value
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(debugVal2) );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxFrameStreak) );
       
     } else if ( rxDataCmd == CMD_DBG_VAL3_GET.address ) {
       // send value back for troubleshooting
       
       // echo back command id to host along with value
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
-      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(debugVal3) );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxAlignRhoMult) );
       
     } else if ( rxDataCmd == CMD_DBG_VAL4_GET.address ) {
       // send value back for troubleshooting
@@ -700,6 +757,78 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
       // echo back command id to host along with value
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
       insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(debugVal4) );
+      
+    } else if ( rxDataCmd == CMD_DBG_INC1.address ) {
+      // increment/decrement value for troubleshooting
+      
+      modRxAlignMultOne += 13;
+      
+      // echo back command id to host along with value
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxAlignMultOne) );
+      
+    } else if ( rxDataCmd == CMD_DBG_DEC1.address ) {
+      // increment/decrement value for troubleshooting
+      
+      modRxAlignMultOne -= 13;
+      
+      // echo back command id to host along with value
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxAlignMultOne) );
+      
+    } else if ( rxDataCmd == CMD_DBG_INC2.address ) {
+      // increment/decrement value for troubleshooting
+      
+      modRxAlignMultTwo += 13;
+      
+      // echo back command id to host along with value
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxAlignMultTwo) );
+      
+    } else if ( rxDataCmd == CMD_DBG_DEC2.address ) {
+      // increment/decrement value for troubleshooting
+      
+      modRxAlignMultTwo -= 13;
+      
+      // echo back command id to host along with value
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxAlignMultTwo) );
+      
+    } else if ( rxDataCmd == CMD_DBG_INC3.address ) {
+      // increment/decrement value for troubleshooting
+      
+      modRxAlignMultThree += 13;
+      
+      // echo back command id to host along with value
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxAlignMultThree) );
+      
+    } else if ( rxDataCmd == CMD_DBG_DEC3.address ) {
+      // increment/decrement value for troubleshooting
+      
+      modRxAlignMultThree -= 13;
+      
+      // echo back command id to host along with value
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxAlignMultThree) );
+      
+    } else if ( rxDataCmd == CMD_DBG_INC4.address ) {
+      // increment/decrement value for troubleshooting
+      
+      modRxAlignSwapMult += 13;
+      
+      // echo back command id to host along with value
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxAlignSwapMult) );
+      
+    } else if ( rxDataCmd == CMD_DBG_DEC4.address ) {
+      // increment/decrement value for troubleshooting
+      
+      modRxAlignSwapMult -= 13;
+      
+      // echo back command id to host along with value
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedLong( txDataBuffer, (uint32_t)(modRxAlignSwapMult) );
       
     } else {
       // we can't match this to anything corresponding to our command addresses...

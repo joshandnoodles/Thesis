@@ -136,10 +136,8 @@ extern "C" {
 #define SERVO_PAN_OCR           OC1R            // oputput compare 'x' control register
 #define SERVO_PAN_OCRS          OC1RS           // output compare 'x' 2nd control register
 #define SERVO_PAN_PERIOD_NS     (20000000ul)    // period of PWM pulse cycle (in nsec)
-//#define SERVO_PAN_PULSE_MIN_NS  (553000ul)      // minimum range pulse width (in nsec)
-//#define SERVO_PAN_PULSE_MAX_NS  (2520000ul)     // maximum range pulse width (in nsec)
-#define SERVO_PAN_PULSE_MIN_NS  (500000ul)      // minimum range pulse width (in nsec)
-#define SERVO_PAN_PULSE_MAX_NS  (2500000ul)     // maximum range pulse width (in nsec)
+#define SERVO_PAN_PULSE_MIN_NS  (553000ul)      // minimum range pulse width (in nsec)
+#define SERVO_PAN_PULSE_MAX_NS  (2520000ul)     // maximum range pulse width (in nsec)
 #define SERVO_PAN_PULSE_RNG_NS  SERVO_PAN_PULSE_MAX_NS-SERVO_PAN_PULSE_MIN_NS
 #define SERVO_PAN_TIMER_CON     T2CON           // type B timer control register
 #define SERVO_PAN_TIMER_PERIOD  PR2             // type B timer period register

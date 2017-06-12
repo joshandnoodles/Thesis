@@ -97,6 +97,7 @@ void initPwm(
   
   // set initial pulse period for PWM
   timerBSetPeriodNs( timerCon, timerPeriod, pulsePeriodNs );
+  *timerPeriod = *timerPeriod - 1;
   
   // set initial pulse width for PWM
   pwmUpdatePulseWidthNs( ocRs, timerBGetPrescaler(timerCon), pulseWidthNs );

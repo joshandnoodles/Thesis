@@ -53,6 +53,9 @@ void main() {
   lsrLoadSwitchOn();
   modOn();
   gimbalOn();
+  
+  gimbalSetPan( 90 );
+  
   #ifdef MASTER
     gimbalSetPan( 90 );
     gimbalSetTilt( 6 );

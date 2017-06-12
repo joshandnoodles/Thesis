@@ -103,7 +103,7 @@ extern "C" {
 #define MOD_TIMER_TX_PERIOD         PR4         // type B timer period register
 #define MOD_TIMER_TX_REG            TMR4        // type B timer count register
 #define MOD_TIMER_TX_INT_ENB        IEC0        // type B timer interrupt enable
-#define MOD_TIMER_TX_INT_PRIO       IPC4        // type B timer intterupt priority
+#define MOD_TIMER_TX_INT_PRIO       IPC4        // type B timer interrupt priority
 #define MOD_TIMER_TX_INT_FLAG       IFS0        // type B timer interrupt flag
 #define MOD_TIMER_TX_PRIO_OFFSET    2           // interrupt priority level bit offset
 #define MOD_TIMER_TX_SUBPRIO_OFFSET 0           // interrupt subpriority level bit offset
@@ -114,7 +114,7 @@ extern "C" {
 #define MOD_TIMER_RX_PERIOD         PR5         // type B timer period register
 #define MOD_TIMER_RX_REG            TMR5        // type B timer count register
 #define MOD_TIMER_RX_INT_ENB        IEC0        // type B timer interrupt enable
-#define MOD_TIMER_RX_INT_PRIO       IPC5        // type B timer intterupt priority
+#define MOD_TIMER_RX_INT_PRIO       IPC5        // type B timer interrupt priority
 #define MOD_TIMER_RX_INT_FLAG       IFS0        // type B timer interrupt flag
 #define MOD_TIMER_RX_PRIO_OFFSET    2           // interrupt priority level bit offset
 #define MOD_TIMER_RX_SUBPRIO_OFFSET 0           // interrupt subpriority level bit offset
@@ -122,7 +122,7 @@ extern "C" {
 
 // hardware configuration for rx ADC interrupts
 #define MOD_ADC_INT_ENB         IEC1            // adc interrupt enable
-#define MOD_ADC_INT_PRIO        IPC6            // adc intterupt priority
+#define MOD_ADC_INT_PRIO        IPC6            // adc interrupt priority
 #define MOD_ADC_INT_FLAG        IFS1            // adc interrupt flag
 #define MOD_ADC_PRIO_OFFSET     26              // interrupt priority level bit offset
 #define MOD_ADC_SUBPRIO_OFFSET  24              // interrupt subpriority level bit offset
@@ -136,8 +136,10 @@ extern "C" {
 #define SERVO_PAN_OCR           OC1R            // oputput compare 'x' control register
 #define SERVO_PAN_OCRS          OC1RS           // output compare 'x' 2nd control register
 #define SERVO_PAN_PERIOD_NS     (20000000ul)    // period of PWM pulse cycle (in nsec)
-#define SERVO_PAN_PULSE_MIN_NS  (553000ul)      // minimum range pulse width (in nsec)
-#define SERVO_PAN_PULSE_MAX_NS  (2520000ul)     // maximum range pulse width (in nsec)
+//#define SERVO_PAN_PULSE_MIN_NS  (553000ul)      // minimum range pulse width (in nsec)
+//#define SERVO_PAN_PULSE_MAX_NS  (2520000ul)     // maximum range pulse width (in nsec)
+#define SERVO_PAN_PULSE_MIN_NS  (500000ul)      // minimum range pulse width (in nsec)
+#define SERVO_PAN_PULSE_MAX_NS  (2500000ul)     // maximum range pulse width (in nsec)
 #define SERVO_PAN_PULSE_RNG_NS  SERVO_PAN_PULSE_MAX_NS-SERVO_PAN_PULSE_MIN_NS
 #define SERVO_PAN_TIMER_CON     T2CON           // type B timer control register
 #define SERVO_PAN_TIMER_PERIOD  PR2             // type B timer period register

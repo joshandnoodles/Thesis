@@ -101,6 +101,7 @@ volatile uint8_t modSigLockState; // 0 = no known signal recognized
                                   // 1 = null handshake seen and locked onto
                                   // 2 = data handshake seen, start sending data
 volatile uint8_t modRxAlignEnb;
+volatile uint8_t modRxAlignRhoEnb;
 
 void initMod( void ) {
   
@@ -164,6 +165,7 @@ void initMod( void ) {
   // set defaults for rx operations
   modRxActiveQuadrant = MOD_DEFAULT_RX_ACTIVE_QUAD;
   modRxAlignEnb = MOD_DEFAULT_RX_ALIGN_ENB;
+  modRxAlignRhoEnb = MOD_DEFAULT_RX_ALIGN_RHO_ENB;
   modRxAlignSwapMult = MOD_DEFAULT_RX_SWAP_MULT;
   modRxAlignMultOne = MOD_DEFAULT_RX_ALIGN_MULT_ONE;
   modRxAlignMultTwo = MOD_DEFAULT_RX_ALIGN_MULT_TWO;
@@ -755,18 +757,21 @@ void __ISR( _ADC_VECTOR, IPL5SOFT ) __ADC_HANDLER( void ) {
                 modSigLockState = 0x00;
                 modRxSigLockIdx = 0;
                 modRxFrameStreak = 0;
-                if ( modRxAlignRhoMult < MOD_RX_ALIGN_RHO_MULT_H)
+                if ( ((modRxAlignRhoMult + 32) <= MOD_RX_ALIGN_RHO_MULT_H) )
                   modRxAlignRhoMult += 32;
+                modRxBitErrors += 8;
               } else {
                 // keep a count of frames that *appear* to be received correctly
                 
-                if ((++modRxFrameStreak) > MOD_RX_ALIGN_FRAME_STREAK_H) {
-                  modRxAlignRhoMult = MOD_RX_ALIGN_RHO_MULT_L;
-                } else if (modRxFrameStreak > MOD_RX_ALIGN_FRAME_STREAK_M) {
-                  modRxAlignRhoMult -= 1;
-                } else if (modRxFrameStreak > MOD_RX_ALIGN_FRAME_STREAK_L) {
-                  modRxAlignRhoMult -= 32;
-                  debugVal4++;
+                if ( modRxAlignEnb ) {
+                  if ((++modRxFrameStreak) > MOD_RX_ALIGN_FRAME_STREAK_H) {
+                    modRxAlignRhoMult = MOD_RX_ALIGN_RHO_MULT_L;
+                  } else if (modRxFrameStreak > MOD_RX_ALIGN_FRAME_STREAK_M) {
+                    modRxAlignRhoMult -= 1;
+                  } else if (modRxFrameStreak > MOD_RX_ALIGN_FRAME_STREAK_L) {
+                    modRxAlignRhoMult -= 32;
+                    debugVal4++;
+                  }
                 }
               }
             } else if ( modRxBufferCur == (modRxBufferHeader+1) ) {
@@ -878,12 +883,13 @@ void __ISR( _ADC_VECTOR, IPL5SOFT ) __ADC_HANDLER( void ) {
               modRxAlignRhoMult++;
             
             // do error checking to see what our bit error rate is like
-            bitErrorTemp = ((*modRxBufferCur) ^ MOD_HANDSHAKE_NULL_BYTE);
-            while ( bitErrorTemp ) {
-              bitErrorTemp &= (bitErrorTemp - 1);
-              modRxBitErrors++;
-            }
+            //bitErrorTemp = ((*modRxBufferCur) ^ MOD_HANDSHAKE_NULL_BYTE);
+            //while ( bitErrorTemp ) {
+            //  bitErrorTemp &= (bitErrorTemp - 1);
+            //  modRxBitErrors++;
+            //}
           }
+          modRxBitErrors += 8;
 
           break;
         case 0:
@@ -902,13 +908,14 @@ void __ISR( _ADC_VECTOR, IPL5SOFT ) __ADC_HANDLER( void ) {
               modRxAlignRhoMult++;
             
             // do error checking to see what our bit error rate is like
-            bitErrorTemp = (*modRxBufferCur) ^ (MOD_HANDSHAKE_NULL_BYTE & 
-                    MOD_HANDSHAKE_FRAME_ALIGN_BYTE);
-            while ( bitErrorTemp ) {
-              bitErrorTemp &= (bitErrorTemp - 1);
-              modRxBitErrors++;
-            }
+            //bitErrorTemp = (*modRxBufferCur) ^ (MOD_HANDSHAKE_NULL_BYTE & 
+            //        MOD_HANDSHAKE_FRAME_ALIGN_BYTE);
+            //while ( bitErrorTemp ) {
+            //  bitErrorTemp &= (bitErrorTemp - 1);
+            //  modRxBitErrors++;
+            //}
           }
+          modRxBitErrors += 8;
 
           break;
       }

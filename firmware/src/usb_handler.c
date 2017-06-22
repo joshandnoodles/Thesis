@@ -112,6 +112,10 @@ static const PktInfo CMD_MOD_HICCUP_NS_SET    = { 0x8A,   0,        4,      };
 static const PktInfo CMD_MOD_TOG_ALIGN_ENB    = { 0x8B,   1,        0       };
 static const PktInfo CMD_MOD_SET_ALIGN_ENB    = { 0x8C,   0,        1       };
 static const PktInfo CMD_MOD_GET_ALIGN_ENB    = { 0x8D,   1,        0       };
+static const PktInfo CMD_MOD_TOG_ALIGN_RHO_ENB= { 0x8E,   1,        0       };
+static const PktInfo CMD_MOD_SET_ALIGN_RHO_ENB= { 0x8F,   0,        1       };
+static const PktInfo CMD_MOD_GET_ALIGN_RHO_ENB= { 0x90,   1,        0       };
+
 // 0xA*
 // 0xB*
 // 0xC*
@@ -585,13 +589,13 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
     } else if ( rxDataCmd == CMD_MOD_TOG_ALIGN_ENB.address ) {
       // toggle modulation alignment on and off
       
-      // set modulation  alignment enable to opposite state
+      // set modulation alignment enable to opposite state
       if ( modRxAlignEnb )
         modRxAlignEnb = 0x00;
       else
         modRxAlignEnb = 0x01;
       
-      // echo back command id to host along with alignment enable state
+      // echo back command id to host along with enable state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
       insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(modRxAlignEnb) );
     
@@ -611,9 +615,45 @@ void usbHandler( uint8_t * rxDataBuffer, uint8_t * txDataBuffer,
     } else if ( rxDataCmd == CMD_MOD_GET_ALIGN_ENB.address ) {
       // get state of modulation alignment
       
-      // echo back command id to host along with alignment enable state
+      // echo back command id to host along with enable state
       insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
       insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(modRxAlignEnb) );
+      
+    } else if ( rxDataCmd == CMD_MOD_TOG_ALIGN_RHO_ENB.address ) {
+      // toggle modulation alignment momentum on and off
+      
+      // set modulation alignment momentum enable to opposite state
+      if ( modRxAlignRhoEnb ) {
+        modRxAlignRhoEnb = 0x00;
+        modRxAlignRhoMult = MOD_RX_ALIGN_RHO_MULT_H;
+      } else {
+        modRxAlignRhoEnb = 0x01;
+      }
+      
+      // echo back command id to host along with enable state
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(modRxAlignRhoEnb) );
+    
+    } else if ( rxDataCmd == CMD_MOD_SET_ALIGN_RHO_ENB.address ) {
+      // set modulation alignment momentum on or off
+      
+      // set modulation alignment momentum enable to certain state
+      if ( (rxDataBuffer[idx++]<<0) == 0 ) {
+        modRxAlignRhoEnb = 0x00;
+        modRxAlignRhoMult = MOD_RX_ALIGN_RHO_MULT_H;
+      } else {
+        modRxAlignRhoEnb = 0x01;
+      }
+      
+      // echo back command id to host
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      
+    } else if ( rxDataCmd == CMD_MOD_GET_ALIGN_RHO_ENB.address ) {
+      // get state of modulation momentum alignment
+      
+      // echo back command id to host along with enable state
+      insertTxBufUnsignedChar( txDataBuffer, rxDataCmd );
+      insertTxBufUnsignedChar( txDataBuffer, (uint8_t)(modRxAlignRhoEnb) );
       
     } else if ( rxDataCmd == CMD_LSR_TOG.address ) {
       // toggle load switch on and off

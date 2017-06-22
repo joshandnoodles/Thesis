@@ -164,7 +164,7 @@ Graph.DIV_BASE_ID= 'graph'
 Graph.MAX_DATA_SIZE = 1500
 
 // contants relating to axes stuff
-Graph.DEFAULT_X_RNG = [-30*1000,5*1000]
+Graph.DEFAULT_X_RNG = [-65*1000,5*1000]
 Graph.DEFAULT_Y_RNG = [0,1]
 Graph.Y_RNG_BUF = 0.01
 Graph.DEFAULT_X_LABEL = ''

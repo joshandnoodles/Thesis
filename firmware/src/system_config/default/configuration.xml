@@ -13,44 +13,28 @@
   <Manifest>
     <Files>
       <File>
-        <Name>osal_impl_basic.h</Name>
-        <Path>Header Files/framework/osal/src</Path>
+        <Name>drv_enc28j60_initialization_state.c</Name>
+        <Path>Source Files/framework/driver/enc28j60/initialization_state</Path>
       </File>
       <File>
-        <Name>peripheral_common_32bit.h</Name>
-        <Path>Header Files/framework/peripheral</Path>
-      </File>
-      <File>
-        <Name>usb_billboard.h</Name>
-        <Path>Header Files/framework/usb</Path>
-      </File>
-      <File>
-        <Name>drv_usbfs.c</Name>
-        <Path>Source Files/framework/driver/usb/usbfs/src/dynamic</Path>
+        <Name>drv_enc28j60_rx_packet.c</Name>
+        <Path>Source Files/framework/driver/enc28j60/packet</Path>
       </File>
       <File>
         <Name>drv_usbfs_local.h</Name>
         <Path>Header Files/framework/driver/usb/usbfs/src</Path>
       </File>
       <File>
-        <Name>sys_devcon.c</Name>
-        <Path>Source Files/framework/system/devcon/src</Path>
-      </File>
-      <File>
-        <Name>usb_hid.h</Name>
-        <Path>Header Files/framework/usb</Path>
-      </File>
-      <File>
-        <Name>osal.h</Name>
-        <Path>Header Files/framework/osal</Path>
-      </File>
-      <File>
-        <Name>usb_device_hid_local.h</Name>
-        <Path>Header Files/framework/usb/src</Path>
+        <Name>drv_enc28j60_utils.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl</Path>
       </File>
       <File>
         <Name>drv_usbhs.h</Name>
         <Path>Header Files/framework/driver/usb/usbhs</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_running_state.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl/running_state</Path>
       </File>
       <File>
         <Name>drv_usbfs_static.h</Name>
@@ -61,16 +45,32 @@
         <Path>Header Files/framework/usb/src</Path>
       </File>
       <File>
-        <Name>usb_common.h</Name>
-        <Path>Header Files/framework/usb</Path>
+        <Name>drv_enc28j60_spi_bus.c</Name>
+        <Path>Source Files/framework/driver/enc28j60/bus/spi</Path>
       </File>
       <File>
-        <Name>usb_device_hid.c</Name>
-        <Path>Source Files/framework/usb/src/dynamic</Path>
+        <Name>drv_enc28j60_bus.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl/bus</Path>
       </File>
       <File>
         <Name>usb_chapter_9.h</Name>
         <Path>Header Files/framework/usb</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_detect_state.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl/initialization_state</Path>
+      </File>
+      <File>
+        <Name>drv_spi.h</Name>
+        <Path>Header Files/framework/driver/spi</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_change_duplex_state.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl/running_state</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_check_tx_status_state.c</Name>
+        <Path>Source Files/framework/driver/enc28j60/running_state</Path>
       </File>
       <File>
         <Name>peripheral_common.h</Name>
@@ -81,8 +81,8 @@
         <Path>Source Files/framework/system/int/src</Path>
       </File>
       <File>
-        <Name>usb_device_mapping.h</Name>
-        <Path>Header Files/framework/usb/src</Path>
+        <Name>drv_enc28j60_rx_packet.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl/packet</Path>
       </File>
       <File>
         <Name>usb_device.c</Name>
@@ -93,12 +93,184 @@
         <Path>Header Files/framework/usb</Path>
       </File>
       <File>
+        <Name>drv_enc28j60_spi_bus.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl/bus/spi</Path>
+      </File>
+      <File>
         <Name>sys_clk.h</Name>
         <Path>Header Files/framework/system/clk</Path>
       </File>
       <File>
+        <Name>drv_enc28j60_detect_state.c</Name>
+        <Path>Source Files/framework/driver/enc28j60/initialization_state</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_initialization_state.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl/initialization_state</Path>
+      </File>
+      <File>
+        <Name>drv_spi_sys_queue_fifo.c</Name>
+        <Path>Source Files/framework/driver/spi</Path>
+      </File>
+      <File>
+        <Name>usb_device.h</Name>
+        <Path>Header Files/framework/usb</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_check_status_state.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl/running_state</Path>
+      </File>
+      <File>
+        <Name>sys_int_private.h</Name>
+        <Path>Header Files/framework/system/int/src</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60.h</Name>
+        <Path>Header Files/framework/driver/enc28j60</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_closed_state.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl/closed_state</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_utils.c</Name>
+        <Path>Source Files/framework/driver/enc28j60</Path>
+      </File>
+      <File>
+        <Name>system.h</Name>
+        <Path>Header Files/framework/system</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_reset_rx_state.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl/running_state</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_api.c</Name>
+        <Path>Source Files/framework/driver/enc28j60</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_local.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl</Path>
+      </File>
+      <File>
+        <Name>drv_usbfs.h</Name>
+        <Path>Header Files/framework/driver/usb/usbfs</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_running_state.c</Name>
+        <Path>Source Files/framework/driver/enc28j60/running_state</Path>
+      </File>
+      <File>
+        <Name>drv_spi_variant_mapping.h</Name>
+        <Path>Header Files/framework/driver/spi/src</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_check_tx_status_state.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl/running_state</Path>
+      </File>
+      <File>
+        <Name>sys_int.h</Name>
+        <Path>Header Files/framework/system/int</Path>
+      </File>
+      <File>
+        <Name>drv_usb.h</Name>
+        <Path>Header Files/framework/driver/usb</Path>
+      </File>
+      <File>
+        <Name>osal_impl_basic.h</Name>
+        <Path>Header Files/framework/osal/src</Path>
+      </File>
+      <File>
+        <Name>peripheral_common_32bit.h</Name>
+        <Path>Header Files/framework/peripheral</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_reset_state.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl/initialization_state</Path>
+      </File>
+      <File>
+        <Name>usb_billboard.h</Name>
+        <Path>Header Files/framework/usb</Path>
+      </File>
+      <File>
+        <Name>drv_usbfs.c</Name>
+        <Path>Source Files/framework/driver/usb/usbfs/src/dynamic</Path>
+      </File>
+      <File>
+        <Name>sys_devcon.c</Name>
+        <Path>Source Files/framework/system/devcon/src</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_main_state.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl</Path>
+      </File>
+      <File>
+        <Name>usb_hid.h</Name>
+        <Path>Header Files/framework/usb</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_tx_packet.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl/packet</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_check_status_state.c</Name>
+        <Path>Source Files/framework/driver/enc28j60/running_state</Path>
+      </File>
+      <File>
+        <Name>osal.h</Name>
+        <Path>Header Files/framework/osal</Path>
+      </File>
+      <File>
+        <Name>usb_device_hid_local.h</Name>
+        <Path>Header Files/framework/usb/src</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_reset_state.c</Name>
+        <Path>Source Files/framework/driver/enc28j60/initialization_state</Path>
+      </File>
+      <File>
+        <Name>usb_common.h</Name>
+        <Path>Header Files/framework/usb</Path>
+      </File>
+      <File>
+        <Name>usb_device_hid.c</Name>
+        <Path>Source Files/framework/usb/src/dynamic</Path>
+      </File>
+      <File>
+        <Name>drv_spi_internal.h</Name>
+        <Path>Header Files/framework/driver/spi/private/dynamic</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_check_int_state.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl/running_state</Path>
+      </File>
+      <File>
+        <Name>drv_spi_sys_queue.h</Name>
+        <Path>Header Files/framework/driver/spi/private</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_tx_packet.c</Name>
+        <Path>Source Files/framework/driver/enc28j60/packet</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_reset_rx_state.c</Name>
+        <Path>Source Files/framework/driver/enc28j60/running_state</Path>
+      </File>
+      <File>
+        <Name>usb_device_mapping.h</Name>
+        <Path>Header Files/framework/usb/src</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_closed_state.c</Name>
+        <Path>Source Files/framework/driver/enc28j60/closed_state</Path>
+      </File>
+      <File>
         <Name>osal_impl_none.h</Name>
         <Path>Header Files/framework/osal/src</Path>
+      </File>
+      <File>
+        <Name>drv_enc28j60_ds_defs.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl</Path>
       </File>
       <File>
         <Name>sys_clk_mapping.h</Name>
@@ -113,24 +285,32 @@
         <Path>Header Files/framework/system/int</Path>
       </File>
       <File>
-        <Name>usb_device.h</Name>
-        <Path>Header Files/framework/usb</Path>
+        <Name>drv_enc28j60_check_int_state.c</Name>
+        <Path>Source Files/framework/driver/enc28j60/running_state</Path>
+      </File>
+      <File>
+        <Name>drv_spi.c</Name>
+        <Path>Source Files/framework/driver/spi/dynamic</Path>
+      </File>
+      <File>
+        <Name>drv_spi_sys_queue_local_fifo.h</Name>
+        <Path>Header Files/framework/driver/spi/private</Path>
       </File>
       <File>
         <Name>gfx_palette.h</Name>
         <Path>Header Files/framework/gfx</Path>
       </File>
       <File>
-        <Name>sys_int_private.h</Name>
-        <Path>Header Files/framework/system/int/src</Path>
+        <Name>drv_enc28j60_configure_state.c</Name>
+        <Path>Source Files/framework/driver/enc28j60/initialization_state</Path>
       </File>
       <File>
         <Name>sys_devcon.h</Name>
         <Path>Header Files/framework/system/devcon</Path>
       </File>
       <File>
-        <Name>system.h</Name>
-        <Path>Header Files/framework/system</Path>
+        <Name>drv_enc28j60_change_duplex_state.c</Name>
+        <Path>Source Files/framework/driver/enc28j60/running_state</Path>
       </File>
       <File>
         <Name>drv_usbfs_device.c</Name>
@@ -139,10 +319,6 @@
       <File>
         <Name>sys_debug.h</Name>
         <Path>Header Files/framework/system/debug</Path>
-      </File>
-      <File>
-        <Name>drv_usbfs.h</Name>
-        <Path>Header Files/framework/driver/usb/usbfs</Path>
       </File>
       <File>
         <Name>sys_devcon_pic32mx.c</Name>
@@ -157,35 +333,50 @@
         <Path>Header Files/framework/driver/usb/usbfs/src</Path>
       </File>
       <File>
+        <Name>drv_enc28j60_main_state.c</Name>
+        <Path>Source Files/framework/driver/enc28j60</Path>
+      </File>
+      <File>
         <Name>peripheral.h</Name>
         <Path>Header Files/framework/peripheral</Path>
       </File>
       <File>
-        <Name>sys_int.h</Name>
-        <Path>Header Files/framework/system/int</Path>
+        <Name>drv_enc28j60_configure_state.h</Name>
+        <Path>Header Files/framework/driver/enc28j60/impl/initialization_state</Path>
       </File>
       <File>
         <Name>drv_usbfs_mapping.h</Name>
         <Path>Header Files/framework/driver/usb/usbfs</Path>
       </File>
-      <File>
-        <Name>drv_usb.h</Name>
-        <Path>Header Files/framework/driver/usb</Path>
-      </File>
     </Files>
     <Templates>
+      <Template>
+        <Name>system_init.c</Name>
+        <Path>Source Files/app/system_config/default</Path>
+        <Checksum>C53B35915D6B087103C273ED45277C64</Checksum>
+      </Template>
+      <Template>
+        <Name>app_usb.h</Name>
+        <Path>Header Files/app</Path>
+      </Template>
+      <Template>
+        <Name>drv_spi_master_rm_tasks.c</Name>
+        <Path>Source Files/app/system_config/default/framework/driver/spi/dynamic</Path>
+        <Checksum>F65FEAB721E68F2679A60E816B77D31E</Checksum>
+      </Template>
+      <Template>
+        <Name>system_definitions.h</Name>
+        <Path>Header Files/app/system_config/default</Path>
+        <Checksum>F5CA242713BD6E3D6EC4710BB143F254</Checksum>
+      </Template>
       <Template>
         <Name>app_usb.c</Name>
         <Path>Source Files/app</Path>
       </Template>
       <Template>
-        <Name>system_init.c</Name>
-        <Path>Source Files/app/system_config/default</Path>
-        <Checksum>3C0CCD6000D5F15BC855783E939606BF</Checksum>
-      </Template>
-      <Template>
-        <Name>app_usb.h</Name>
-        <Path>Header Files/app</Path>
+        <Name>drv_spi_tasks.c</Name>
+        <Path>Source Files/app/system_config/default/framework/driver/spi/dynamic</Path>
+        <Checksum>9CF63BF0D8710639F17ADD285DECD69A</Checksum>
       </Template>
       <Template>
         <Name>system_tasks.c</Name>
@@ -195,12 +386,7 @@
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>59D75BCD153FB27FAE5933424E9859AE</Checksum>
-      </Template>
-      <Template>
-        <Name>system_definitions.h</Name>
-        <Path>Header Files/app/system_config/default</Path>
-        <Checksum>624F79CED84BE598503BA2882F6702EF</Checksum>
+        <Checksum>A371DDFAD110F5992643043D490D8C1B</Checksum>
       </Template>
       <Template>
         <Name>app_eth.c</Name>
@@ -214,7 +400,7 @@
       <Template>
         <Name>system_interrupt.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>B736C5A4D62F7620AC7D70ACCA7F8E30</Checksum>
+        <Checksum>9CD2D53BA2763B929153B110C04AC306</Checksum>
       </Template>
       <Template>
         <Name>app_eth.h</Name>
@@ -225,14 +411,19 @@
         <Path>Source Files/app/system_config/default/framework/system/clk/src</Path>
         <Checksum>45DCC5FDCEA03577B1B40B781BCC20C5</Checksum>
       </Template>
+      <Template>
+        <Name>drv_spi_api.c</Name>
+        <Path>Source Files/app/system_config/default/framework/driver/spi/dynamic</Path>
+        <Checksum>255620425DF47589A4C7B297D81BB71B</Checksum>
+      </Template>
     </Templates>
     <CompilerItems>
       <C32>
-        <Include value="C:/Users/josh/Dropbox/Documents/Thesis/firmware/src"/>
-        <Include value="C:/Users/josh/Dropbox/Documents/Thesis/firmware/src/system_config/default"/>
-        <Include value="C:/Users/josh/Dropbox/Documents/Thesis/firmware/src/default"/>
-        <Include value="C:/microchip/harmony/v1_10/framework"/>
-        <Include value="C:/Users/josh/Dropbox/Documents/Thesis/firmware/src/system_config/default/framework"/>
+        <Include value="C:\Users\josh\Dropbox\Documents\Thesis\firmware\src"/>
+        <Include value="C:\Users\josh\Dropbox\Documents\Thesis\firmware\src\system_config\default"/>
+        <Include value="C:\Users\josh\Dropbox\Documents\Thesis\firmware\src\default"/>
+        <Include value="C:\microchip\harmony\v1_10\framework"/>
+        <Include value="C:\Users\josh\Dropbox\Documents\Thesis\firmware\src\system_config\default\framework"/>
       </C32>
     </CompilerItems>
     <Libraries>

@@ -307,6 +307,21 @@ var CMDS = {
     rxBytes:  1,
     txBytes:  0,
   },
+  'CMD_MOD_TOG_ALIGN_RHO_ENB': {
+    address:  0x8E,
+    rxBytes:  1,
+    txBytes:  0,
+  },
+  'CMD_MOD_SET_ALIGN_RHO_ENB': {
+    address:  0x8F,
+    rxBytes:  0,
+    txBytes:  1,
+  },
+  'CMD_MOD_GET_ALIGN_RHO_ENB': {
+    address:  0x90,
+    rxBytes:  1,
+    txBytes:  0,
+  },
   // 0xA*
   // 0xB*
   // 0xC*
@@ -369,10 +384,10 @@ var CONTROLS = [
   [ 'Gimbal', 'Tilt -0.15°', function() { sendHandler( SCAN_CMD_PKT( [ gimbal.pan+0.0, gimbal.tilt-0.15 ] ) ) } ],
   [ 'Gimbal', 'Tilt +0.15°', function() { sendHandler( SCAN_CMD_PKT( [ gimbal.pan+0.0, gimbal.tilt+0.15 ] ) ) } ],
   [ 'Gimbal', 'Tilt +5.0°', function() { sendHandler( SCAN_CMD_PKT( [ gimbal.pan+0.0, gimbal.tilt+5.0 ] ) ) } ],
-  [ 'Gimbal', 'Get Pan', function() { sendHandler( [ CMDS['CMD_GIMBAL_PAN_ANG_GET'].address ] ) } ],
-  [ 'Gimbal', 'Get Tilt', function() { sendHandler( [ CMDS['CMD_GIMBAL_TILT_ANG_GET'].address ] ) } ],
+  [ 'Gimbal', 'Get Pan/Tilt', function() { sendHandler( [ CMDS['CMD_GIMBAL_PAN_ANG_GET'].address, CMDS['CMD_GIMBAL_TILT_ANG_GET'].address ] ) } ],
   [ 'Gimbal', 'Origin', function() { sendHandler( SCAN_CMD_PKT( [ 90, 90 ] ) ) } ],
   [ 'Gimbal', 'Toggle Alignment', function() { sendHandler( [ CMDS['CMD_MOD_TOG_ALIGN_ENB'].address ] ) } ],
+  [ 'Gimbal', 'Toggle Momentum', function() { sendHandler( [ CMDS['CMD_MOD_TOG_ALIGN_RHO_ENB'].address ] ) } ],
   [ 'HID USB', 'Connect', hidConnect ],
   [ 'HID USB', 'Disconnect', hidDisconnect ],
   [ 'Debug', 'LED1', function() { sendHandler( [ CMDS['CMD_LED1_TOG'].address ] ) } ],
@@ -473,6 +488,7 @@ var DEFAULT_MCU_PKT = ( function() { return [
   CMDS['CMD_MOD_SIG_LOCK_GET'].address,
   CMDS['CMD_MOD_HICCUP_NS_GET'].address,
   CMDS['CMD_MOD_GET_ALIGN_ENB'].address,
+  CMDS['CMD_MOD_GET_ALIGN_RHO_ENB'].address,
   CMDS['CMD_GIMBAL_PAN_GET'].address,
   CMDS['CMD_GIMBAL_TILT_GET'].address,
   CMDS['CMD_GIMBAL_PAN_ANG_GET'].address,
@@ -535,7 +551,7 @@ function startPoller() {
   } )
   if ( mcuPollerTxSize.every( function( val ) { return val <= Hid.BUF_SIZE } ) &&
        mcuPollerRxSize.every( function( val ) { return val <= Hid.BUF_SIZE } ) ) {
-    mcuPollerRate = 100
+    mcuPollerRate = 125
     mcuPollerH = window.setInterval( function() { 
       sendHandler( packets[packetsSendIdx] )
       if ( (packetsSendIdx + 1) == packets.length )
@@ -864,7 +880,8 @@ function receiveHandler( dataBuf ) {
         if ( typeof graphPan !== 'undefined' )
           graphPan.addPoint( angle )
         //else
-          controls.controlsByGroup["Gimbal"]["Get Pan"].querySelector( '#value' ).innerHTML = " - " + angle.toFixed(3) + "&deg;"
+          var prev = controls.controlsByGroup["Gimbal"]["Get Pan/Tilt"].querySelector( '#value' ).innerHTML
+          controls.controlsByGroup["Gimbal"]["Get Pan/Tilt"].querySelector( '#value' ).innerHTML = " (" + angle.toFixed(3) + "&deg;," + prev.substring(11,99)
         
         break
         
@@ -887,7 +904,8 @@ function receiveHandler( dataBuf ) {
         if ( typeof graphTilt !== 'undefined' )
           graphTilt.addPoint( angle )
         //else
-          controls.controlsByGroup["Gimbal"]["Get Tilt"].querySelector( '#value' ).innerHTML = " - " + angle.toFixed(3) + "&deg;"
+          var prev = controls.controlsByGroup["Gimbal"]["Get Pan/Tilt"].querySelector( '#value' ).innerHTML
+          controls.controlsByGroup["Gimbal"]["Get Pan/Tilt"].querySelector( '#value' ).innerHTML =  prev.substring(0,10) + angle.toFixed(3) + "&deg;)"
         
         break
       
@@ -1199,6 +1217,7 @@ function receiveHandler( dataBuf ) {
         break
       
       case CMDS['CMD_MOD_GET_ALIGN_ENB'].address:
+      case CMDS['CMD_MOD_TOG_ALIGN_ENB'].address:
         
         // extract data bytes from packet
         var dataBytes = getDataBytes( 'CMD_MOD_GET_ALIGN_ENB' )
@@ -1209,6 +1228,21 @@ function receiveHandler( dataBuf ) {
           graphModAlignEnb.addPoint( dataBytes[0] )
         //else
           controls.controlsByGroup["Gimbal"]["Toggle Alignment"].querySelector( '#value' ).innerHTML = " (" + dataBytes[0] + ")"
+        
+        break
+        
+      case CMDS['CMD_MOD_GET_ALIGN_RHO_ENB'].address:
+      case CMDS['CMD_MOD_TOG_ALIGN_RHO_ENB'].address:
+        
+        // extract data bytes from packet
+        var dataBytes = getDataBytes( 'CMD_MOD_GET_ALIGN_RHO_ENB' )
+        
+        // graphically update value field in control (or graph
+        // if we have one set up for this variable)
+        if ( typeof graphModAlignRhoEnb !== 'undefined' )
+          graphModAlignRhoEnb.addPoint( dataBytes[0] )
+        //else
+          controls.controlsByGroup["Gimbal"]["Toggle Momentum"].querySelector( '#value' ).innerHTML = " (" + dataBytes[0] + ")"
         
         break
         

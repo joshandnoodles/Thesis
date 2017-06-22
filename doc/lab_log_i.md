@@ -642,7 +642,7 @@ https://rawgit.com/joshandnoodles/MS/cd88693408b3beadbc45515974884ea5a7c1ab7e/do
 
 Doing an initial evaluation of MikroElektronika's products based on our systems needs...
 
-The **camera will again be a large constraint** in design choices. MikroElektronika recommeds a 32-bit MCU to be able to achieve QCIF resolution video (**176 x 144 px**). This is explained here: http://www.mikroe.com/click/camera/. This alone is enough to limit our search to 32-bit MCUs. 
+The **camera will again be a large constraint** in design choices. MikroElektronika recommeds a 32-bit MCU to be able to achieve QCIF resolution video (**176 x 144 px**). This is explained here: http://www.mikroe.com/click/camera/. This alone is enough to limit our search to 32-bit MCUs.
 
 ![](http://www.mikroe.com/img/development-tools/accessory-boards/click/camera/camera_click.png)
 ![](http://www.mikroe.com/img/development-tools/accessory-boards/click/eth_wiz/eth_wiz_click.png)

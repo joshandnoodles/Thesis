@@ -22,8 +22,57 @@
         <itemPath>../src/app_eth.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
-        <logicalFolder name="f5" displayName="driver" projectFiles="true">
-          <logicalFolder name="f1" displayName="usb" projectFiles="true">
+        <logicalFolder name="f1" displayName="driver" projectFiles="true">
+          <logicalFolder name="f1" displayName="enc28j60" projectFiles="true">
+            <logicalFolder name="f1" displayName="impl" projectFiles="true">
+              <logicalFolder name="f1" displayName="bus" projectFiles="true">
+                <logicalFolder name="f1" displayName="spi" projectFiles="true">
+                  <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/bus/spi/drv_enc28j60_spi_bus.h</itemPath>
+                </logicalFolder>
+                <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/bus/drv_enc28j60_bus.h</itemPath>
+              </logicalFolder>
+              <logicalFolder name="f2" displayName="closed_state" projectFiles="true">
+                <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/closed_state/drv_enc28j60_closed_state.h</itemPath>
+              </logicalFolder>
+              <logicalFolder name="f3" displayName="initialization_state" projectFiles="true">
+                <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/initialization_state/drv_enc28j60_initialization_state.h</itemPath>
+                <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/initialization_state/drv_enc28j60_configure_state.h</itemPath>
+                <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/initialization_state/drv_enc28j60_detect_state.h</itemPath>
+                <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/initialization_state/drv_enc28j60_reset_state.h</itemPath>
+              </logicalFolder>
+              <logicalFolder name="f4" displayName="packet" projectFiles="true">
+                <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/packet/drv_enc28j60_tx_packet.h</itemPath>
+                <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/packet/drv_enc28j60_rx_packet.h</itemPath>
+              </logicalFolder>
+              <logicalFolder name="f5" displayName="running_state" projectFiles="true">
+                <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/running_state/drv_enc28j60_running_state.h</itemPath>
+                <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/running_state/drv_enc28j60_change_duplex_state.h</itemPath>
+                <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/running_state/drv_enc28j60_check_int_state.h</itemPath>
+                <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/running_state/drv_enc28j60_check_status_state.h</itemPath>
+                <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/running_state/drv_enc28j60_check_tx_status_state.h</itemPath>
+                <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/running_state/drv_enc28j60_reset_rx_state.h</itemPath>
+              </logicalFolder>
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/drv_enc28j60_ds_defs.h</itemPath>
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/drv_enc28j60_local.h</itemPath>
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/drv_enc28j60_main_state.h</itemPath>
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/drv_enc28j60_utils.h</itemPath>
+            </logicalFolder>
+            <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/drv_enc28j60.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="f2" displayName="spi" projectFiles="true">
+            <logicalFolder name="f1" displayName="private" projectFiles="true">
+              <logicalFolder name="f1" displayName="dynamic" projectFiles="true">
+                <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/spi/src/dynamic/drv_spi_internal.h</itemPath>
+              </logicalFolder>
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/spi/src/drv_spi_sys_queue.h</itemPath>
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/spi/src/drv_spi_sys_queue_local_fifo.h</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f2" displayName="src" projectFiles="true">
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/spi/src/drv_spi_variant_mapping.h</itemPath>
+            </logicalFolder>
+            <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/spi/drv_spi.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="f3" displayName="usb" projectFiles="true">
             <logicalFolder name="f2" displayName="usbfs" projectFiles="true">
               <logicalFolder name="f1" displayName="src" projectFiles="true">
                 <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/usb/usbfs/src/drv_usbfs_local.h</itemPath>
@@ -39,10 +88,10 @@
             <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/usb/drv_usb.h</itemPath>
           </logicalFolder>
         </logicalFolder>
-        <logicalFolder name="f1" displayName="gfx" projectFiles="true">
+        <logicalFolder name="f2" displayName="gfx" projectFiles="true">
           <itemPath>../../../../../../../microchip/harmony/v1_10/framework/gfx/gfx_palette.h</itemPath>
         </logicalFolder>
-        <logicalFolder name="f2" displayName="osal" projectFiles="true">
+        <logicalFolder name="f3" displayName="osal" projectFiles="true">
           <logicalFolder name="f1" displayName="src" projectFiles="true">
             <itemPath>../../../../../../../microchip/harmony/v1_10/framework/osal/src/osal_impl_basic.h</itemPath>
             <itemPath>../../../../../../../microchip/harmony/v1_10/framework/osal/src/osal_impl_none.h</itemPath>
@@ -50,12 +99,12 @@
           <itemPath>../../../../../../../microchip/harmony/v1_10/framework/osal/osal.h</itemPath>
           <itemPath>../../../../../../../microchip/harmony/v1_10/framework/osal/osal_definitions.h</itemPath>
         </logicalFolder>
-        <logicalFolder name="f3" displayName="peripheral" projectFiles="true">
+        <logicalFolder name="f4" displayName="peripheral" projectFiles="true">
           <itemPath>../../../../../../../microchip/harmony/v1_10/framework/peripheral/peripheral.h</itemPath>
           <itemPath>../../../../../../../microchip/harmony/v1_10/framework/peripheral/peripheral_common.h</itemPath>
           <itemPath>../../../../../../../microchip/harmony/v1_10/framework/peripheral/peripheral_common_32bit.h</itemPath>
         </logicalFolder>
-        <logicalFolder name="f4" displayName="system" projectFiles="true">
+        <logicalFolder name="f5" displayName="system" projectFiles="true">
           <logicalFolder name="f1" displayName="clk" projectFiles="true">
             <itemPath>../../../../../../../microchip/harmony/v1_10/framework/system/clk/sys_clk.h</itemPath>
             <itemPath>../../../../../../../microchip/harmony/v1_10/framework/system/clk/sys_clk_mapping.h</itemPath>
@@ -121,7 +170,16 @@
         <logicalFolder name="f1" displayName="system_config" projectFiles="true">
           <logicalFolder name="f1" displayName="default" projectFiles="true">
             <logicalFolder name="f1" displayName="framework" projectFiles="true">
-              <logicalFolder name="f1" displayName="system" projectFiles="true">
+              <logicalFolder name="f1" displayName="driver" projectFiles="true">
+                <logicalFolder name="f1" displayName="spi" projectFiles="true">
+                  <logicalFolder name="f1" displayName="dynamic" projectFiles="true">
+                    <itemPath>../src/system_config/default/framework/driver/spi/dynamic/drv_spi_tasks.c</itemPath>
+                    <itemPath>../src/system_config/default/framework/driver/spi/dynamic/drv_spi_api.c</itemPath>
+                    <itemPath>../src/system_config/default/framework/driver/spi/dynamic/drv_spi_master_rm_tasks.c</itemPath>
+                  </logicalFolder>
+                </logicalFolder>
+              </logicalFolder>
+              <logicalFolder name="f2" displayName="system" projectFiles="true">
                 <logicalFolder name="f1" displayName="clk" projectFiles="true">
                   <logicalFolder name="f1" displayName="src" projectFiles="true">
                     <itemPath>../src/system_config/default/framework/system/clk/src/sys_clk_static.c</itemPath>
@@ -138,8 +196,45 @@
         <itemPath>../src/app_eth.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
-        <logicalFolder name="f2" displayName="driver" projectFiles="true">
-          <logicalFolder name="f1" displayName="usb" projectFiles="true">
+        <logicalFolder name="f1" displayName="driver" projectFiles="true">
+          <logicalFolder name="f1" displayName="enc28j60" projectFiles="true">
+            <logicalFolder name="f1" displayName="bus" projectFiles="true">
+              <logicalFolder name="f1" displayName="spi" projectFiles="true">
+                <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/bus/spi/drv_enc28j60_spi_bus.c</itemPath>
+              </logicalFolder>
+            </logicalFolder>
+            <logicalFolder name="f2" displayName="closed_state" projectFiles="true">
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/closed_state/drv_enc28j60_closed_state.c</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f3" displayName="initialization_state" projectFiles="true">
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/initialization_state/drv_enc28j60_initialization_state.c</itemPath>
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/initialization_state/drv_enc28j60_configure_state.c</itemPath>
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/initialization_state/drv_enc28j60_detect_state.c</itemPath>
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/initialization_state/drv_enc28j60_reset_state.c</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f4" displayName="packet" projectFiles="true">
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/packet/drv_enc28j60_tx_packet.c</itemPath>
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/packet/drv_enc28j60_rx_packet.c</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f5" displayName="running_state" projectFiles="true">
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/running_state/drv_enc28j60_running_state.c</itemPath>
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/running_state/drv_enc28j60_change_duplex_state.c</itemPath>
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/running_state/drv_enc28j60_check_int_state.c</itemPath>
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/running_state/drv_enc28j60_check_status_state.c</itemPath>
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/running_state/drv_enc28j60_check_tx_status_state.c</itemPath>
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/running_state/drv_enc28j60_reset_rx_state.c</itemPath>
+            </logicalFolder>
+            <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/drv_enc28j60_api.c</itemPath>
+            <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/drv_enc28j60_main_state.c</itemPath>
+            <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/enc28j60/src/dynamic/drv_enc28j60_utils.c</itemPath>
+          </logicalFolder>
+          <logicalFolder name="f2" displayName="spi" projectFiles="true">
+            <logicalFolder name="f1" displayName="dynamic" projectFiles="true">
+              <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/spi/src/dynamic/drv_spi.c</itemPath>
+            </logicalFolder>
+            <itemPath>../../../../../../../microchip/harmony/v1_10/framework/driver/spi/src/drv_spi_sys_queue_fifo.c</itemPath>
+          </logicalFolder>
+          <logicalFolder name="f3" displayName="usb" projectFiles="true">
             <logicalFolder name="f1" displayName="usbfs" projectFiles="true">
               <logicalFolder name="f1" displayName="src" projectFiles="true">
                 <logicalFolder name="f1" displayName="dynamic" projectFiles="true">
@@ -150,7 +245,7 @@
             </logicalFolder>
           </logicalFolder>
         </logicalFolder>
-        <logicalFolder name="f1" displayName="system" projectFiles="true">
+        <logicalFolder name="f2" displayName="system" projectFiles="true">
           <logicalFolder name="f1" displayName="devcon" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../../../../../../../microchip/harmony/v1_10/framework/system/devcon/src/sys_devcon.c</itemPath>
@@ -212,7 +307,7 @@
         <targetDevice>PIC32MX460F512L</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>Simulator</platformTool>
+        <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>1.42</languageToolchainVersion>
         <platform>3</platform>

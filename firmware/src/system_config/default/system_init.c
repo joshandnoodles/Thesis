@@ -93,6 +93,43 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // Section: Driver Initialization Data
 // *****************************************************************************
 // *****************************************************************************
+
+/* enc28j60 Driver Configuration */
+DRV_ENC28J60_Configuration drvEnc28j60InitDataIdx0 = {
+    .txDescriptors =        DRV_ENC28J60_MAC_TX_DESCRIPTORS_IDX0,
+    .rxDescriptors =        DRV_ENC28J60_MAC_RX_DESCRIPTORS_IDX0,
+    .rxDescBufferSize =     DRV_ENC28J60_MAX_RX_BUFFER_IDX0,
+    .spiDrvIndex =          DRV_ENC28J60_SPI_DRIVER_INDEX_IDX0,
+    .spiBps =               DRV_ENC28J60_SPI_BPS_IDX0,
+    .spiSSPortModule =      DRV_ENC28J60_SPI_SS_PORT_MODULE_IDX0,
+    .spiSSPortChannel =     DRV_ENC28J60_SPI_SS_PORT_CHANNEL_IDX0,
+    .spiSSPortPin =         DRV_ENC28J60_SPI_SS_PORT_PIN_IDX0,
+    .rxBufferSize = 		DRV_ENC28J60_RX_BUFFER_SIZE_IDX0,
+    .maxFrameSize =	        DRV_ENC28J60_MAX_FRAME_SIZE_IDX0,
+};
+// <editor-fold defaultstate="collapsed" desc="DRV_SPI Initialization Data"> 
+ /*** SPI Driver Initialization Data ***/
+  /*** Index 0  ***/
+ DRV_SPI_INIT drvSpi0InitData =
+ {
+    .spiId = DRV_SPI_SPI_ID_IDX0,
+    .taskMode = DRV_SPI_TASK_MODE_IDX0,
+    .spiMode = DRV_SPI_SPI_MODE_IDX0,
+    .allowIdleRun = DRV_SPI_ALLOW_IDLE_RUN_IDX0,
+    .spiProtocolType = DRV_SPI_SPI_PROTOCOL_TYPE_IDX0,
+    .commWidth = DRV_SPI_COMM_WIDTH_IDX0,
+    .spiClk = DRV_SPI_SPI_CLOCK_IDX0,
+    .baudRate = DRV_SPI_BAUD_RATE_IDX0,
+    .bufferType = DRV_SPI_BUFFER_TYPE_IDX0,
+    .clockMode = DRV_SPI_CLOCK_MODE_IDX0,
+    .inputSamplePhase = DRV_SPI_INPUT_PHASE_IDX0,
+    .txInterruptSource = DRV_SPI_TX_INT_SOURCE_IDX0,
+    .rxInterruptSource = DRV_SPI_RX_INT_SOURCE_IDX0,
+    .errInterruptSource = DRV_SPI_ERROR_INT_SOURCE_IDX0,
+    .queueSize = DRV_SPI_QUEUE_SIZE_IDX0,
+    .jobQueueReserveSize = DRV_SPI_RESERVED_JOB_IDX0,
+ };
+// </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="DRV_USB Initialization Data">
 /******************************************************
  * USB Driver Initialization
@@ -447,9 +484,18 @@ void SYS_Initialize ( void* data )
     SYS_DEVCON_JTAGDisable();
 
     /* Initialize Drivers */
+
+    /*** SPI Driver Index 0 initialization***/
+
+    SYS_INT_VectorPrioritySet(DRV_SPI_INT_VECTOR_IDX0, DRV_SPI_INT_PRIORITY_IDX0);
+    SYS_INT_VectorSubprioritySet(DRV_SPI_INT_VECTOR_IDX0, DRV_SPI_INT_SUB_PRIORITY_IDX0);
+    sysObj.spiObjectIdx0 = DRV_SPI_Initialize(DRV_SPI_INDEX_0, (const SYS_MODULE_INIT  * const)&drvSpi0InitData);
     /* Initialize USB Driver */ 
     sysObj.drvUSBObject = DRV_USBFS_Initialize(DRV_USBFS_INDEX_0, (SYS_MODULE_INIT *) &drvUSBInit);
-
+    
+    //DRV_ENC28J60_Initialize( ( SYS_MODULE_INIT* ) & drvEnc28j60InitDataIdx0);
+    
+            
     /* Initialize System Services */
 
     /*** Interrupt Service Initialization Code ***/

@@ -56,6 +56,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "system/clk/sys_clk_static.h"
 #include "system/devcon/sys_devcon.h"
 #include "system/int/sys_int.h"
+#include "driver/spi/drv_spi.h"
+#include "driver/enc28j60/drv_enc28j60.h"
 #include "driver/usb/usbfs/drv_usbfs.h"
 #include "usb/usb_device.h"
 
@@ -98,6 +100,9 @@ extern "C" {
 typedef struct
 {
     SYS_MODULE_OBJ  sysDevcon;
+
+    /*** SPI Object for Index 0 ***/
+    SYS_MODULE_OBJ				spiObjectIdx0;
     SYS_MODULE_OBJ  drvUSBObject;
     
     SYS_MODULE_OBJ  usbDevObject0;

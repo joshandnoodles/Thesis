@@ -31,15 +31,16 @@ extern "C" {
 // define default values for initial rx configuration
 #define MOD_DEFAULT_RX_ACTIVE_QUAD      1
 #define MOD_DEFAULT_RX_ALIGN_ENB        1
-#define MOD_DEFAULT_RX_SWAP_MULT        200    // multiplier when comparing ch
-#define MOD_DEFAULT_RX_ALIGN_MULT_ONE   255
+#define MOD_DEFAULT_RX_ALIGN_RHO_ENB    1
+#define MOD_DEFAULT_RX_SWAP_MULT        255    // multiplier when comparing ch
+#define MOD_DEFAULT_RX_ALIGN_MULT_ONE   200
 #define MOD_DEFAULT_RX_ALIGN_MULT_TWO   0
 #define MOD_DEFAULT_RX_ALIGN_MULT_THREE 0
-#define MOD_RX_ALIGN_RHO_MULT_L         64
-#define MOD_RX_ALIGN_RHO_MULT_M         96
+#define MOD_RX_ALIGN_RHO_MULT_L         96
+#define MOD_RX_ALIGN_RHO_MULT_M         128
 #define MOD_RX_ALIGN_RHO_MULT_H         255
 #define MOD_RX_ALIGN_FRAME_STREAK_L     0
-#define MOD_RX_ALIGN_FRAME_STREAK_M     4
+#define MOD_RX_ALIGN_FRAME_STREAK_M     3
 #define MOD_RX_ALIGN_FRAME_STREAK_H     32
 #define MOD_DEFAULT_RX_HICCUP_NS        20000   // differential in sampling (ns)
 #define MOD_DEFAULT_RX_HICCUP_THRES     22
@@ -62,6 +63,7 @@ extern uint8_t modState;
 extern volatile uint8_t modSigLockState;
 extern volatile uint8_t modRxHiccupState;
 extern volatile uint8_t modRxAlignEnb;
+extern volatile uint8_t modRxAlignRhoEnb;
 extern uint32_t modTxFreqHz;
 extern uint32_t modRxBitErrors;
 extern uint32_t modRxHiccupNs;

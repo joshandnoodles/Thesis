@@ -91,6 +91,78 @@ extern "C" {
 // *****************************************************************************
 // *****************************************************************************
 
+/*** enc28j60 Driver Configuration ***/
+/*** Driver Compilation and static configuration options. ***/
+#define TCPIP_IF_ENC28J60
+#define DRV_ENC28J60_INSTANCES_NUMBER 1
+#define DRV_ENC28J60_CLIENT_INSTANCES 1
+#define DRV_ENC28J60_MAC_TX_DESCRIPTORS_IDX0 2
+#define DRV_ENC28J60_MAC_RX_DESCRIPTORS_IDX0 2
+#define DRV_ENC28J60_MAX_RX_BUFFER_IDX0 1536
+#define DRV_ENC28J60_SPI_DRIVER_INDEX_IDX0 0
+#define DRV_ENC28J60_SPI_BPS_IDX0 14000000
+#define DRV_ENC28J60_SPI_SS_PORT_MODULE_IDX0 PORTS_ID_0
+#define DRV_ENC28J60_SPI_SS_PORT_CHANNEL_IDX0 PORT_CHANNEL_G
+#define DRV_ENC28J60_SPI_SS_PORT_PIN_IDX0 PORTS_BIT_POS_13
+#define DRV_ENC28J60_RX_BUFFER_SIZE_IDX0 16384
+#define DRV_ENC28J60_MAX_FRAME_SIZE_IDX0 1536
+
+/*** SPI Driver Configuration ***/
+#define DRV_SPI_NUMBER_OF_MODULES		2
+/*** Driver Compilation and static configuration options. ***/
+/*** Select SPI compilation units.***/
+#define DRV_SPI_POLLED 				0
+#define DRV_SPI_ISR 				1
+#define DRV_SPI_MASTER 				1
+#define DRV_SPI_SLAVE 				0
+#define DRV_SPI_RM 					1
+#define DRV_SPI_EBM 				0
+#define DRV_SPI_8BIT 				1
+#define DRV_SPI_16BIT 				0
+#define DRV_SPI_32BIT 				0
+#define DRV_SPI_DMA 				0
+
+/*** SPI Driver Static Allocation Options ***/
+#define DRV_SPI_INSTANCES_NUMBER 		1
+#define DRV_SPI_CLIENTS_NUMBER 			1
+#define DRV_SPI_ELEMENTS_PER_QUEUE 		10
+/* SPI Driver Instance 0 Configuration */
+#define DRV_SPI_SPI_ID_IDX0 				SPI_ID_2
+#define DRV_SPI_TASK_MODE_IDX0 				DRV_SPI_TASK_MODE_ISR
+#define DRV_SPI_SPI_MODE_IDX0				DRV_SPI_MODE_MASTER
+#define DRV_SPI_ALLOW_IDLE_RUN_IDX0			false
+#define DRV_SPI_SPI_PROTOCOL_TYPE_IDX0 		DRV_SPI_PROTOCOL_TYPE_STANDARD
+#define DRV_SPI_COMM_WIDTH_IDX0 			SPI_COMMUNICATION_WIDTH_8BITS
+#define DRV_SPI_SPI_CLOCK_IDX0 				CLK_BUS_PERIPHERAL_2
+#define DRV_SPI_BAUD_RATE_IDX0 				1000000
+#define DRV_SPI_BUFFER_TYPE_IDX0 			DRV_SPI_BUFFER_TYPE_STANDARD
+#define DRV_SPI_CLOCK_MODE_IDX0 			DRV_SPI_CLOCK_MODE_IDLE_LOW_EDGE_RISE
+#define DRV_SPI_INPUT_PHASE_IDX0 			SPI_INPUT_SAMPLING_PHASE_IN_MIDDLE
+#define DRV_SPI_TX_INT_SOURCE_IDX0 			INT_SOURCE_SPI_2_TRANSMIT
+#define DRV_SPI_RX_INT_SOURCE_IDX0 			INT_SOURCE_SPI_2_RECEIVE
+#define DRV_SPI_ERROR_INT_SOURCE_IDX0 		INT_SOURCE_SPI_2_ERROR
+#define DRV_SPI_INT_VECTOR_IDX0				INT_VECTOR_SPI2
+#define DRV_SPI_INT_PRIORITY_IDX0			INT_PRIORITY_LEVEL1
+#define DRV_SPI_INT_SUB_PRIORITY_IDX0		INT_SUBPRIORITY_LEVEL0        
+#define DRV_SPI_QUEUE_SIZE_IDX0 			10
+#define DRV_SPI_RESERVED_JOB_IDX0 			1
+
+/*** enc28j60 Driver Configuration ***/
+/*** Driver Compilation and static configuration options. ***/
+#define TCPIP_IF_ENC28J60
+#define DRV_ENC28J60_INSTANCES_NUMBER 1
+#define DRV_ENC28J60_CLIENT_INSTANCES 1
+#define DRV_ENC28J60_MAC_TX_DESCRIPTORS_IDX0 2
+#define DRV_ENC28J60_MAC_RX_DESCRIPTORS_IDX0 2
+#define DRV_ENC28J60_MAX_RX_BUFFER_IDX0 1536
+#define DRV_ENC28J60_SPI_DRIVER_INDEX_IDX0 0
+#define DRV_ENC28J60_SPI_BPS_IDX0 14000000
+#define DRV_ENC28J60_SPI_SS_PORT_MODULE_IDX0 PORTS_ID_0
+#define DRV_ENC28J60_SPI_SS_PORT_CHANNEL_IDX0 PORT_CHANNEL_G
+#define DRV_ENC28J60_SPI_SS_PORT_PIN_IDX0 PORTS_BIT_POS_13
+#define DRV_ENC28J60_RX_BUFFER_SIZE_IDX0 16384
+#define DRV_ENC28J60_MAX_FRAME_SIZE_IDX0 1536
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Middleware & Other Library Configuration

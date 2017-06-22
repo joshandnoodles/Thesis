@@ -36,6 +36,8 @@
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "system/common/sys_module.h"   // SYS function prototypes
 
+#include "driver/enc28j60/drv_enc28j60.h"
+
 // main function
 void main() {
   
@@ -49,19 +51,17 @@ void main() {
   initMod();                // modulation processes/hardware
   initGimbal();             // gimbal controlling pan/tilt mechanisms
   initDebug();              // debug hardware on the Clicker 2
-  
+        
   lsrLoadSwitchOn();
   modOn();
   gimbalOn();
   
-  gimbalSetPan( 90 );
-  
   #ifdef MASTER
     gimbalSetPan( 90 );
-    gimbalSetTilt( 6 );
+    gimbalSetTilt( 6.147 );
   #else
     gimbalSetPan( 90 );
-    gimbalSetTilt( 7 );
+    gimbalSetTilt( 7.279 );
   #endif
   
   while (1) {     // loop forever
